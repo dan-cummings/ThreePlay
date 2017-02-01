@@ -1,1 +1,1 @@
-package gameSuite;
+package gamesuite;

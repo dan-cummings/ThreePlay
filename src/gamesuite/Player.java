@@ -5,6 +5,9 @@ package gamesuite;
  * @author Daniel Cummings
  *
  */
-public interface IGameLogic {
-	
+public enum Player {
+	/**
+	 * 
+	 */
+	WHITE, BLACK;
 }
