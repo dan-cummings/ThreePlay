@@ -1,12 +1,11 @@
 package gamesuite;
 
-import javax.swing.JPanel;
-
 /**
- * 
+ * View for the user to interact with visual representations of
+ * game pieces and boards.
  * @author Daniel Cummings
  *
  */
-public class GameSuiteGUI extends JPanel {
+public class GameSuiteGUI {
 
 }
