@@ -1,11 +1,18 @@
 package gamesuite;
 
+import javax.swing.JFrame;
+
 /**
+ * Utility class to instantiate the window and suite GUI.
  * 
  * @author Daniel Cummings
- *
  */
-public final class GameSuite {
+public final class GameSuite extends JFrame{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * private constructor. (not used)
 	 */
