@@ -7,5 +7,11 @@ package gamesuite;
  *
  */
 public class GameSuiteGUI {
-
+	
+	/**
+	 * 
+	 */
+	public GameSuiteGUI() {
+			
+	}
 }
