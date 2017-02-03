@@ -1,11 +1,9 @@
 package gamesuite;
 
-/**
- * 
+/** 
  * Move class creates and stores moves of board pieces.
  * When a piece is moved the Move object stores the to
  * and from coordinates of the board.
- * 
  * @author Daniel Cummings
  *
  */

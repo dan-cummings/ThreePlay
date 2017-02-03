@@ -1,8 +1,9 @@
 package gamesuite;
 
 /**
- * Utility class to start game suite.
+ * 
  * @author Daniel Cummings
+ *
  */
 public final class GameSuite {
 	/**
