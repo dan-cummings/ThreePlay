@@ -5,9 +5,10 @@ package gamesuite;
  * When a piece is moved the Move object stores the to
  * and from coordinates of the board.
  * @author Daniel Cummings
- *
+ * @version 0.1
  */
 public class Move {
+	
 	/**Horizontal board location piece moving to.*/
 	private int toX;
 	/**Vertical board location the piece is moving to.*/
@@ -18,9 +19,7 @@ public class Move {
 	private int frY;
 	
 	/**
-	 * 
 	 * Constructor method for Move class.
-	 * 
 	 * @param tX Horizontal position the piece is moving to.
 	 * @param tY Vertical position the piece is moving to.
 	 * @param fX Horizontal origin of the piece.

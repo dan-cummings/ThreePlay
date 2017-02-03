@@ -3,7 +3,7 @@ package gamesuite;
 /**
  * Interface to provide structure for board games within game suite.
  * @author Daniel Cummings
- *
+ * @version 0.1
  */
 public interface IPiece {
 	
