@@ -5,7 +5,7 @@ package gamesuite;
  * played. Games act as control for determine whether the game is over
  * or manipulate pieces of the game.
  * @author Daniel Cummings
- *
+ * @version 0.1
  */
 public interface IGameLogic {
 	

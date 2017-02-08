@@ -6,8 +6,9 @@ import javax.swing.JFrame;
  * Utility class to instantiate the window and suite GUI.
  * 
  * @author Daniel Cummings
+ * @version 0.1
  */
-public final class GameSuite extends JFrame{
+public final class GameSuite{
 	/**
 	 * 
 	 */
@@ -23,6 +24,9 @@ public final class GameSuite extends JFrame{
 	 * view objects.
 	 */
 	public static void main() {
-		
+		JFrame frame = new JFrame("ThreePlay");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		GameSuiteGUI g = new GameSuiteGUI(frame);
+		frame.getContentPane().add(g);
 	}
 }
