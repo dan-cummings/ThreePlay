@@ -1,5 +1,6 @@
 package gamesuite;
 
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +11,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
 
 
 /**
@@ -35,17 +38,14 @@ public class GameSuiteGUI extends JPanel {
 	/** Menu buttons. */
 	private JMenuItem newGames, save, load, exit;
 
-	/** Action listener for buttons. */
-	private ButtonListener listen;
+	/** Panel for the initial screen. */
+	private JPanel init, sudokuPanel, checkersPanel, reversiPanel;
 
 	/**
 	 * @param frame  
 	 */
 	public GameSuiteGUI(final JFrame frame) {
 		this.wind = frame;
-		GridLayout layout = new GridLayout(3, 2, 25, 15);
-		this.setLayout(layout);
-		listen = new ButtonListener();
 		createBar();
 		createInitial();
 
@@ -62,10 +62,31 @@ public class GameSuiteGUI extends JPanel {
 		this.save = new JMenuItem("Save..");
 		this.load = new JMenuItem("Load..");
 		this.exit = new JMenuItem("Exit");
-		newGames.addActionListener(listen);
-		save.addActionListener(listen);
-		load.addActionListener(listen);
-		exit.addActionListener(listen);
+		newGames.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				createInitial();
+			}
+		});
+
+		save.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				save();
+			}
+		});
+		load.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				load();
+			}
+		});
+		exit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				System.exit(0);
+			}
+		});
 		gameMenu.add(newGames);
 		gameMenu.add(save);
 		gameMenu.add(load);
@@ -81,125 +102,121 @@ public class GameSuiteGUI extends JPanel {
 	 */
 	private void createInitial() {
 		// Creates buttons for the initial games menu.
+		this.removeAll();
+		// initial panel creation.
+		init = new JPanel(new GridLayout(3, 1, 25, 10));
+		init.setPreferredSize(new Dimension(700, 500));
+		// Instantiates buttons.
 		checkersButton = new JButton("Checkers");
 		reversiButton = new JButton("Reversi");
 		sudokuButton = new JButton("Sudoku");
-		checkersButton.addActionListener(listen);
-		reversiButton.addActionListener(listen);
-		sudokuButton.addActionListener(listen);
-		this.add(checkersButton);
-		this.add(reversiButton);
-		this.add(sudokuButton);
-		this.repaint();
-	}
-
-	/**
-	 * Implementation of ActionListener class to handle button presses.
-	 * @author Daniel Cummings
-	 */
-	private class ButtonListener implements ActionListener {
-
-		@Override
-		public void actionPerformed(final ActionEvent e) {
-			Object temp = e.getSource();
-			if (temp == newGames) {
-
-				createInitial();	
-			} else if (temp == save) {
-
-				if (game != null) {
-					String filename = "";
-
-					filename = JOptionPane.showInputDialog(
-							wind, 
-							"Enter name "
-							+ "of file to save to",
-							"Save",
-						JOptionPane.PLAIN_MESSAGE);
-
-					if (filename == "") {
-
-						JOptionPane.showMessageDialog(
-								wind,
-								"Invalid file");
-
-					} else {
-						game.saveState(filename);
-					}
-				} else {
-					JOptionPane.showMessageDialog(wind, 
-							"Cannot save:"
-							+ "No game has"
-							+ " been started.");
-				}
-
-			} else if (temp == load) {
-				if (game != null) {
-					String filename = "";
-
-					filename = JOptionPane.showInputDialog(
-							wind,
-							"Enter name of"
-							+ " file to load from:",
-							"Load",
-						JOptionPane.PLAIN_MESSAGE);
-
-					if (filename == "") {
-
-						JOptionPane.showMessageDialog(
-								wind,
-								"Invalid file");
-
-					} else {
-						game.loadState(filename);
-					}
-				} else {
-					JOptionPane.showMessageDialog(wind,
-						"No game started, please"
-							+ " choose a game then"
-							+ " attempt to load.",
-							"Load Failure",
-						JOptionPane.ERROR_MESSAGE);
-				}
-
-			} else if (temp == exit) {
-				System.exit(0);
-
-			} else if (temp == checkersButton) {
-				// launch checkers.
+		
+		// each button gets listener to activate commands when
+		// pressed
+		checkersButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				checkersUI();
-			} else if (temp == reversiButton) {
-				// launch reversi.
+			}
+		});
+		reversiButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				reversiUI();
-			} else if (temp == sudokuButton) {
-				// launch sudoku.
+			}
+		});
+		sudokuButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				sudokuUI();
 			}
-
-		}
+		});
+		init.add(checkersButton);
+		init.add(reversiButton);
+		init.add(sudokuButton);
+		this.add(init);
+		this.revalidate();
 	}
 
 	/**
-	 * 
+	 * Creates the sudoku GUI when the player chooses the game.
 	 */
 	private void sudokuUI() {
-		// TODO Auto-generated method stub
-
+		sudokuPanel = new JPanel();	
 	}
 
 	/**
 	 * 
 	 */
 	private void checkersUI() {
-		// TODO Auto-generated method stub
-
+		checkersPanel = new JPanel();
 	}
 
 	/**
 	 * 
 	 */
 	private void reversiUI() {
-		// TODO Auto-generated method stub
+		reversiPanel = new JPanel();
+	}
 
+	/**
+	 * Method to initiate save game state for current game.
+	 */
+	private void save() {
+		if (game != null) {
+			try {
+				String filename = "";
+				filename = JOptionPane.showInputDialog(
+						wind, 
+						"Enter name "
+						+ "of file to save to",
+						"Save",
+						JOptionPane.PLAIN_MESSAGE);
+				game.saveState(filename);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(wind,
+						e.getMessage(),
+						"Save Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		} else {
+			JOptionPane.showMessageDialog(wind, 
+					"Cannot save:"
+							+ "No game has"
+							+ " been started.",
+							"Save Failure",
+						JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	/**
+	 * Method to initiate load game state for current game.
+	 */
+	private void load() {
+		if (game != null) {
+			try {
+				String filename = "";
+				filename = JOptionPane.showInputDialog(
+						wind,
+						"Enter name of"
+						+ " file to load from:",
+						"Load",
+						JOptionPane.PLAIN_MESSAGE);
+					game.loadState(filename);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(
+						wind,
+						e.getMessage(),
+						"Load Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		} else {
+			JOptionPane.showMessageDialog(wind,
+					"No game started, please"
+							+ " choose a game then"
+							+ " attempt to load.",
+							"Load Failure",
+						JOptionPane.ERROR_MESSAGE);
+		}
 	}
 }

@@ -39,18 +39,36 @@ public class CheckersPiece implements IPiece {
 		int tY = m.getToY();
 		int fX = m.getFromX();
 		int fY = m.getFromY();
-
-		if (isKinged) {
-			if (Math.abs(tX - fX) == 1 || Math.abs(tY - fY) == 1) {
-				return true;
-			}
-		} else if (b[fX][fY].getOwner() == Player.BLACK) {
-			if (Math.abs(tY - fY) == 1 && (tX - fX) == 1) {
-				return true;
+		if (Math.abs(tX - fX) == 2 && Math.abs(tY - fY) == 2) {
+			if (tX - fX < 0) {
+				if ((b[fX][fY].getOwner()
+					!= b[fX - 1][fY - 1].getOwner())
+					|| (b[fX][fY].getOwner()
+					!= b[fX - 1][fY + 1].getOwner())) {
+					return true;
+				}
+			} else {
+				if ((b[fX][fY].getOwner()
+					!= b[fX + 1][fY + 1].getOwner())
+					|| (b[fX][fY].getOwner()
+					!= b[fX + 1][fY - 1].getOwner())) {
+					return true;
+				}
 			}
 		} else {
-			if (Math.abs(tY - fY) == 1 && (tX - fX) == -1) {
-				return true;
+			if (isKinged) {
+				if (Math.abs(tX - fX) == 1 
+						|| Math.abs(tY - fY) == 1) {
+					return true;
+				}
+			} else if (b[fX][fY].getOwner() == Player.BLACK) {
+				if (Math.abs(tY - fY) == 1 && (tX - fX) == 1) {
+					return true;
+				}
+			} else {
+				if (Math.abs(tY - fY) == 1 && (tX - fX) == -1) {
+					return true;
+				}
 			}
 		}
 		return false;

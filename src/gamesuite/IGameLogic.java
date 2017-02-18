@@ -28,15 +28,17 @@ public interface IGameLogic {
 	 * Writes objects into the specified file. The data is
 	 * stored into the file as a corresponding state of the game.
 	 * @param filename Name of file to save the game state.
+	 * @throws Exception contains information about save error.
 	 */
-	void saveState(String filename);
+	void saveState(String filename) throws Exception;
 	
 	/**
 	 * Reads objects from the specified file into the game.
 	 * Allowing users to load from saved states.
 	 * @param filename Name of file to load game state.
+	 * @throws Exception contains information about load error.
 	 */
-	void loadState(String filename);
+	void loadState(String filename) throws Exception;
 	
 	
 }
