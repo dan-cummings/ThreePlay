@@ -32,6 +32,11 @@ public class CheckersPiece implements IPiece {
 	public final Player getOwner() {
 		return owner;
 	}
+	
+	@Override
+	public final boolean validMove(final int x, final int y, final IPiece[][] b, Player p){
+		return false;
+	}
 
 	@Override
 	public final boolean validMove(final Move m, final IPiece[][] b) {
