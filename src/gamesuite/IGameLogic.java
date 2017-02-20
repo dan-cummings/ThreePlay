@@ -16,11 +16,29 @@ public interface IGameLogic {
 	boolean isGameOver();
 	
 	/**
-	 * Determines whether the move is valid based on the given board.
+	 * Determines whether the move is valid based on the current board.
 	 * Moves vary based on rules of piece movement.
 	 * @param m Move provided by the user.
-	 * @param b Board status based on the move provided.
-	 * @return True when the provided move is valid for provided board.
+	 * @return True when the provided move is valid for current board.
+	 * Otherwise the move is invalid, false.
 	 */
-	boolean isMove(Move m, IPiece[][] b);
+	boolean isMove(Move m);
+	
+	/**
+	 * Writes objects into the specified file. The data is
+	 * stored into the file as a corresponding state of the game.
+	 * @param filename Name of file to save the game state.
+	 * @throws Exception contains information about save error.
+	 */
+	void saveState(String filename) throws Exception;
+	
+	/**
+	 * Reads objects from the specified file into the game.
+	 * Allowing users to load from saved states.
+	 * @param filename Name of file to load game state.
+	 * @throws Exception contains information about load error.
+	 */
+	void loadState(String filename) throws Exception;
+	
+	
 }

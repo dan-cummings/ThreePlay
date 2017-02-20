@@ -29,8 +29,8 @@ public class Move {
 			final int fX, final int fY) {
 		this.setToX(tX);
 		this.setToY(tY);
-		this.setFrX(fX);
-		this.setFrY(fY);		
+		this.setFromX(fX);
+		this.setFromY(fY);		
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class Move {
 	 * Gets the pieces horizontal origin.
 	 * @return Horizontal origin of piece.
 	 */
-	public int getFrX() {
+	public int getFromX() {
 		return frX;
 	}
 
@@ -77,7 +77,7 @@ public class Move {
 	 * Sets the pieces horizontal origin.
 	 * @param fX Horizontal origin of piece.
 	 */
-	private void setFrX(final int fX) {
+	private void setFromX(final int fX) {
 		this.frX = fX;
 	}
 
@@ -85,7 +85,7 @@ public class Move {
 	 * Gets the pieces vertical origin.
 	 * @return Vertical origin of piece.
 	 */
-	public int getFrY() {
+	public int getFromY() {
 		return frY;
 	}
 
@@ -93,7 +93,7 @@ public class Move {
 	 * Sets the pieces vertical origin.
 	 * @param fY Vertical origin of piece.
 	 */
-	private void setFrY(final int fY) {
+	private void setFromY(final int fY) {
 		this.frY = fY;
 	}
 }

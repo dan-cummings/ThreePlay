@@ -11,7 +11,7 @@ public interface IPiece {
 	 * Which player owns the piece.
 	 * @return ID of the player who owns the piece.
 	 */
-	Player owner();
+	Player getOwner();
 	
 	/**
 	 * Determines whether a given piece can move to the player determined
