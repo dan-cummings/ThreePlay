@@ -112,6 +112,11 @@ public class CheckersLogic implements IGameLogic {
 		}
 		return false;
 	}
+	
+	@Override
+	public final boolean isMove(int x, int y, Player p) {
+		return false;
+	}
 
 	/**
 	 * Adjusts the current board to represent the board
