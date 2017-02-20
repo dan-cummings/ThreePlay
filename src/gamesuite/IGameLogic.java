@@ -25,6 +25,17 @@ public interface IGameLogic {
 	boolean isMove(Move m);
 	
 	/**
+	 * Determines whether the move is valid based on the current board.
+	 * Moves vary based on rules of piece movement.
+	 * @param x position of the move checking
+	 * @param y position of the move checking
+	 * @param p current Player making the move
+	 * @return True when the provided move is valid for current board.
+	 * Otherwise the move is invalid, false.
+	 */
+	boolean isMove(int x, int y, Player p);
+	
+	/**
 	 * Writes objects into the specified file. The data is
 	 * stored into the file as a corresponding state of the game.
 	 * @param filename Name of file to save the game state.
