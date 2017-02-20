@@ -1,5 +1,6 @@
 package gamesuite;
 
+import java.awt.Rectangle;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -7,9 +8,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 
@@ -33,7 +31,7 @@ public class CheckersLogic implements IGameLogic {
 	private boolean gameover;
 	/** Has the game been saved. */
 	private boolean saved;
-	
+
 	/**
 	 * Begins checkers game.
 	 */
@@ -103,8 +101,9 @@ public class CheckersLogic implements IGameLogic {
 
 	@Override
 	public final boolean isMove(final Move m) {
-		if ((m.getToY() < size && m.getToX() < size)
-				&& (m.getToY() >= 0 && m.getToX() >= 0)) {
+		Rectangle d = new Rectangle(0, size - 1);
+		if (d.contains(m.getFromX(), m.getFromX())
+				&& d.contains(m.getToX(), m.getToY())) {
 			if (board[m.getFromX()][m.getFromY()]
 					.validMove(m, board)) {
 				return true;
@@ -120,11 +119,11 @@ public class CheckersLogic implements IGameLogic {
 	 */
 	public void makeMove(final Move m) {
 		if (jumps.contains(board[m.getFromX()][m.getFromY()])) {
-			
+
 		} else if (moves.contains(board[m.getFromX()][m.getFromY()])) {
-			
+
 		} else {
-			
+
 		}
 	}
 
@@ -148,7 +147,7 @@ public class CheckersLogic implements IGameLogic {
 		if (jumps.isEmpty()) {
 			checkMoves();
 		}
-		
+
 	}
 
 	/**
@@ -259,7 +258,39 @@ public class CheckersLogic implements IGameLogic {
 			throw new Exception("Internal"
 					+ " error please restart game.");
 		} finally {
-			
+
+		}
+	}
+
+	/**
+	 * Getter for the board size.
+	 * @return size of the game board.
+	 */
+	public int getSize() {
+		return size;
+	}
+
+	/**
+	 * Getter for the piece at requested location.
+	 * @param x vertical position of piece.
+	 * @param y horizontal position of piece.
+	 * @return piece at given location.
+	 */
+	public IPiece getPiece(final int x, final int y) {
+		return board[x][y];
+	}
+
+	/**
+	 * Method checks whether the provided piece has a move.
+	 * @param piece Checkers piece to look for move.
+	 * @return True if the piece has a jump or standard move,
+	 *  otherwise false.
+	 */
+	public boolean hasMove(final IPiece piece) {
+		if (!jumps.isEmpty()) {
+			return jumps.contains(piece);
+		} else {
+			return moves.contains(piece);
 		}
 	}
 }
