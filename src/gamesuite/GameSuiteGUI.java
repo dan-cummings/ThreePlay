@@ -13,8 +13,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
 
 
 /**
@@ -166,8 +164,8 @@ public class GameSuiteGUI extends JPanel {
 		GridBagConstraints gbCon = new GridBagConstraints();
 		gbCon.gridx = 0;
 		gbCon.gridy = 0;
-		gbCon.gridheight = 600;
-		gbCon.gridwidth = 600;
+		gbCon.gridheight = 700;
+		gbCon.gridwidth = 700;
 		gbCon.anchor = GridBagConstraints.NORTHWEST;
 		this.add(checkersPanel, gbCon);
 		this.repaint();

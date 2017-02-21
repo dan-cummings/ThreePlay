@@ -3,6 +3,7 @@ package gamesuite;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
@@ -12,20 +13,20 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 
 /**
  * Panel containing all of the information for the Checkers game.
  * @author Daniel Cummings
  * @version 0.1
  */
-public class CheckersGUI extends JLayeredPane 
+public class CheckersGUI extends JPanel 
 implements MouseListener, MouseMotionListener {
 	
 	/** Image for the piece. */
 	private ImageIcon bKing, bReg, rKing, rReg;
-
-	/** Icons for game pieces. */
-	private ImageIcon[] icons;
 
 	/** Board square containers. */
 	private JPanel[][] board;
@@ -48,41 +49,71 @@ implements MouseListener, MouseMotionListener {
 	/** Size of each square. */
 	private final int size, sqSize;
 
+	/** Panel to hold JPanel pieces. */
+	private JPanel boardPanel;
+
+	/** Layered pane for drag. */
+	private JLayeredPane pane;
+
 	/**
 	 * Constructor for the checkers GUI.
 	 * @param gamel checkers game logic.
 	 */
 	public CheckersGUI(final CheckersLogic gamel) {
+		// Get game images.
 		this.getImages();
+		
+		// instantiate game objects
 		this.game = gamel;
 		this.size = gamel.getSize();
 		this.sqSize = 75;
-		Dimension paneSize =
+		// Creating size of panels.
+		Dimension panelSize =
 				new Dimension(size * sqSize,
 						size * sqSize);
-		this.setLayout(new GridLayout(size, size));
-		this.setPreferredSize(paneSize);
-		this.setBounds(0, 0, paneSize.width, paneSize.height);
-		this.board = new JPanel[size][size];
+		// Layout setup
+		this.setLayout(new BorderLayout(30, 15));
+		this.setBorder(new EmptyBorder(20, 25, 15, 15));
 		
+		//Instantiates layered pane.
+		pane = new JLayeredPane();
+		pane.setPreferredSize(panelSize);
+		pane.addMouseListener(this);
+		pane.addMouseMotionListener(this);
+		
+		// Create panel to store board with grid layout of
+		// board size.
+		boardPanel = new JPanel(new GridLayout(size, size));
+		boardPanel.setPreferredSize(panelSize);
+		boardPanel.setBounds(0, 0, panelSize.width, panelSize.height);
+		this.board = new JPanel[size][size];
 		this.createBoard();
+		pane.add(boardPanel, JLayeredPane.DEFAULT_LAYER);
+		this.add(pane, BorderLayout.CENTER);
+		this.displayBoard();
 		this.showMoveablePieces();
-		this.setVisible(true);
+		this.revalidate();
 	}
 
 	@Override
 	public final void mousePressed(final MouseEvent e) { 
 		
-		xPos = e.getY();
-		yPos = e.getX();
-
-		Component temp = this.findComponentAt(xPos, yPos);
+		xPos = e.getX();
+		yPos = e.getY();
+		Component temp = pane.findComponentAt(xPos, yPos);
 		if (!(temp instanceof JPanel)) {
-			adjx = temp.getParent().getLocation().y - e.getY();
-			adjy = temp.getParent().getLocation().x - e.getX();
-			piece = (JLabel) temp;
-			showMoves();
-			this.add(piece, JLayeredPane.DRAG_LAYER);
+			adjx = temp.getParent().getLocation().x - e.getX();
+			adjy = temp.getParent().getLocation().y - e.getY();
+			fromX = Math.floorDiv(yPos, 75);
+			fromY = Math.floorDiv(xPos, 75);
+			if (game.hasMove(game.getPiece(fromX, fromY))) {
+				piece = (JLabel) temp;
+				piece.setVisible(false);
+				this.resetColor();
+				this.showMoves();
+				pane.add(piece, JLayeredPane.DRAG_LAYER);
+				piece.setVisible(true);
+			}
 		} else {
 			piece = null;
 		}
@@ -91,18 +122,23 @@ implements MouseListener, MouseMotionListener {
 
 	@Override
 	public final void mouseReleased(final MouseEvent e) {
-		piece.setVisible(false);
-		if (this.getBounds().contains(e.getPoint())) {
-			toX = Math.floorDiv(e.getY(), sqSize);
-			toY = Math.floorDiv(e.getX(), sqSize);
-			Move m = new Move(fromX, fromY, toX, toY);
-			if (game.isMove(m)) {
-				game.makeMove(m);
+		if (piece != null) {
+			piece.setVisible(false);
+			if (pane.getBounds().contains(e.getPoint())) {
+				toX = Math.floorDiv(e.getY(), sqSize);
+				toY = Math.floorDiv(e.getX(), sqSize);
+				Move m = new Move(fromX, fromY, toX, toY);
+				if (game.isMove(m)) {
+					game.makeMove(m);
+					piece.setVisible(true);
+					pane.remove(piece);
+				}
 			}
-		} else {
-			board[fromX][fromY].add(piece);
-			piece.setVisible(true);
+			piece = null;
 		}
+		this.displayBoard();
+		this.resetColor();
+		this.showMoveablePieces();
 	}
 
 	@Override
@@ -118,10 +154,6 @@ implements MouseListener, MouseMotionListener {
 	 * Method to show possible moves for the current piece.
 	 */
 	private void showMoves() {
-
-		fromX = Math.floorDiv(xPos, 75);
-		fromY = Math.floorDiv(yPos, 75);
-
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				if (game.isMove(new Move(fromX, fromY, x, y))) {
@@ -149,8 +181,8 @@ implements MouseListener, MouseMotionListener {
 	}
 	
 	/**
-	 * Creates the board out of JPanels and places them into the
-	 * default layer of the board display.
+	 * Creates the board out of JPanels and places them onto the
+	 * JPanel to hold the board.
 	 */
 	private void createBoard() {
 		
@@ -158,15 +190,12 @@ implements MouseListener, MouseMotionListener {
 			for (int y = 0; y < size; y++) {
 				board[x][y] = new JPanel(new BorderLayout());
 				if ((x % 2 == 0 && y % 2 == 0)
-						|| (x % 2 == 1 && y % 2 == 1)) {
+					|| ((x & 1) == 1 && (y & 1) == 1)) {
 					board[x][y].setBackground(Color.gray);
 				} else {
 					board[x][y].setBackground(Color.white);
 				}
-				board[x][y].setPreferredSize(
-						new Dimension(sqSize, sqSize));
-				this.add(board[x][y],
-						JLayeredPane.DEFAULT_LAYER);
+				boardPanel.add(board[x][y]);
 			}
 		}
 	}
@@ -186,6 +215,40 @@ implements MouseListener, MouseMotionListener {
 	}
 	
 	/**
+	 * Creates label for the pieces and places them into the
+	 * proper position on the board.
+	 */
+	private void displayBoard() {
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				board[x][y].removeAll();
+				if (game.getPiece(x, y) != null) {
+					if (game.getPiece(x, y).isKinged()) {
+						if (game.getPiece(x, y)
+						.getOwner() == Player.BLACK) {
+							board[x][y]
+							.add(new JLabel(bKing));
+						} else {
+							board[x][y]
+							.add(new JLabel(rKing));
+						}
+					} else {
+						if (game.getPiece(x, y)
+						.getOwner() == Player.BLACK) {
+							board[x][y]
+							.add(new JLabel(bReg));
+						} else {
+							board[x][y]
+							.add(new JLabel(rReg));
+						}
+					}
+				}
+			}
+		}
+		boardPanel.revalidate();
+	}
+	
+	/**
 	 * Resets the background color of the board after 
 	 * being called.
 	 */
@@ -193,7 +256,7 @@ implements MouseListener, MouseMotionListener {
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				if ((x % 2 == 0 && y % 2 == 0)
-						|| (x % 2 == 1 && y % 2 == 1)) {
+					|| ((x & 1) == 1 && (y & 1) == 1)) {
 					board[x][y].setBackground(Color.gray);
 				} else {
 					board[x][y].setBackground(Color.white);

@@ -6,7 +6,6 @@ package gamesuite;
  * @version 0.1
  */
 public interface IPiece {
-	
 	/**
 	 * Which player owns the piece.
 	 * @return ID of the player who owns the piece.
