@@ -25,8 +25,8 @@ public class Move {
 	 * @param fX Horizontal origin of the piece.
 	 * @param fY Vertical origin of the piece.
 	 */
-	public Move(final int tX, final int tY,
-			final int fX, final int fY) {
+	public Move(final int fX, final int fY,
+			final int tX, final int tY) {
 		this.setToX(tX);
 		this.setToY(tY);
 		this.setFromX(fX);

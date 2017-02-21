@@ -1,6 +1,8 @@
 package gamesuite;
 
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,8 +13,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
 
 
 /**
@@ -38,8 +38,14 @@ public class GameSuiteGUI extends JPanel {
 	/** Menu buttons. */
 	private JMenuItem newGames, save, load, exit;
 
-	/** Panel for the initial screen. */
-	private JPanel init, sudokuPanel, checkersPanel, reversiPanel;
+	/** User interface for a checkers board. */
+	private CheckersGUI checkersPanel;
+	
+	/** User interface for a reversi board. */
+	//private ReversiGUI reversiPanel;
+	
+	/** User interface for a sudoku board. */
+	private JPanel init, sudokuPanel, info;
 
 	/**
 	 * @param frame  
@@ -104,8 +110,8 @@ public class GameSuiteGUI extends JPanel {
 		// Creates buttons for the initial games menu.
 		this.removeAll();
 		// initial panel creation.
-		init = new JPanel(new GridLayout(3, 1, 25, 10));
-		init.setPreferredSize(new Dimension(700, 500));
+		init = new JPanel(new GridLayout(3, 1));
+		init.setPreferredSize(new Dimension(800, 550));
 		// Instantiates buttons.
 		checkersButton = new JButton("Checkers");
 		reversiButton = new JButton("Reversi");
@@ -146,17 +152,31 @@ public class GameSuiteGUI extends JPanel {
 	}
 
 	/**
-	 * 
+	 * Resizes window to fit the game UI for the checkers game.
+	 * Only called when the checkers button is selected.
 	 */
 	private void checkersUI() {
-		checkersPanel = new JPanel();
+		wind.setSize(900, 700);
+		game = new CheckersLogic();
+		checkersPanel = new CheckersGUI((CheckersLogic) game);
+		this.removeAll();
+		this.setLayout(new GridBagLayout());
+		GridBagConstraints gbCon = new GridBagConstraints();
+		gbCon.gridx = 0;
+		gbCon.gridy = 0;
+		gbCon.gridheight = 700;
+		gbCon.gridwidth = 700;
+		gbCon.anchor = GridBagConstraints.NORTHWEST;
+		this.add(checkersPanel, gbCon);
+		this.repaint();
+		this.revalidate();
 	}
 
 	/**
 	 * 
 	 */
 	private void reversiUI() {
-		reversiPanel = new JPanel();
+
 	}
 
 	/**

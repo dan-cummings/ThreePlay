@@ -1,11 +1,17 @@
 package gamesuite;
 
+import java.io.Serializable;
+
 /**
- * 
+ * Checkers Piece is used as a structure to represent pieces on
+ * a checker board. Pieces maintain their valid movements as
+ * well as whether or not they are king pieces.
  * @author Daniel Cummings
  */
-public class CheckersPiece implements IPiece {
+public class CheckersPiece implements IPiece, Serializable {
 
+	/** Serial version ID. */
+	private static final long serialVersionUID = 1L;
 	/** Which player owns this piece. */
 	private Player owner;
 	/** Tells if the piece has been made it to the end. */
@@ -44,39 +50,57 @@ public class CheckersPiece implements IPiece {
 		int tY = m.getToY();
 		int fX = m.getFromX();
 		int fY = m.getFromY();
+		boolean can = false;
+		if (b[tX][tY] != null) {
+			return can;
+		}
 		if (Math.abs(tX - fX) == 2 && Math.abs(tY - fY) == 2) {
 			if (tX - fX < 0) {
-				if ((b[fX][fY].getOwner()
-					!= b[fX - 1][fY - 1].getOwner())
-					|| (b[fX][fY].getOwner()
-					!= b[fX - 1][fY + 1].getOwner())) {
-					return true;
+				if (tY - fY < 0) {
+					if ((b[fX - 1][fY - 1] != null)
+							&& (b[fX][fY].getOwner()
+					!= b[fX - 1][fY - 1].getOwner())) {
+						can = true;
+					}
+				} else {
+					if ((b[fX - 1][fY + 1] != null) 
+							&& b[fX][fY].getOwner()
+					!= b[fX - 1][fY + 1].getOwner()) {
+						can = true;
+					}
 				}
 			} else {
-				if ((b[fX][fY].getOwner()
-					!= b[fX + 1][fY + 1].getOwner())
-					|| (b[fX][fY].getOwner()
+				if (tY - fY < 0) {
+					if ((b[fX + 1][fY - 1] != null) 
+							&& (b[fX][fY].getOwner()
 					!= b[fX + 1][fY - 1].getOwner())) {
-					return true;
+						can = true;
+					}
+				} else {
+					if ((b[fX + 1][fY + 1] != null)
+						&&	b[fX][fY].getOwner()
+					!= b[fX + 1][fY + 1].getOwner()) {
+						can = true;
+					}
 				}
 			}
 		} else {
 			if (isKinged) {
 				if (Math.abs(tX - fX) == 1 
-						|| Math.abs(tY - fY) == 1) {
-					return true;
+						&& Math.abs(tY - fY) == 1) {
+					can = true;
 				}
 			} else if (b[fX][fY].getOwner() == Player.BLACK) {
 				if (Math.abs(tY - fY) == 1 && (tX - fX) == 1) {
-					return true;
+					can = true;
 				}
 			} else {
 				if (Math.abs(tY - fY) == 1 && (tX - fX) == -1) {
-					return true;
+					can = true;
 				}
 			}
 		}
-		return false;
+		return can;	
 	}
 
 	/**
