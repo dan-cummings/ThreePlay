@@ -45,23 +45,41 @@ public class SudokuLogic {
 				atempBoard[i][j] = array[i][j];
 			}
 		}
+		int repeatCount = 0;
 		int removedCount = 0;
 		int rowRandom;
 		int colRandom;
 		int numberHolder;
 		int counter;
 		boolean shouldLoop;
+		boolean shouldRepeat = false;
 		
 		while(removedCount < removeQuantity)
 		{
+			// To start from scratch if comes to dead end
+			if(shouldRepeat)
+			{
+				shouldRepeat = false;
+				removedCount = 0;
+				for(int i =0; i<9; i++)
+				{
+					for(int j = 0; j<9; j++)
+					{
+						atempBoard[i][j] = array[i][j];
+					}
+				}
+				// System.out.print("Repeat: " + repeatCount + "\n");
+				repeatCount = repeatCount + 1;
+			}
+			
 			// Take remove a square, hold onto that removed number
 			// until it's checked to still be solvable
 			counter = 0;
 			shouldLoop = true;
 			while(shouldLoop)
 			{
-				rowRandom = (int)(Math.random() * 8);
-				colRandom = (int)(Math.random() * 8);
+				rowRandom = (int)(Math.random() * 9);
+				colRandom = (int)(Math.random() * 9);
 				numberHolder = atempBoard[rowRandom][colRandom];
 				if(atempBoard[rowRandom][colRandom] != 0)
 				{
@@ -70,17 +88,30 @@ public class SudokuLogic {
 					{
 						removedCount = removedCount + 1;
 						shouldLoop = false;
-						// System.out.println("Just Removed ["+ rowRandom + "]["+ colRandom +"]: " + atempBoard[rowRandom][colRandom]);
-						// System.out.println("Remove Count: " + removedCount + "\n");
+						// System.out.println("Just Removed ["+ rowRandom + "]["+ colRandom +"]: " + numberHolder);
+						// System.out.println("Remove Count: " + removedCount);
 					}
 					else
 					{
 						atempBoard[rowRandom][colRandom] = numberHolder;
 						counter = counter + 1;
-						// System.out.println("Trial: " + counter);
+						if (counter > 90)
+						{
+							shouldRepeat = true;
+							shouldLoop = false;
+							if(repeatCount > 10)
+							{
+								System.out.print("ERROR: unable to remove " + removeQuantity + " squares.\n");
+								System.out.print("Removed " + removedCount + " squares.\n");
+								return atempBoard;
+							}
+						}
 					}
 				}
-			}	
+			}
+			
+			
+			
 		}
 		
 		// We're here once the removeQuantity is met
@@ -307,23 +338,305 @@ public class SudokuLogic {
 		
 	}
 	
-	
-	
-	public static void main(String[] args) {
+	// Generates a randomized completeBoard from the beginningBoard
+	public static int[][] generateBoard()
+	{
+		// (1) Swap rows
+		// (2) Swap cols
+		// (3) Swap chunks
+		// (4) Swap two numbers
 		
+		int[][] btempBoard = new int[9][9];
+		btempBoard = outputBeginningBoard();
+		
+		int holdingNumber;
+		int decidingRandom;
+		
+		// Swap some rows randomly
+		decidingRandom = (int)(Math.random() * 2); // 0, 1, 2
+		if(decidingRandom == 1)
+		{
+			// Swap row0 and row1
+			for(int i=0; i<9; i++)
+			{
+				holdingNumber = btempBoard[0][i];
+				btempBoard[0][i] = btempBoard[1][i];
+				btempBoard[1][i] = holdingNumber;
+			}
+		} 
+		if(decidingRandom == 2)
+		{
+			// Swap row0 and row2
+			for(int i=0; i<9; i++)
+			{
+				holdingNumber = btempBoard[0][i];
+				btempBoard[0][i] = btempBoard[2][i];
+				btempBoard[2][i] = holdingNumber;
+			}
+		}
+		decidingRandom = (int)(Math.random() * 3); // 0, 1, 2
+		if(decidingRandom == 1)
+		{
+			// Swap row3 and row4
+			for(int i=0; i<9; i++)
+			{
+				holdingNumber = btempBoard[3][i];
+				btempBoard[3][i] = btempBoard[4][i];
+				btempBoard[4][i] = holdingNumber;
+			}
+		} 
+		if(decidingRandom == 2)
+		{
+			// Swap row3 and row5
+			for(int i=0; i<9; i++)
+			{
+				holdingNumber = btempBoard[3][i];
+				btempBoard[3][i] = btempBoard[5][i];
+				btempBoard[5][i] = holdingNumber;
+			}
+		}
+		decidingRandom = (int)(Math.random() * 3); // 0, 1, 2
+		if(decidingRandom == 1)
+		{
+			// Swap row6 and row7
+			for(int i=0; i<9; i++)
+			{
+				holdingNumber = btempBoard[6][i];
+				btempBoard[6][i] = btempBoard[7][i];
+				btempBoard[7][i] = holdingNumber;
+			}
+		} 
+		if(decidingRandom == 2)
+		{
+			// Swap row6 and row8
+			for(int i=0; i<9; i++)
+			{
+				holdingNumber = btempBoard[6][i];
+				btempBoard[6][i] = btempBoard[8][i];
+				btempBoard[8][i] = holdingNumber;
+			}
+		}
+		
+		// Swap some columns randomly
+		decidingRandom = (int)(Math.random() * 3); // 0, 1, 2
+		if(decidingRandom == 1)
+		{
+			// Swap col0 and col1
+			for(int i=0; i<9; i++)
+			{
+				holdingNumber = btempBoard[i][0];
+				btempBoard[i][0] = btempBoard[i][1];
+				btempBoard[i][1] = holdingNumber;
+			}
+		} 
+		if(decidingRandom == 2)
+		{
+			// Swap col0 and col2
+			for(int i=0; i<9; i++)
+			{
+				holdingNumber = btempBoard[i][0];
+				btempBoard[i][0] = btempBoard[i][2];
+				btempBoard[i][2] = holdingNumber;
+			}
+		}
+		decidingRandom = (int)(Math.random() * 3); // 0, 1, 2
+		if(decidingRandom == 1)
+		{
+			// Swap col3 and col4
+			for(int i=0; i<9; i++)
+			{
+				holdingNumber = btempBoard[i][3];
+				btempBoard[i][3] = btempBoard[i][4];
+				btempBoard[i][4] = holdingNumber;
+			}
+		} 
+		if(decidingRandom == 2)
+		{
+			// Swap col3 and col5
+			for(int i=0; i<9; i++)
+			{
+				holdingNumber = btempBoard[i][3];
+				btempBoard[i][3] = btempBoard[i][5];
+				btempBoard[i][5] = holdingNumber;
+			}
+		}
+		decidingRandom = (int)(Math.random() * 3); // 0, 1, 2
+		if(decidingRandom == 1)
+		{
+			// Swap col6 and col7
+			for(int i=0; i<9; i++)
+			{
+				holdingNumber = btempBoard[i][6];
+				btempBoard[i][6] = btempBoard[i][7];
+				btempBoard[i][7] = holdingNumber;
+			}
+		} 
+		if(decidingRandom == 2)
+		{
+			// Swap col6 and col8
+			for(int i=0; i<9; i++)
+			{
+				holdingNumber = btempBoard[i][6];
+				btempBoard[i][6] = btempBoard[i][8];
+				btempBoard[i][8] = holdingNumber;
+			}
+		}
+		
+		// Swap two horizontal 3-tall chunks
+		// Original "ABC" ->  After "BAC" "ACB" "CAB" "ABC"
+		decidingRandom = (int)(Math.random() * 4); // 0, 1, 2, 3
+		if (decidingRandom == 0)
+		{
+			for(int h=0; h<3; h++)
+			{
+				for(int i=0; i<9; i++)
+				{
+					holdingNumber = btempBoard[h][i];
+					btempBoard[h][i] = btempBoard[h+3][i];
+					btempBoard[h+3][i] = holdingNumber;
+				}
+			}
+		}
+		if (decidingRandom == 1)
+		{
+			for(int h=0; h<3; h++)
+			{
+				for(int i=0; i<9; i++)
+				{
+					holdingNumber = btempBoard[h][i];
+					btempBoard[h][i] = btempBoard[h+6][i];
+					btempBoard[h+6][i] = holdingNumber;
+				}
+			}
+		}
+		if (decidingRandom == 2)
+		{
+			for(int h=3; h<6; h++)
+			{
+				for(int i=0; i<9; i++)
+				{
+					holdingNumber = btempBoard[h][i];
+					btempBoard[h][i] = btempBoard[h+3][i];
+					btempBoard[h+3][i] = holdingNumber;
+				}
+			}
+		}
+		
+		// Swap two vertical 3-wide chunks
+		// Original "ABC" ->  After "BAC" "ACB" "CAB" "ABC"
+		decidingRandom = (int)(Math.random() * 4); // 0, 1, 2, 3
+		if (decidingRandom == 0)
+		{
+			for(int h=0; h<3; h++)
+			{
+				for(int i=0; i<9; i++)
+				{
+					holdingNumber = btempBoard[i][h];
+					btempBoard[i][h] = btempBoard[i][h+3];
+					btempBoard[i][h+3] = holdingNumber;
+				}
+			}
+		}
+		if (decidingRandom == 1)
+		{
+			for(int h=0; h<3; h++)
+			{
+				for(int i=0; i<9; i++)
+				{
+					holdingNumber = btempBoard[i][h];
+					btempBoard[i][h] = btempBoard[i][h+6];
+					btempBoard[i][h+6] = holdingNumber;
+				}
+			}
+		}
+		if (decidingRandom == 2)
+		{
+			for(int h=3; h<6; h++)
+			{
+				for(int i=0; i<9; i++)
+				{
+					holdingNumber = btempBoard[i][h];
+					btempBoard[i][h] = btempBoard[i][h+3];
+					btempBoard[i][h+3] = holdingNumber;
+				}
+			}
+		}
+		
+		// On the overall board, swap the complete placements of two integers
+		// "Wherever an x put a y, and a y an x."
+		int randomX = (int)((Math.random() * 9) + 1);
+		int randomY = (int)((Math.random() * 9) + 1);
+		while(randomX == randomY)
+		{
+			randomY = (int)((Math.random() * 9) + 1);
+		}
+		for(int i =0; i<9; i++)
+		{
+			for(int j = 0; j<9; j++)
+			{
+				if(btempBoard[i][j] == randomX)
+				{
+					btempBoard[i][j] = randomY;
+				}
+				else if(btempBoard[i][j] == randomY)
+				{
+					btempBoard[i][j] = randomX;
+				}
+			}
+		}
+		
+		return btempBoard;
+	}
+	
+	// Player Entry method
+	// A player wants to enter a number to the board
+	public static int[][] playerEntry(int num, int row, int col, int array[][], int barray[][])
+	{
+		// array[][] is the currentBoard
+		// barray[][] is the initialBoard
+		
+		int[][] ctempBoard = new int[9][9];
+		for(int i=0; i <9; i++)
+		{
+			for(int j=0; j<9;j++)
+			{
+				ctempBoard[i][j] = array[i][j];
+			}
+		}
+		
+		// Before any changes, if invalid, return the board before the change
+		if(num < 1 || num > 9)
+		{
+			return ctempBoard;
+		}
+		
+		System.out.print("Number at ["+row+"]["+col+"]: "+ctempBoard[row][col]+"\n");
+		ctempBoard[row][col] = num;
+		
+		// Overwrite any input with the initialBoard
+		// To catch inputs on given squares
+		for(int i=0; i <9; i++)
+		{
+			for(int j=0; j<9;j++)
+			{
+				if(barray[i][j] != 0)
+				{
+					ctempBoard[i][j] = barray[i][j];
+				}
+			}
+		}
+		
+		return ctempBoard;
+	}
+	
+	
+	
+	public static int[][] outputBeginningBoard()
+	{
 		String[][] stringBoard = new String[9][9];
-		int[][] beginningBoard = new int[9][9];
-		int[][] completeBoard = new int[9][9];
-		int[][] initialBoard = new int[9][9];
-		int[][] currentBoard = new int[9][9];
-		int[][] errorsBoard = new int[9][9];
+		int[][] someBoard = new int[9][9];
 		
-		// For use of scrambling the beginningBoard
-		int[][] holdingArray = new int[2][9];
-		int[][] secondArray = new int[2][9];
-		int[][] thirdArray = new int[6][9];
-		
-		// A Sample Starting Board
+		// An arbitrary valid board to start from
 		stringBoard[0] = "3 2 9 6 5 7 8 4 1".split(" ");
 		stringBoard[1] = "7 4 5 8 3 1 2 9 6".split(" ");
 		stringBoard[2] = "6 1 8 2 4 9 3 7 5".split(" ");
@@ -339,84 +652,47 @@ public class SudokuLogic {
 		{
 			for(int j = 0; j<9; j++)
 			{
-				beginningBoard[i][j] = Integer.parseInt(stringBoard[i][j]);
+				someBoard[i][j] = Integer.parseInt(stringBoard[i][j]);
 			}
 		}
 		
-		// Output the array
-		System.out.println("   Beginning \"Key\" Board:");	
-		outputToConsole(beginningBoard);
-		
-		// Set the completeBoard
-		// completeBoard = beginningBoard;
+		return someBoard;
+	}
+	
+	public static boolean isSolved(int array[][])
+	{
 		for(int i =0; i<9; i++)
 		{
 			for(int j = 0; j<9; j++)
 			{
-				completeBoard[i][j] = beginningBoard[i][j];
+				if(array[i][j] == 0)
+				{
+					return false;
+				}
 			}
 		}
+		return true;	
+	}
+	
+	
+	public static void main(String[] args) {
 		
-		// Swap Two Rows
-		int row1 = 3;
-		int row2 = 4;	
-		holdingArray[0] = beginningBoard[row1];
-		holdingArray[1] = beginningBoard[row2];
-		beginningBoard[row1] = holdingArray[1];
-		beginningBoard[row2] = holdingArray[0];
+		int[][] beginningBoard = new int[9][9];
+		int[][] completeBoard = new int[9][9];
+		int[][] initialBoard = new int[9][9];
+		int[][] currentBoard = new int[9][9];
+		int[][] errorsBoard = new int[9][9];
 		
-		// Output the array
-		// System.out.println("   After Row Swap:");	
-		// outputToConsole(beginningBoard);
+		// For use of scrambling the beginningBoard
+		int[][] holdingArray = new int[2][9];
+		int[][] secondArray = new int[2][9];
+		int[][] thirdArray = new int[6][9];
 		
-		// Swap Two Cols
-		int col1 = 6;
-		int col2 = 8;	
-		for(int i=0; i<9;i++)
-		{
-			secondArray[0][i] = beginningBoard[i][col1];
-		}
-		for(int i=0; i<9;i++)
-		{
-			secondArray[1][i] = beginningBoard[i][col2];
-		}
-		for(int i=0; i<9;i++)
-		{
-			beginningBoard[i][col1] = secondArray[1][i];
-		}
-		for(int i=0; i<9;i++)
-		{
-			beginningBoard[i][col2] = secondArray[0][i];
-		}
+		// Set the beginning Board
+		beginningBoard = outputBeginningBoard();
 		
-		// Output the array
-		// System.out.println("   After Column Swap:");
-		// outputToConsole(beginningBoard);
-		
-		
-		// Swap Six Rows, "Two Horizontal Chunks"
-		// Swaps the top three rows (1,2,3) with a choice between (4,5,6) or (7,8,9)
-		int chunk2 = 2;	// 1 or 2
-		thirdArray[0] = beginningBoard[0];
-		thirdArray[1] = beginningBoard[1];
-		thirdArray[2] = beginningBoard[2];
-		thirdArray[3] = beginningBoard[(3 * chunk2 ) + 0];
-		thirdArray[4] = beginningBoard[(3 * chunk2 ) + 1];
-		thirdArray[5] = beginningBoard[(3 * chunk2 ) + 2];
-		beginningBoard[0] = thirdArray[3];
-		beginningBoard[1] = thirdArray[4];
-		beginningBoard[2] = thirdArray[5];
-		beginningBoard[(3 * chunk2 ) + 0] = thirdArray[0];
-		beginningBoard[(3 * chunk2 ) + 1] = thirdArray[1];
-		beginningBoard[(3 * chunk2 ) + 2] = thirdArray[2];
-		
-		// Output the array
-		// System.out.println("   After Horizontal Thirds Swap:");
-		// outputToConsole(beginningBoard);
-		
-		
-		
-		System.out.print("\n\n");
+		// Set the completeBoard
+		completeBoard = generateBoard();
 		
 		// Output the beginningBoard by method
 		System.out.print("   Beginning \"Key\" Board: \n");
@@ -425,9 +701,18 @@ public class SudokuLogic {
 		outputToConsole(completeBoard);
 		
 		// Testing generation of initialBoard from completeBoard
-		initialBoard = generateInitialBoard(35, completeBoard);
+		initialBoard = generateInitialBoard(4, completeBoard);
 		System.out.print("   Initial Board: \n");
 		outputToConsole(initialBoard);
+		
+		// Initialize currentBoard
+		for(int i =0; i<9; i++)
+		{
+			for(int j = 0; j<9; j++)
+			{
+				currentBoard[i][j] = initialBoard[i][j];
+			}
+		}
 		
 		// Testing solvedBySingleCandidate(int row, int col, int array[][])
 		System.out.print("   Testing solvedBySingleCandidate():\n");
@@ -439,7 +724,6 @@ public class SudokuLogic {
 		String colString = scanner.nextLine();
 		int testRow = Integer.parseInt(rowString);
 		int testCol = Integer.parseInt(colString);
-		scanner.close();
 		if(solvedBySingleCandidate(testRow, testCol, initialBoard) != 0)
 		{
 			System.out.print("Method solvedBySingleCandidate() RETURNED: ");
@@ -461,6 +745,37 @@ public class SudokuLogic {
 			System.out.print("No.");
 		}
 		
+		System.out.print("\n\n");
+		System.out.print("   Let us solve a board!");
+		System.out.print("\n   Current Board:\n");
+		outputToConsole(currentBoard);
+		System.out.print("\n");
 		
+		
+		
+		int value;
+		int row;
+		int col;
+		while(!isSolved(currentBoard))
+		{
+			System.out.print("Enter a row: ");
+			rowString = scanner.nextLine();
+			row = Integer.parseInt(rowString);
+			System.out.print("Enter a column: ");
+			colString = scanner.nextLine();
+			col = Integer.parseInt(colString);
+			System.out.print("Enter a value: ");
+			String valueString = scanner.nextLine();
+			value = Integer.parseInt(valueString);
+			
+			currentBoard = playerEntry(value, row, col, currentBoard, initialBoard);
+			System.out.print("   Current Board: \n");
+			outputToConsole(currentBoard);
+			System.out.print("\n");
+		}
+		System.out.print("CONGRATS!");
+		
+		
+		scanner.close();
 	}
 }
