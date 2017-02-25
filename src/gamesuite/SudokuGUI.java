@@ -87,8 +87,19 @@ implements MouseListener, MouseMotionListener {
 
 	@Override
 	public final void mousePressed(final MouseEvent e) { 
+		if (game.isGameOver()) {
+			return;
+		}
+		if (game.isFilled()) {
+			showErrors();
+		}
+		
 		xPos = e.getX();
 		yPos = e.getY();
+		
+		// on click of piece, SudokuPiece[x][y].clickedOn()
+		// SudokuPiece.isSelected() returns true if currently selected
+		
 		System.out.print("xPos: " + xPos + " yPos: " + yPos);
 	}
 
@@ -162,6 +173,21 @@ implements MouseListener, MouseMotionListener {
 			}
 		}
 		boardPanel.revalidate();
+	}
+	*/
+	
+	/*  Sets all selected boxes back to unselected 
+	public boolean clearAllSelected()
+	{
+		for(int x=0; x<9;x++){
+			for(int y=0;y<9;y++){
+				// UPDATE ME
+				// if(game.isSelected(x,y))
+				// SudokuLogic.current[x][y]
+			}
+		}
+		
+		
 	}
 	*/
 	

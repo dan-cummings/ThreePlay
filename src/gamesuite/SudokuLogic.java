@@ -288,6 +288,16 @@ public class SudokuLogic implements IGameLogic {
 		return array;
 	}
 	
+	// Clicked on piece
+	public void clickedOn(int row, int col){
+		
+		// UPDATE ME
+		//(SudokuPiece)board[row][col].clickedOn();
+	}
+	
+	// Returns if the piece is selected
+	
+	
 	// Returns true if the PossibleArray (of SingleCandidate) contains num
 	public static boolean arrayContains(int array[], int num)
 	{
@@ -649,11 +659,11 @@ public class SudokuLogic implements IGameLogic {
 	 *  Returns FALSE if the board is not filled
 	 *  Used to trigger end of game
 	 */
-	public static boolean isFilled(int array[][])
+	public boolean isFilled()
 	{
 		for(int i =0; i<9; i++){
 			for(int j = 0; j<9; j++){
-				if(array[i][j] == 0){
+				if(currentBoard[i][j] == 0){
 					return false;
 				}
 			}
@@ -667,10 +677,10 @@ public class SudokuLogic implements IGameLogic {
 	 *  Returns TRUE, otherwise
 	 *  Used to generate the errorBoard
 	 */
-	public static boolean isCorrect(int array[][], int barray[][]){
+	public boolean isCorrect(){
 		for(int i =0; i<9; i++){
 			for(int j = 0; j<9; j++){
-				if(array[i][j] != barray[i][j]){
+				if(currentBoard[i][j] != completeBoard[i][j]){
 					return false;
 				}
 			}
@@ -686,7 +696,6 @@ public class SudokuLogic implements IGameLogic {
 		int[][] completeBoard = new int[9][9];
 		int[][] initialBoard = new int[9][9];
 		int[][] currentBoard = new int[9][9];
-		int[][] errorsBoard = new int[9][9];
 
 		// Set the completeBoard
 		completeBoard = generateBoard();
@@ -715,7 +724,7 @@ public class SudokuLogic implements IGameLogic {
 		int[] tempArray = new int[3];
 		Scanner scanner = new Scanner(System.in);
 		
-		while(!isCorrect(currentBoard, completeBoard) ){
+		while(!isCorrect()){
 			System.out.print("Entry [row] [col] [num]: ");
 			tempString = scanner.nextLine();
 			tempStringArray = tempString.split(" ");
@@ -726,7 +735,7 @@ public class SudokuLogic implements IGameLogic {
 			System.out.print("   Current Board: \n");
 			outputToConsole(currentBoard);
 			System.out.print("\n");
-			if(isFilled(currentBoard)){
+			if(isFilled()){
 				// Offer to show errors
 				System.out.print("Board Filled\n");
 			}
@@ -737,7 +746,12 @@ public class SudokuLogic implements IGameLogic {
 	}
 
 	@Override
-	public boolean isGameOver() { return false;	}
+	public boolean isGameOver() { 
+		if(isFilled() && isCorrect()){
+			return true;
+		}
+		return false;	
+	}
 
 	@Override
 	public boolean isMove(Move m) {	return false; }

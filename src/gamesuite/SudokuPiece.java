@@ -17,12 +17,26 @@ public class SudokuPiece implements IPiece, Serializable {
 	private boolean isInitial;
 	private boolean isError;
 	private Player owner;
+	private boolean currentlySelected = false;
+	
 	/**
 	 * Checkers piece constructor to set owner and beginning state.
 	 * @param p Which player owns this piece.
 	 */
 	public SudokuPiece(final int num) {
 		this.setNum(num);
+	}
+	
+	private boolean isSelected(){
+		return currentlySelected;
+	}
+	private void clickedOn(){
+		if(currentlySelected == true){
+			this.currentlySelected = false;
+		}
+		if(currentlySelected == false){
+			this.currentlySelected = true;
+		}
 	}
 
 	private void setNum(int temp){
