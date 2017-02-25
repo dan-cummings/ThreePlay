@@ -32,9 +32,9 @@ public class OthelloPiece implements IPiece {
 	public void switchOwner() {
 		if(this.owner == Player.NONE) return;
 		
-		if(this.owner == Player.WHITE){
+		if (this.owner == Player.WHITE) {
 			this.owner = Player.BLACK;
-		} else{
+		} else {
 			this.owner = Player.WHITE;
 		}
 	}
@@ -45,14 +45,16 @@ public class OthelloPiece implements IPiece {
 	}
 	
 	@Override
-	public boolean validMove(Move m, IPiece[][] b){
+	public final boolean validMove(Move m, IPiece[][] b){
 		return false;
 	}
 
 	@Override
 	public final boolean validMove(int x, int y, final IPiece[][] b, Player p) {
 		
-		if(b[x][y].getOwner() != Player.NONE) return false;
+		if (b[x][y].getOwner() != Player.NONE) {
+			return false;
+		}
 		
 		if(b[x + 1][y].getOwner() != Player.NONE && b[x + 1][y].getOwner() != p){
 			for(int i = x + 2; i < b.length; i++){

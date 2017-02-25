@@ -3,7 +3,6 @@ package gamesuite;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
@@ -12,19 +11,23 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 /**
  * Panel containing all of the information for the Checkers game.
+ * CheckersGUI acts as the view for the Checkers game.
  * @author Daniel Cummings
  * @version 0.1
  */
 public class CheckersGUI extends JPanel 
 implements MouseListener, MouseMotionListener {
 	
+	/** Version Serialize ID. */
+	private static final long serialVersionUID = 1L;
+
 	/** Image for the piece. */
 	private ImageIcon bKing, bReg, rKing, rReg;
 
@@ -51,6 +54,9 @@ implements MouseListener, MouseMotionListener {
 
 	/** Panel to hold JPanel pieces. */
 	private JPanel boardPanel;
+	
+	/** Panel for displaying the player turn. */
+	private JLabel turn;
 
 	/** Layered pane for drag. */
 	private JLayeredPane pane;
@@ -92,27 +98,42 @@ implements MouseListener, MouseMotionListener {
 		this.add(pane, BorderLayout.CENTER);
 		this.displayBoard();
 		this.showMoveablePieces();
-		this.revalidate();
 	}
 
 	@Override
 	public final void mousePressed(final MouseEvent e) { 
-		
+		if (game.gameOver() || game.isStalemate()) {
+			return;
+		}
+		//get position of the event
 		xPos = e.getX();
 		yPos = e.getY();
+		
+		//grab the component at the location.
 		Component temp = pane.findComponentAt(xPos, yPos);
+		
+		//If the piece is not a JPanel they can select it.
 		if (!(temp instanceof JPanel)) {
+			//Adjustments to keep piece centered
+			//where user picked it up.
 			adjx = temp.getParent().getLocation().x - e.getX();
 			adjy = temp.getParent().getLocation().y - e.getY();
+			
+			//gets the integer 0-7 location of piece in 2d array.
 			fromX = Math.floorDiv(yPos, 75);
 			fromY = Math.floorDiv(xPos, 75);
+			
+			// Piece must have a move to move.
 			if (game.hasMove(game.getPiece(fromX, fromY))) {
+				//Stores selected piece into field.
 				piece = (JLabel) temp;
-				piece.setVisible(false);
 				this.resetColor();
 				this.showMoves();
+				//Move to drag layer.
 				pane.add(piece, JLayeredPane.DRAG_LAYER);
-				piece.setVisible(true);
+				//Places piece at correct position.
+				piece.setLocation(e.getX() + adjx,
+						e.getY() + adjy);
 			}
 		} else {
 			piece = null;
@@ -132,6 +153,11 @@ implements MouseListener, MouseMotionListener {
 					game.makeMove(m);
 					piece.setVisible(true);
 					pane.remove(piece);
+					if (game.gameOver()) {
+						this.handleGameOver();
+					} else if (game.isStalemate()) {
+						this.handleStalemate();
+					}
 				}
 			}
 			piece = null;
@@ -141,84 +167,24 @@ implements MouseListener, MouseMotionListener {
 		this.showMoveablePieces();
 	}
 
+	
+
 	@Override
 	public final void mouseDragged(final MouseEvent e) {
 		// Keeps piece moving with the cursor while centered.
 		if (piece != null) {
+			if (!piece.isVisible()) {
+				piece.setVisible(true);
+			}
 			piece.setLocation(e.getX() + adjx, e.getY() + adjy);
 		}
-	}
-	
-
-	/**
-	 * Method to show possible moves for the current piece.
-	 */
-	private void showMoves() {
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				if (game.isMove(new Move(fromX, fromY, x, y))) {
-					board[x][y].setBackground(Color.YELLOW);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Changes the background of panels to red if the piece has
-	 * a move available.
-	 */
-	private void showMoveablePieces() {
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				if (game.getPiece(x, y) != null) {
-					if (game.hasMove(game.getPiece(x, y))) {
-						board[x][y].
-						setBackground(Color.red);
-					}
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Creates the board out of JPanels and places them onto the
-	 * JPanel to hold the board.
-	 */
-	private void createBoard() {
-		
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				board[x][y] = new JPanel(new BorderLayout());
-				if ((x % 2 == 0 && y % 2 == 0)
-					|| ((x & 1) == 1 && (y & 1) == 1)) {
-					board[x][y].setBackground(Color.gray);
-				} else {
-					board[x][y].setBackground(Color.white);
-				}
-				boardPanel.add(board[x][y]);
-			}
-		}
-	}
-	
-	/** 
-	 * Method grabs the checkers images from the resource file.
-	 */
-	private void getImages() {
-		bKing = new ImageIcon(this.getClass()
-				.getResource("/BlackKing.png"));
-		rKing = new ImageIcon(this.getClass()
-				.getResource("/RedKing.png"));
-		bReg = new ImageIcon(this.getClass()
-				.getResource("/BlackReg.png"));
-		rReg = new ImageIcon(this.getClass()
-				.getResource("/RedReg.png"));
 	}
 	
 	/**
 	 * Creates label for the pieces and places them into the
 	 * proper position on the board.
 	 */
-	private void displayBoard() {
+	public void displayBoard() {
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				board[x][y].removeAll();
@@ -252,7 +218,7 @@ implements MouseListener, MouseMotionListener {
 	 * Resets the background color of the board after 
 	 * being called.
 	 */
-	private void resetColor() {
+	public void resetColor() {
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				if ((x % 2 == 0 && y % 2 == 0)
@@ -264,6 +230,127 @@ implements MouseListener, MouseMotionListener {
 			}
 		}
 	}
+
+	/**
+	 * Method to show possible moves for the current piece.
+	 */
+	private void showMoves() {
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				if (game.isMove(new Move(fromX, fromY, x, y))) {
+					board[x][y].setBackground(Color.YELLOW);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Changes the background of panels to red if the piece has
+	 * a move available.
+	 */
+	public void showMoveablePieces() {
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				if (game.getPiece(x, y) != null) {
+					if (game.hasMove(game.getPiece(x, y))) {
+						board[x][y].
+						setBackground(Color.red);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Creates the board out of JPanels and places them onto the
+	 * JPanel to hold the board.
+	 */
+	private void createBoard() {
+		
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				board[x][y] = new JPanel(new BorderLayout());
+				board[x][y].setBorder(
+					new EtchedBorder(EtchedBorder.LOWERED));
+				if ((x % 2 == 0 && y % 2 == 0)
+					|| ((x & 1) == 1 && (y & 1) == 1)) {
+					board[x][y].setBackground(Color.gray);
+				} else {
+					board[x][y].setBackground(Color.white);
+				}
+				boardPanel.add(board[x][y]);
+			}
+		}
+	}
+	
+	/** 
+	 * Method grabs the checkers images from the resource file.
+	 */
+	private void getImages() {
+		bKing = new ImageIcon(this.getClass()
+				.getResource("/BlackKing.png"));
+		rKing = new ImageIcon(this.getClass()
+				.getResource("/RedKing.png"));
+		bReg = new ImageIcon(this.getClass()
+				.getResource("/BlackReg.png"));
+		rReg = new ImageIcon(this.getClass()
+				.getResource("/RedReg.png"));
+	}
+	
+	/**
+	 * Helper method to handle the instance of a stalemate.
+	 */
+	private void handleStalemate() {
+		int choice = JOptionPane.showConfirmDialog(this,
+				"Game ended in stalemate, \n"
+				+ "would you like to play again?",
+				"Stalemate", JOptionPane.YES_NO_OPTION);
+		if (choice == JOptionPane.YES_OPTION) {
+			game.reset();
+			this.displayBoard();
+			this.showMoveablePieces();
+		} else if (choice == JOptionPane.NO_OPTION) {
+			JOptionPane.showMessageDialog(this,
+					"If you would like to play"
+					+ " again select New Game tab.",
+					"Stalemate", JOptionPane.CANCEL_OPTION);
+		} else {
+			JOptionPane.showMessageDialog(this,
+					"You may load or start a new game",
+					"Stalemate", JOptionPane.CANCEL_OPTION);
+		}
+	}
+
+	/**
+	 * Helper method to handle the instance of game over.
+	 */
+	private void handleGameOver() {
+		String player;
+		if (game.getPlayer() == Player.BLACK) {
+			player = "Black";
+		} else {
+			player = "Red";
+		}
+		int choice = JOptionPane.showConfirmDialog(this,
+				"Game ended, player: " + player + " wins, \n"
+				+ "would you like to play again?",
+				"Game over", JOptionPane.YES_NO_OPTION);
+		if (choice == JOptionPane.YES_OPTION) {
+			game.reset();
+			this.displayBoard();
+			this.showMoveablePieces();
+		} else if (choice == JOptionPane.NO_OPTION) {
+			JOptionPane.showMessageDialog(this,
+					"If you would like to play"
+					+ " again, select New Game tab.",
+					"Game over", JOptionPane.CANCEL_OPTION);
+		} else {
+			JOptionPane.showMessageDialog(this,
+					"You may load or start a new game",
+					"Game over", JOptionPane.CANCEL_OPTION);
+		}
+	}
+	
 
 	/** Unused methods from MouseListener. */
 	@Override
