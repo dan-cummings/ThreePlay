@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-package gamesuite;
-
-public class SudokuGUI {
-
-}
-=======
 package gamesuite;
 
 import java.awt.BorderLayout;
@@ -223,4 +216,3 @@ implements MouseListener, MouseMotionListener {
 	@Override
 	public void mouseDragged(MouseEvent e) { }
 }
->>>>>>> c5fb6e0757cf0ca2b4f5d640d8d6545b5a88e6fe
