@@ -148,7 +148,21 @@ public class GameSuiteGUI extends JPanel {
 	 * Creates the sudoku GUI when the player chooses the game.
 	 */
 	private void sudokuUI() {
-		sudokuPanel = new JPanel();	
+		// sudokuPanel = new JPanel();
+		wind.setSize(900, 700);
+		game = new SudokuLogic();
+		sudokuPanel = new SudokuGUI((SudokuLogic) game);
+		this.removeAll();
+		this.setLayout(new GridBagLayout());
+		GridBagConstraints gbCon = new GridBagConstraints();
+		gbCon.gridx = 0;
+		gbCon.gridy = 0;
+		gbCon.gridheight = 700;
+		gbCon.gridwidth = 700;
+		gbCon.anchor = GridBagConstraints.NORTHWEST;
+		this.add(sudokuPanel, gbCon);
+		this.repaint();
+		this.revalidate();
 	}
 
 	/**
