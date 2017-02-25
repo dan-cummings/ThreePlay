@@ -2,7 +2,30 @@ package gamesuite;
 
 import java.util.Scanner;
 
-public class SudokuLogic {
+/**
+ * 
+ * @author Brendon Murthum
+ *
+ */
+
+public class SudokuLogic implements IGameLogic {
+	
+	/** Current board status of the game. */
+	private IPiece[][] board;
+	private Player player;
+	private int[][] completeBoard = new int[9][9];
+	private int[][] initialBoard = new int[9][9];
+	private int[][] currentBoard = new int[9][9];
+	private boolean[][] errorsBoard = new boolean[9][9];
+	public boolean gameComplete;
+	private int size;
+	
+	public SudokuLogic() {
+		// Initializes completeBoard, initialBoard, currentBoard and errorsBoard
+		this.initializeGame();
+		this.gameComplete = false;
+		this.size = 9;
+	}
 	
 	/*
 	 *  Terms:
@@ -15,26 +38,94 @@ public class SudokuLogic {
 	 * 		currentBoard - The board as the game continues (load to this)
 	 * 		errorsBoard - The errors on the board as the game continues
 	 * 
-	 * 		User Solving Methods:
-	 * 			Single Candidate method - to look to a spot to see if only
-	 * 				option exists for that spot
-	 * 			Single Position method - to look to a row, col, or box, to
-	 * 				see that a number within it only exists at a spot
-	 * 		Difficulties:
-	 * 			Easy - Using Single Candidate and Single Position to solve
-	 * 				35 squares of the board
-	 * 			Medium - Using the former methods to solve 45 squares of
-	 * 				the board
-	 * 			Hard - TO ADD... using more methods
-	 * 		Credit:
-	 * 			This site describes the techniques used to solve a board.
-	 * 			http://www.sudokuoftheday.com/techniques/
+	 * 	User Solving Methods:
+	 * 		Single Candidate method - to look to a spot to see if only
+	 * 			option exists for that spot
+	 * 		Single Position method - to look to a row, col, or box, to
+	 * 			see that a number within it only exists at a spot
+	 * 	Difficulties:
+	 * 		Easy - Using Single Candidate and Single Position to solve
+	 * 			~30 squares of the board
+	 * 		Medium - Using the former methods to solve 50 squares of
+	 * 			the board
+	 * 		Hard - TO ADD... using more methods
+	 * 	Credit:
+	 * 		This site describes the techniques used to solve a board.
+	 * 		http://www.sudokuoftheday.com/techniques/
+	 *
+	 *	Methods:
+	 * 		int[][] generateInitialBoard(int removeQuantity, int array[][])
+	 *			- Returns an always-solvable board
+	 *		boolean solveBoard(int array[][])
+	 *			- Returns TRUE, if it is solveable by our given methods
+	 *			- Returns FALSE, if it is not solvable
+	 *			- This method used in validating an initial board
+	 * 		int solvedBySingleCandidate(int row, int col, int array[][])
+	 *			- Looks to solve a square by "Single Candidate Method"
+	 *			- Returns 0, if square is currently unsolvable
+	 * 			- Returns #, if solvable, where # is the solution
+	 *		void outputToConsole(int array[][])
+	 *			- Outputs the given board to the console
+	 *		int[][] generateBoard()
+	 *			- Returns a randomized complete board
+	 *			- Uses outputBeginningBoard()
+	 *		int[][] outputBeginningBoard()
+	 *			- Returns a "key" board to be randomized
+	 *		boolean isSolved(int array[][])
+	 *			- Returns TRUE, if the given board is full
+	 *			- Returns FALSE, if there is empty squares
+	 *
+	 *	To-Do:
+	 *		Transfer code to object-oriented focus
+	 *		Write in the "Single Position" method of solving
+	 *			- Allows for more complex puzzles
+	 *			- More spaces opened on the board as well
+	 *		Remove "static"
 	 */
+	
+	public int getSize(){
+		return size;
+	}
+	
+	public int getNumber(int row, int col){
+		return ((SudokuPiece) this.board[row][col]).getNum();
+	}
+	
+	/**
+	 * Getter for the piece at requested location.
+	 * @param x vertical position of piece.
+	 * @param y horizontal position of piece.
+	 * @return piece at given location.
+	 */
+	
+	public boolean isInitial(int row, int col){
+		if(initialBoard[row][col] != 0)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isError(int row, int col){
+		return errorsBoard[row][col];
+	}
 
-	// Generating a Board
-	// Goal: Remove 30 squares by removing pieces that would
-	// 		 leave the game still solvable by the given methods
-	public static int[][] generateInitialBoard(int removeQuantity, int array[][])
+	private void initializeGame(){
+		this.board = new SudokuPiece[9][9];
+		this.completeBoard = generateBoard();
+		this.initialBoard = generateInitialBoard(5);
+		for(int i=0;i<9;i++){
+			for(int j=0;j<9;j++){
+				this.errorsBoard[i][j] = false;
+				this.currentBoard[i][j] = initialBoard[i][j];
+				board[i][j] = new SudokuPiece(0);
+			}
+		}
+		
+	}
+	
+	// Generating a solvable Board
+	public int[][] generateInitialBoard(int removeQuantity)
 	{
 		int[][] atempBoard = new int[9][9];
 		// Set all the values of atempBoard == array
@@ -42,7 +133,7 @@ public class SudokuLogic {
 		{
 			for(int j = 0; j<9; j++)
 			{
-				atempBoard[i][j] = array[i][j];
+				atempBoard[i][j] = this.completeBoard[i][j];
 			}
 		}
 		int repeatCount = 0;
@@ -65,7 +156,7 @@ public class SudokuLogic {
 				{
 					for(int j = 0; j<9; j++)
 					{
-						atempBoard[i][j] = array[i][j];
+						atempBoard[i][j] = this.completeBoard[i][j];
 					}
 				}
 				// System.out.print("Repeat: " + repeatCount + "\n");
@@ -236,7 +327,10 @@ public class SudokuLogic {
 	}
 	
 	
-	// Returns true if square is solvable by Single Candidate method
+	/*
+	 *  Returns: 0, if square is not solvable
+	 *  		 #, where # is the number found
+	 */
 	public static int solvedBySingleCandidate(int row, int col, int array[][])
 	{
 		// Start with all possibility
@@ -609,27 +703,14 @@ public class SudokuLogic {
 		{
 			return ctempBoard;
 		}
-		
-		System.out.print("Number at ["+row+"]["+col+"]: "+ctempBoard[row][col]+"\n");
-		ctempBoard[row][col] = num;
-		
-		// Overwrite any input with the initialBoard
-		// To catch inputs on given squares
-		for(int i=0; i <9; i++)
-		{
-			for(int j=0; j<9;j++)
-			{
-				if(barray[i][j] != 0)
-				{
-					ctempBoard[i][j] = barray[i][j];
-				}
-			}
+		if(barray[row][col] != 0){
+			return ctempBoard;
 		}
+		
+		ctempBoard[row][col] = num;
 		
 		return ctempBoard;
 	}
-	
-	
 	
 	public static int[][] outputBeginningBoard()
 	{
@@ -659,7 +740,9 @@ public class SudokuLogic {
 		return someBoard;
 	}
 	
-	public static boolean isSolved(int array[][])
+	// Returns true if the board is filled completely
+	// Use this to show errors at completion
+	public static boolean isFilled(int array[][])
 	{
 		for(int i =0; i<9; i++)
 		{
@@ -674,34 +757,36 @@ public class SudokuLogic {
 		return true;	
 	}
 	
+	// Compares two boards, if difference returns false. Else, returns true.
+	public static boolean isCorrect(int array[][], int barray[][]){
+		for(int i =0; i<9; i++)
+		{
+			for(int j = 0; j<9; j++)
+			{
+				if(array[i][j] != barray[i][j])
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 	
-	public static void main(String[] args) {
-		
-		int[][] beginningBoard = new int[9][9];
+	
+	public void main(String[] args) {
+	
 		int[][] completeBoard = new int[9][9];
 		int[][] initialBoard = new int[9][9];
 		int[][] currentBoard = new int[9][9];
 		int[][] errorsBoard = new int[9][9];
-		
-		// For use of scrambling the beginningBoard
-		int[][] holdingArray = new int[2][9];
-		int[][] secondArray = new int[2][9];
-		int[][] thirdArray = new int[6][9];
-		
-		// Set the beginning Board
-		beginningBoard = outputBeginningBoard();
-		
+
 		// Set the completeBoard
 		completeBoard = generateBoard();
-		
-		// Output the beginningBoard by method
-		System.out.print("   Beginning \"Key\" Board: \n");
-		outputToConsole(beginningBoard);
 		System.out.print("   Complete Board: \n");
 		outputToConsole(completeBoard);
 		
 		// Testing generation of initialBoard from completeBoard
-		initialBoard = generateInitialBoard(4, completeBoard);
+		// initialBoard = generateInitialBoard(5);
 		System.out.print("   Initial Board: \n");
 		outputToConsole(initialBoard);
 		
@@ -714,68 +799,68 @@ public class SudokuLogic {
 			}
 		}
 		
-		// Testing solvedBySingleCandidate(int row, int col, int array[][])
-		System.out.print("   Testing solvedBySingleCandidate():\n");
-		System.out.print("   Type in a [row][col] to see if that square is immediately solveable:\n");
-		Scanner scanner = new Scanner(System.in);
-		System.out.print("Enter the row: ");
-		String rowString = scanner.nextLine();
-		System.out.print("Enter the col: ");
-		String colString = scanner.nextLine();
-		int testRow = Integer.parseInt(rowString);
-		int testCol = Integer.parseInt(colString);
-		if(solvedBySingleCandidate(testRow, testCol, initialBoard) != 0)
-		{
-			System.out.print("Method solvedBySingleCandidate() RETURNED: ");
-			System.out.print(solvedBySingleCandidate(testRow, testCol, initialBoard) + "\n");
-		}
-		else
-		{
-			System.out.print("Method solvedBySingleCandidate() RETURNED: 0 (or, false)\n");
-		}
-		
-		// Testing solveBoard()
-		System.out.print("Can Solve Initial Board: ");
-		if(solveBoard(initialBoard))
-		{
-			System.out.print("Yes!");
-		}
-		else
-		{
-			System.out.print("No.");
-		}
-		
-		System.out.print("\n\n");
+		System.out.print("\n");
 		System.out.print("   Let us solve a board!");
 		System.out.print("\n   Current Board:\n");
 		outputToConsole(currentBoard);
-		System.out.print("\n");
+
+		String tempString;
+		String[] tempStringArray = new String[3]; 
+		int[] tempArray = new int[3];
+		Scanner scanner = new Scanner(System.in);
 		
-		
-		
-		int value;
-		int row;
-		int col;
-		while(!isSolved(currentBoard))
+		while(!isCorrect(currentBoard, completeBoard) )
 		{
-			System.out.print("Enter a row: ");
-			rowString = scanner.nextLine();
-			row = Integer.parseInt(rowString);
-			System.out.print("Enter a column: ");
-			colString = scanner.nextLine();
-			col = Integer.parseInt(colString);
-			System.out.print("Enter a value: ");
-			String valueString = scanner.nextLine();
-			value = Integer.parseInt(valueString);
-			
-			currentBoard = playerEntry(value, row, col, currentBoard, initialBoard);
+			System.out.print("Entry [row] [col] [num]: ");
+			tempString = scanner.nextLine();
+			tempStringArray = tempString.split(" ");
+			for(int i=0;i<3;i++){
+				tempArray[i] = Integer.parseInt(tempStringArray[i]);
+			}
+			currentBoard = playerEntry(tempArray[2], tempArray[0], tempArray[1], currentBoard, initialBoard);
 			System.out.print("   Current Board: \n");
 			outputToConsole(currentBoard);
 			System.out.print("\n");
+			if(isFilled(currentBoard)){
+				// Offer to show errors
+				System.out.print("Board Filled\n");
+			}
 		}
-		System.out.print("CONGRATS!");
-		
+		System.out.print("Board Complete\n");
 		
 		scanner.close();
+		
+		
 	}
+
+	@Override
+	public boolean isGameOver() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isMove(Move m) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isMove(int x, int y, Player p) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void saveState(String filename) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void loadState(String filename) throws Exception {
+		// TODO Auto-generated method stub
+		
+	} 
+	
 }
