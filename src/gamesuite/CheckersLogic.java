@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class CheckersLogic implements IGameLogic {
 
 	/** Current board status of the game. */
-	private IPiece[][] board;
+	private CheckersPiece[][] board;
 	/** Stores value of player making move. */
 	private Player player;
 	/** Size of game board. */
@@ -33,7 +33,7 @@ public class CheckersLogic implements IGameLogic {
 	private boolean saved;
 
 	/**
-	 * Begins checkers game.
+	 * Constructor for checkers game.
 	 */
 	public CheckersLogic() {
 		this.size = 8;
@@ -54,10 +54,10 @@ public class CheckersLogic implements IGameLogic {
 		//setup black pieces
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < size; j++) {
-				if (i % 2 == 0 && (j & 1) == 1) {
+				if (i % 2 == 0 && j % 2 == 0) {
 					board[i][j] = new CheckersPiece(
 							Player.BLACK);
-				} else if ((i & 1) == 1 && j % 2 == 0) {
+				} else if ((i & 1) == 1 && (j & 1) == 1) {
 					board[i][j] = new CheckersPiece(
 							Player.BLACK);
 				}
@@ -67,10 +67,10 @@ public class CheckersLogic implements IGameLogic {
 		//Setup red pieces
 		for (int i = 5; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				if (i % 2 == 0 && (j & 1) == 1) {
+				if (i % 2 == 0 && j % 2 == 0) {
 					board[i][j] = new CheckersPiece(
 							Player.WHITE);
-				} else if ((i & 1) == 1 && j % 2 == 0) {
+				} else if ((i & 1) == 1 && (j & 1) == 1) {
 					board[i][j] = new CheckersPiece(
 							Player.WHITE);
 				}
@@ -101,14 +101,16 @@ public class CheckersLogic implements IGameLogic {
 
 	@Override
 	public final boolean isMove(final Move m) {
-
-		if ((m.getFromX() >= 0 && m.getFromX() < size)
-				&& (m.getFromY() >= 0 && m.getFromY() < size)
-				&& (m.getToX() >= 0 && m.getToX() < size)
-				&& (m.getToY() >= 0 && m.getToY() < size)) {
-			if (board[m.getFromX()][m.getFromY()] != null) {
-				if (board[m.getFromX()][m.getFromY()]
-						.validMove(m, board)) {
+		int tx = m.getToX();
+		int ty = m.getToY();
+		int fx = m.getFromX();
+		int fy = m.getFromY();
+		if ((fx >= 0 && fx < size)
+				&& (fy >= 0 && fy < size)
+				&& (tx >= 0 && tx < size)
+				&& (ty >= 0 && ty < size)) {
+			if (board[fx][fy] != null) {
+				if (board[fx][fy].validMove(m, board)) {
 					return true;
 				}
 			}
@@ -117,7 +119,7 @@ public class CheckersLogic implements IGameLogic {
 	}
 	
 	@Override
-	public final boolean isMove(int x, int y, Player p) {
+	public final boolean isMove(final int x, final int y, final Player p) {
 		return false;
 	}
 
@@ -128,50 +130,34 @@ public class CheckersLogic implements IGameLogic {
 	 */
 	public void makeMove(final Move m) {
 		// Piece can jump.
-		if (jumps.contains(board[m.getFromX()][m.getFromY()])) {
-			if (m.getToX() < m.getFromX()) {
-				if (m.getToY() < m.getFromY()) {
+		int tx = m.getToX();
+		int ty = m.getToY();
+		int fx = m.getFromX();
+		int fy = m.getFromY();
+		if (jumps.contains(board[fx][fy])) {
+			if (tx < fx) {
+				if (ty < fy) {
 					//Jump forward to the right.
-					board[m.getToX()][m.getToY()] = 
-							board[m.getFromX()]
-								[m.getFromY()];
-					board[m.getToX() + 1]
-							[m.getToY() + 1] =
-							null;
-					board[m.getFromX()]
-							[m.getFromY()] = null;
+					board[tx][ty] = board[fx][fy];
+					board[tx + 1][ty + 1] = null;
+					board[fx][fy] = null;
 				} else {
 					//Jump forward to the left.
-					board[m.getToX()][m.getToY()] = 
-							board[m.getFromX()]
-								[m.getFromY()];
-					board[m.getToX() + 1]
-							[m.getToY() - 1] =
-							null;
-					board[m.getFromX()]
-							[m.getFromY()] = null;
+					board[tx][ty] = board[fx][fy];
+					board[tx + 1][ty - 1] = null;
+					board[fx][fy] = null;
 				}
 			} else {
-				if (m.getToY() < m.getFromY()) {
+				if (ty < fy) {
 					//jump down to the left.
-					board[m.getToX()][m.getToY()] = 
-							board[m.getFromX()]
-								[m.getFromY()];
-					board[m.getToX() - 1]
-							[m.getToY() + 1] =
-							null;
-					board[m.getFromX()]
-							[m.getFromY()] = null;
+					board[tx][ty] = board[fx][fy];
+					board[tx - 1][ty + 1] = null;
+					board[fx][fy] = null;
 				} else {
 					//jump down to the right.
-					board[m.getToX()][m.getToY()] = 
-							board[m.getFromX()]
-								[m.getFromY()];
-					board[m.getToX() - 1]
-							[m.getToY() - 1] =
-							null;
-					board[m.getFromX()]
-							[m.getFromY()] = null;
+					board[tx][ty] = board[fx][fy];
+					board[tx - 1][ty - 1] = null;
+					board[fx][fy] = null;
 				}
 			}
 			//Clears ArrayList of jump pieces.
@@ -188,10 +174,9 @@ public class CheckersLogic implements IGameLogic {
 				this.checkJumps();
 			}
 		//Checks if the piece exists in moves Arraylist.
-		} else if (moves.contains(board[m.getFromX()][m.getFromY()])) {
-			board[m.getToX()][m.getToY()] = 
-					board[m.getFromX()][m.getFromY()];
-			board[m.getFromX()][m.getFromY()] = null;
+		} else if (moves.contains(board[fx][fy])) {
+			board[tx][ty] = board[fx][fy];
+			board[fx][fy] = null;
 			//clear possible movable pieces.
 			moves.clear();
 			jumps.clear();
@@ -201,15 +186,16 @@ public class CheckersLogic implements IGameLogic {
 			this.checkJumps();
 		}
 		//Checks whether the piece is a king after move.
-		CheckersPiece piece =
-				(CheckersPiece) board[m.getToX()][m.getToY()];
-		if (m.getToX() == 7 && piece.getOwner() 
+		CheckersPiece piece = board[tx][ty];
+		if (tx == 7 && piece.getOwner() 
 				== Player.BLACK && !piece.isKinged()) {
 			piece.setKinged(true);
-		} else if (m.getToX() == 0 && piece.getOwner()
+		} else if (tx == 0 && piece.getOwner()
 				== Player.WHITE && !piece.isKinged()) {
 			piece.setKinged(true);
 		}
+		this.gameover = this.isGameOver();
+		this.saved = false;
 	}
 
 	/**
@@ -222,11 +208,15 @@ public class CheckersLogic implements IGameLogic {
 			for (int y = 0; y < size; y++) {
 				if (board[x][y] != null) { 
 				//if the piece is owned by current player.
+					board[x][y].canJump(true);
 					if (board[x][y].getOwner() == player) {
 						//Has a jump.
 						if (canJump(x, y)) {
 						//adds to arraylist if possible.
 							jumps.add(board[x][y]);
+						} else {
+							board[x][y].canJump(
+									false);
 						}
 					}
 				}
@@ -325,27 +315,29 @@ public class CheckersLogic implements IGameLogic {
 			ostrm.writeObject(moves);
 			ostrm.close();
 			strm.close();
+			saved = true;
 		} catch (FileNotFoundException e) {
 			//When filename points to a directory instead of a file.
 			e.printStackTrace();
-			throw new Exception("Please choose a "
-					+ "different file name.");
+			throw new Exception("File name is occupied,"
+					+ " please try another.");
 		} catch (IOException e) {
 			//When error occurs in IO.
 			e.printStackTrace();
-			throw new Exception("Error in write took "
-				+ "place, try again with new file name.");
+			throw new Exception("Error in saving took place,"
+				+ " please try again with new file name.");
 		} finally {
-			saved = true;
+			System.out.println("Save attempted");
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public final void loadState(final String filename) throws Exception {
 		try {
 			FileInputStream strm = new FileInputStream(filename);
 			ObjectInputStream ostrm = new ObjectInputStream(strm);
-			this.board = (IPiece[][]) ostrm.readObject();
+			this.board = (CheckersPiece[][]) ostrm.readObject();
 			this.player = (Player) ostrm.readObject();
 			this.jumps = (ArrayList<IPiece>) ostrm.readObject();
 			this.moves = (ArrayList<IPiece>) ostrm.readObject();
@@ -359,14 +351,15 @@ public class CheckersLogic implements IGameLogic {
 		} catch (IOException e) {
 			//When error occurs in IO.
 			e.printStackTrace();
-			throw new Exception("Error in read, file corrupted.");
+			throw new Exception("Error durring reading, "
+					+ "file corrupted.");
 		} catch (ClassNotFoundException e) {
 			//When class specified is not found.
 			e.printStackTrace();
-			throw new Exception("Internal"
-					+ " error please restart game.");
+			throw new Exception("File corrupted,"
+					+ " cannot recieve game state.");
 		} finally {
-			System.out.println("Load Complete");
+			System.out.println("Load Attempted.");
 		}
 	}
 
@@ -411,7 +404,7 @@ public class CheckersLogic implements IGameLogic {
 	}
 
 	/**
-	 * Switches player when called.
+	 * Switches player after turn.
 	 */
 	private void nextTurn() {
 		if (player == Player.WHITE) {
@@ -422,11 +415,49 @@ public class CheckersLogic implements IGameLogic {
 	}
 	
 	/**
-	 * Getter method for the player who is currently makeing
+	 * Getter method for the player who is currently making
 	 * a move.
 	 * @return The current player who can move.
 	 */
 	public Player getCurrentPlayer() {
 		return player;
+	}
+	
+	/**
+	 * Getter for status of game in stalemate.
+	 * @return True if current player cannot move.
+	 */
+	public boolean isStalemate() {
+		return this.stalemate;
+	}
+	
+	/**
+	 * Getter method for the game completion status of the game.
+	 * @return True if the game is determined to be finished.
+	 */
+	public boolean gameOver() {
+		return this.gameover;
+	}
+	
+	/**
+	 * Getter for whether or not the current game state has been saved.
+	 * @return True if the game has been saved this turn.
+	 */
+	public boolean isSaved() {
+		return this.saved;
+	}
+
+	/**
+	 *  Allows users to reset board after getting stalemate or gameover.
+	 */
+	public void reset() {
+		this.stalemate = false;
+		this.gameover = false;
+		this.createBoard();
+		this.player = Player.WHITE;
+		this.moves.clear();
+		this.jumps.clear();
+		this.checkJumps();
+		
 	}
 }

@@ -42,10 +42,13 @@ public class GameSuiteGUI extends JPanel {
 	private CheckersGUI checkersPanel;
 	
 	/** User interface for a reversi board. */
-	//private ReversiGUI reversiPanel;
+	private OthelloGUI othelloPanel;
 	
-	/** User interface for a sudoku board. */
-	private JPanel init, sudokuPanel, info;
+	/** User interface for a sudoku panel. */
+	private SudokuGUI sudokuPanel;
+	
+	/** User interface for the inital screen. */
+	private JPanel init;
 
 	/**
 	 * @param frame  
@@ -122,13 +125,13 @@ public class GameSuiteGUI extends JPanel {
 		checkersButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				checkersUI();
+				checkersGUI();
 			}
 		});
 		reversiButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				reversiUI();
+				othelloGUI();
 			}
 		});
 		sudokuButton.addActionListener(new ActionListener() {
@@ -148,14 +151,14 @@ public class GameSuiteGUI extends JPanel {
 	 * Creates the sudoku GUI when the player chooses the game.
 	 */
 	private void sudokuUI() {
-		sudokuPanel = new JPanel();	
+		sudokuPanel = new SudokuGUI();	
 	}
 
 	/**
 	 * Resizes window to fit the game UI for the checkers game.
 	 * Only called when the checkers button is selected.
 	 */
-	private void checkersUI() {
+	private void checkersGUI() {
 		wind.setSize(900, 700);
 		game = new CheckersLogic();
 		checkersPanel = new CheckersGUI((CheckersLogic) game);
@@ -173,10 +176,12 @@ public class GameSuiteGUI extends JPanel {
 	}
 
 	/**
-	 * 
+	 * Calls the othelloGUI class to create the othello board.
 	 */
-	private void reversiUI() {
-
+	private void othelloGUI() {
+		game = new Othello();
+		this.othelloPanel = new OthelloGUI((Othello) game);
+		this.removeAll();
 	}
 
 	/**
@@ -229,6 +234,17 @@ public class GameSuiteGUI extends JPanel {
 						e.getMessage(),
 						"Load Error",
 						JOptionPane.ERROR_MESSAGE);
+			} finally {
+				if (game instanceof CheckersLogic) {
+					checkersPanel.displayBoard();
+					checkersPanel.resetColor();
+					checkersPanel.showMoveablePieces();
+				} else if (game instanceof Othello) {
+					//othello.
+				} else {
+					//sudoku.
+				}
+				
 			}
 		} else {
 			JOptionPane.showMessageDialog(wind,
