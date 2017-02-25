@@ -9,6 +9,8 @@ import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -20,15 +22,11 @@ import javax.swing.border.EtchedBorder;
 /**
  * Panel containing all of the information for the Checkers game.
  * @author Daniel Cummings
+ * Fitted to Sudoku by Brendon Murthum
  * @version 0.1
- * 
  */
 public class SudokuGUI extends JPanel 
 implements MouseListener, MouseMotionListener {
-	
-	/** Image for the piece. */
-	private ImageIcon one, two, three, four, five;
-	private ImageIcon six, seven, eight, nine;
 	
 	/** Board square containers. */
 	private JPanel[][] board;
@@ -42,12 +40,6 @@ implements MouseListener, MouseMotionListener {
 	/** Position of piece on board. */
 	private int xPos, yPos;
 
-	/** adjustment measurement. */
-	// private int adjx, adjy;
-
-	/** integer values for location of move. */
-	// private int fromX, fromY, toX, toY;
-
 	/** Size of each square. */
 	private final int size, sqSize;
 
@@ -59,13 +51,10 @@ implements MouseListener, MouseMotionListener {
 
 	/**
 	 * Constructor for the checkers GUI.
-	 * @param gamel checkers game logic.
+	 * @param game1 Sudoku game logic.
 	 */
 	public SudokuGUI(final SudokuLogic gamel) {
-		// Get game images.
-		this.getImages();
-		
-		// instantiate game objects
+		// Instantiate game objects
 		this.game = gamel;
 		this.size = gamel.getSize();
 		this.sqSize = 60;
@@ -92,19 +81,16 @@ implements MouseListener, MouseMotionListener {
 		this.createBoard();
 		pane.add(boardPanel, JLayeredPane.DEFAULT_LAYER);
 		this.add(pane, BorderLayout.CENTER);
-		this.displayBoard();
+		//this.displayBoard();
 		this.revalidate();
 	}
 
 	@Override
 	public final void mousePressed(final MouseEvent e) { 
-		
 		xPos = e.getX();
 		yPos = e.getY();
 		System.out.print("xPos: " + xPos + " yPos: " + yPos);
-
 	}
-
 
 	/**
 	 * Method to show errors on the Board
@@ -120,58 +106,52 @@ implements MouseListener, MouseMotionListener {
 	}
 	
 	@Override
-	public final void mouseReleased(final MouseEvent e) {
-		
-	}
+	public final void mouseReleased(final MouseEvent e) { }
 	
 	/**
 	 * Creates the board out of JPanels and places them onto the
 	 * JPanel to hold the board.
 	 */
 	private void createBoard() {
-		
+		boardPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				board[x][y] = new JPanel(new BorderLayout());
-				if (game.isInitial(y,x)) {
-					board[x][y].setBackground(Color.gray);
-				} else {
-					board[x][y].setBackground(Color.white);
+				JLabel numberLabel = new JLabel();
+				board[x][y].setBackground(Color.white);
+				if (game.getNumber(y,x) == 1) {
+					numberLabel.setText("1");
+				} else if(game.getNumber(y,x) == 2){
+					numberLabel.setText("2");
+				} else if(game.getNumber(y,x) == 3){
+					numberLabel.setText("3");
+				} else if(game.getNumber(y,x) == 4){
+					numberLabel.setText("4");
+				} else if(game.getNumber(y,x) == 5){
+					numberLabel.setText("5");
+				} else if(game.getNumber(y,x) == 6){
+					numberLabel.setText("6");
+				} else if(game.getNumber(y,x) == 7){
+					numberLabel.setText("7");
+				} else if(game.getNumber(y,x) == 8){
+					numberLabel.setText("8");
+				} else if(game.getNumber(y,x) == 9){
+					numberLabel.setText("9");
+				} else if(game.isInitial(y,x)){
+					board[x][y].setBackground(Color.lightGray);
 				}
+				board[x][y].setBorder(BorderFactory.createLineBorder(Color.black));
+				boardPanel.add(numberLabel);
 				boardPanel.add(board[x][y]);
 			}
 		}
-	}
-	
-	/** 
-	 * Method grabs the checkers images from the resource file.
-	 */
-	// MAKE IMAGES FOR THE NUMBERS?
-	private void getImages() {
-		one = new ImageIcon(this.getClass()
-				.getResource("/BlackKing.png"));
-		two = new ImageIcon(this.getClass()
-				.getResource("/RedKing.png"));
-		three = new ImageIcon(this.getClass()
-				.getResource("/BlackReg.png"));
-		four = new ImageIcon(this.getClass()
-				.getResource("/RedReg.png"));
-		five = new ImageIcon(this.getClass()
-				.getResource("/RedReg.png"));
-		six = new ImageIcon(this.getClass()
-				.getResource("/RedReg.png"));
-		seven = new ImageIcon(this.getClass()
-				.getResource("/RedReg.png"));
-		eight = new ImageIcon(this.getClass()
-				.getResource("/RedReg.png"));
-		nine = new ImageIcon(this.getClass()
-				.getResource("/RedReg.png"));
 	}
 	
 	/**
 	 * Creates label for the pieces and places them into the
 	 * proper position on the board.
 	 */
+	/*
 	private void displayBoard() {
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
@@ -183,6 +163,7 @@ implements MouseListener, MouseMotionListener {
 		}
 		boardPanel.revalidate();
 	}
+	*/
 	
 	/**
 	 * Resets the background color of the board after 

@@ -3,9 +3,66 @@ package gamesuite;
 import java.util.Scanner;
 
 /**
- * 
  * @author Brendon Murthum
+ */
+
+/*
+ *  Code:
+ *  	"UPDATE ME" is at the spots for future updates
+ * 
+ *  Terms:
+ *  	Board - The 9x9 complete array
+ * 		Box - A 3x3 chunk of squares
+ * 		Square - A single, changeable, smallest unit
+ * 
+ * 		completeBoard - The full correct board
+ * 		initialBoard - The board first given to the player
+ * 		currentBoard - The board as the game continues (load to this)
+ * 		errorsBoard - The errors on the board as the game continues
+ * 
+ * 	User Solving Methods:
+ * 		Single Candidate method - to look to a spot to see if only
+ * 			option exists for that spot
+ * 		Single Position method - to look to a row, col, or box, to
+ * 			see that a number within it only exists at a spot
+ * 	Difficulties:
+ * 		Easy - Using Single Candidate and Single Position to solve
+ * 			~30 squares of the board
+ * 		Medium - Using the former methods to solve 50 squares of
+ * 			the board
+ * 		Hard - TO ADD... using more methods
+ * 	Credit:
+ * 		This site describes the techniques used to solve a board.
+ * 		http://www.sudokuoftheday.com/techniques/
  *
+ *	Methods:
+ * 		int[][] generateInitialBoard(int removeQuantity, int array[][])
+ *			- Returns an always-solvable board
+ *		boolean solveBoard(int array[][])
+ *			- Returns TRUE, if it is solveable by our given methods
+ *			- Returns FALSE, if it is not solvable
+ *			- This method used in validating an initial board
+ * 		int solvedBySingleCandidate(int row, int col, int array[][])
+ *			- Looks to solve a square by "Single Candidate Method"
+ *			- Returns 0, if square is currently unsolvable
+ * 			- Returns #, if solvable, where # is the solution
+ *		void outputToConsole(int array[][])
+ *			- Outputs the given board to the console
+ *		int[][] generateBoard()
+ *			- Returns a randomized complete board
+ *			- Uses outputBeginningBoard()
+ *		int[][] outputBeginningBoard()
+ *			- Returns a "key" board to be randomized
+ *		boolean isSolved(int array[][])
+ *			- Returns TRUE, if the given board is full
+ *			- Returns FALSE, if there is empty squares
+ *
+ *	To-Do:
+ *		Transfer code to object-oriented focus
+ *		Write in the "Single Position" method of solving
+ *			- Allows for more complex puzzles
+ *			- More spaces opened on the board as well
+ *		Remove "static"
  */
 
 public class SudokuLogic implements IGameLogic {
@@ -20,96 +77,46 @@ public class SudokuLogic implements IGameLogic {
 	public boolean gameComplete;
 	private int size;
 	
+	/* Initializes completeBoard, initialBoard, currentBoard and errorsBoard */
 	public SudokuLogic() {
-		// Initializes completeBoard, initialBoard, currentBoard and errorsBoard
 		this.initializeGame();
 		this.gameComplete = false;
 		this.size = 9;
 	}
 	
-	/*
-	 *  Terms:
-	 *  	Board - The 9x9 complete array
-	 * 		Box - A 3x3 chunk of squares
-	 * 		Square - A single, changeable, smallest unit
-	 * 
-	 * 		completeBoard - The full correct board
-	 * 		initialBoard - The board first given to the player
-	 * 		currentBoard - The board as the game continues (load to this)
-	 * 		errorsBoard - The errors on the board as the game continues
-	 * 
-	 * 	User Solving Methods:
-	 * 		Single Candidate method - to look to a spot to see if only
-	 * 			option exists for that spot
-	 * 		Single Position method - to look to a row, col, or box, to
-	 * 			see that a number within it only exists at a spot
-	 * 	Difficulties:
-	 * 		Easy - Using Single Candidate and Single Position to solve
-	 * 			~30 squares of the board
-	 * 		Medium - Using the former methods to solve 50 squares of
-	 * 			the board
-	 * 		Hard - TO ADD... using more methods
-	 * 	Credit:
-	 * 		This site describes the techniques used to solve a board.
-	 * 		http://www.sudokuoftheday.com/techniques/
-	 *
-	 *	Methods:
-	 * 		int[][] generateInitialBoard(int removeQuantity, int array[][])
-	 *			- Returns an always-solvable board
-	 *		boolean solveBoard(int array[][])
-	 *			- Returns TRUE, if it is solveable by our given methods
-	 *			- Returns FALSE, if it is not solvable
-	 *			- This method used in validating an initial board
-	 * 		int solvedBySingleCandidate(int row, int col, int array[][])
-	 *			- Looks to solve a square by "Single Candidate Method"
-	 *			- Returns 0, if square is currently unsolvable
-	 * 			- Returns #, if solvable, where # is the solution
-	 *		void outputToConsole(int array[][])
-	 *			- Outputs the given board to the console
-	 *		int[][] generateBoard()
-	 *			- Returns a randomized complete board
-	 *			- Uses outputBeginningBoard()
-	 *		int[][] outputBeginningBoard()
-	 *			- Returns a "key" board to be randomized
-	 *		boolean isSolved(int array[][])
-	 *			- Returns TRUE, if the given board is full
-	 *			- Returns FALSE, if there is empty squares
-	 *
-	 *	To-Do:
-	 *		Transfer code to object-oriented focus
-	 *		Write in the "Single Position" method of solving
-	 *			- Allows for more complex puzzles
-	 *			- More spaces opened on the board as well
-	 *		Remove "static"
-	 */
-	
+	/* Returns the width of the board. SHOULD BE 9 FOR SUDOKU! */
 	public int getSize(){
 		return size;
 	}
 	
+	/* Returns INT of the IPiece at row, col. */
 	public int getNumber(int row, int col){
-		return ((SudokuPiece) this.board[row][col]).getNum();
+		return currentBoard[row][col];
+		//return ((SudokuPiece) this.board[row][col]).getNum();
 	}
 	
-	/**
-	 * Getter for the piece at requested location.
-	 * @param x vertical position of piece.
-	 * @param y horizontal position of piece.
-	 * @return piece at given location.
-	 */
-	
+	/* Returns TRUE if a square at row, col, was initially set */
 	public boolean isInitial(int row, int col){
-		if(initialBoard[row][col] != 0)
-		{
+		if(initialBoard[row][col] != 0){
 			return true;
 		}
 		return false;
 	}
 	
+	/* Returns TRUE if a square at row, col, is not parallel with the completeBoard */
 	public boolean isError(int row, int col){
 		return errorsBoard[row][col];
 	}
 
+	/* This initializes the game. board
+	 * 		- Sets the IPiece board
+	 * 		- Generates the array of the completeBoard
+	 * 		- Generates the array of the initialBoard
+	 * 		- Generates the array of the errorsBoard
+	 * 		- Generates the array of the currentBoard
+	 * 			- This is the board the player interacts with
+	 * 		- Populates the IPiece board with SudokuPiece
+	 */
 	private void initializeGame(){
 		this.board = new SudokuPiece[9][9];
 		this.completeBoard = generateBoard();
@@ -118,13 +125,13 @@ public class SudokuLogic implements IGameLogic {
 			for(int j=0;j<9;j++){
 				this.errorsBoard[i][j] = false;
 				this.currentBoard[i][j] = initialBoard[i][j];
-				board[i][j] = new SudokuPiece(0);
+				board[i][j] = new SudokuPiece(currentBoard[i][j]);
 			}
 		}
 		
 	}
 	
-	// Generating a solvable Board
+	/* Generates the initialBoard */
 	public int[][] generateInitialBoard(int removeQuantity)
 	{
 		int[][] atempBoard = new int[9][9];
@@ -145,26 +152,25 @@ public class SudokuLogic implements IGameLogic {
 		boolean shouldLoop;
 		boolean shouldRepeat = false;
 		
-		while(removedCount < removeQuantity)
-		{
-			// To start from scratch if comes to dead end
-			if(shouldRepeat)
-			{
+		while(removedCount < removeQuantity){
+			// Starts again if comes to dead end
+			if(shouldRepeat){
 				shouldRepeat = false;
 				removedCount = 0;
-				for(int i =0; i<9; i++)
-				{
-					for(int j = 0; j<9; j++)
-					{
+				for(int i =0; i<9; i++){
+					for(int j = 0; j<9; j++){
 						atempBoard[i][j] = this.completeBoard[i][j];
 					}
 				}
+				// Testing
 				// System.out.print("Repeat: " + repeatCount + "\n");
 				repeatCount = repeatCount + 1;
 			}
 			
-			// Take remove a square, hold onto that removed number
-			// until it's checked to still be solvable
+			/* 
+			 * Remove a square. Hold onto that removed number
+			 * until it's checked to still be solvable
+			 */
 			counter = 0;
 			shouldLoop = true;
 			while(shouldLoop)
@@ -179,6 +185,7 @@ public class SudokuLogic implements IGameLogic {
 					{
 						removedCount = removedCount + 1;
 						shouldLoop = false;
+						// Testing
 						// System.out.println("Just Removed ["+ rowRandom + "]["+ colRandom +"]: " + numberHolder);
 						// System.out.println("Remove Count: " + removedCount);
 					}
@@ -207,8 +214,7 @@ public class SudokuLogic implements IGameLogic {
 		
 		// We're here once the removeQuantity is met
 		// ... and one last check
-		if (solveBoard(atempBoard) != true)
-		{
+		if (solveBoard(atempBoard) != true){
 			System.out.println("ERROR IN INTERNAL GENERATING MECHANIC!");
 		}
 		
@@ -219,10 +225,8 @@ public class SudokuLogic implements IGameLogic {
 	{
 		int[][] tempBoard = new int[9][9];
 		// Set all values of tempBoard == array
-		for(int i =0; i<9; i++)
-		{
-			for(int j = 0; j<9; j++)
-			{
+		for(int i =0; i<9; i++){
+			for(int j = 0; j<9; j++){
 				tempBoard[i][j] = array[i][j];
 			}
 		}
@@ -234,22 +238,17 @@ public class SudokuLogic implements IGameLogic {
 		// solving come into play
 		boolean solved = false;
 		boolean madeProgress = false;
-		while(solved == false)
-		{
+		while(solved == false){
 			// To make sure progress is being made
 			madeProgress = false;
 			
 			// Try entire board for Single Candidate solutions
-			for(int i=0;i<9;i++)
-			{
-				for(int j=0;j<9;j++)
-				{
+			for(int i=0;i<9;i++){
+				for(int j=0;j<9;j++){
 					// If square is empty
-					if(tempBoard[i][j] == 0)
-					{
+					if(tempBoard[i][j] == 0){
 						// If solvable square, solve it
-						if(solvedBySingleCandidate(i,j,tempBoard) != 0)
-						{
+						if(solvedBySingleCandidate(i,j,tempBoard) != 0){
 							tempBoard[i][j] = solvedBySingleCandidate(i,j,tempBoard);
 							madeProgress = true;
 						}
@@ -257,28 +256,23 @@ public class SudokuLogic implements IGameLogic {
 				}
 			}
 			
-			// Add another solving method HERE
+			// UPDATE ME: Add a future solving method HERE
 			
 			// Check if solved 
 			solved = true;
-			for(int i=0;i<9;i++)
-			{
-				for(int j=0;j<9;j++)
-				{
-					if(tempBoard[i][j] == 0)
-					{
+			for(int i=0;i<9;i++){
+				for(int j=0;j<9;j++){
+					if(tempBoard[i][j] == 0){
 						solved = false;
 					}
 				}
 			}
-			if(solved == true)
-			{
+			if(solved == true){
 				// System.out.print("   Within solveBoard() AFTER:\n");
 				// outputToConsole(tempBoard);
 				return true;
 			}
-			if(madeProgress == false)
-			{
+			if(madeProgress == false){
 				return false;
 			}
 		}
@@ -331,8 +325,7 @@ public class SudokuLogic implements IGameLogic {
 	 *  Returns: 0, if square is not solvable
 	 *  		 #, where # is the number found
 	 */
-	public static int solvedBySingleCandidate(int row, int col, int array[][])
-	{
+	public static int solvedBySingleCandidate(int row, int col, int array[][]){
 		// Start with all possibility
 		int possible[] = {1,2,3,4,5,6,7,8,9};
 		// If square is filled, return true
@@ -360,20 +353,15 @@ public class SudokuLogic implements IGameLogic {
 		*/
 		
 		// Eliminate all numbers in that column from possibility
-		for(int i=0; i< 9;i++)
-		{
-			if(arrayContains(possible, array[i][col]))
-			{
+		for(int i=0; i< 9;i++){
+			if(arrayContains(possible, array[i][col])){
 				SCarrayRemove(possible, array[i][col]);
 			}
 		}
 		// Eliminate all numbers in that box from possibility				
-		for(int i=0; i<3; i++)
-		{
-			for(int j=0; j<3; j++)
-			{
-				if(arrayContains( possible, array[(((row/3)*3)+i)][(((col/3)*3)+j )] ))
-				{
+		for(int i=0; i<3; i++){
+			for(int j=0; j<3; j++){
+				if(arrayContains( possible, array[(((row/3)*3)+i)][(((col/3)*3)+j )] )){
 					SCarrayRemove(possible, array[(((row/3)*3)+i)][(((col/3)*3)+j )] );
 				}
 			}
@@ -381,97 +369,70 @@ public class SudokuLogic implements IGameLogic {
 		// See if there are multiple possibilities left in this square
 		int stillPossible = 0;
 		int lastRemaining = 0;
-		for(int i=0; i< 9;i++)
-		{
-			if(possible[i] != 0)
-			{
+		for(int i=0; i< 9;i++){
+			if(possible[i] != 0){
 				stillPossible = stillPossible + 1;
 				lastRemaining = possible[i];
 			}
-			if(stillPossible > 1)
-			{
+			if(stillPossible > 1){
 				return 0;
 			}
 		}
 		return lastRemaining;
 	}
 	
-	// Output the board to the console
-	public static void outputToConsole(int array[][])
-	{
-		
+	/* Outputs a boardArray to the console for testing */
+	public static void outputToConsole(int array[][]){
 		int a_counter = 0;
 		int b_counter = 0;
-		for(int i = 0; i<9; i++)
-		{
+		for(int i = 0; i<9; i++){
 			b_counter = b_counter + 1;
-			for(int j = 0; j<9;j++)
-			{
+			for(int j = 0; j<9;j++){
 				a_counter = a_counter + 1;
-				if(array[i][j] == 0)
-				{
+				if(array[i][j] == 0){
 					System.out.print("-");
 				}
-				else
-				{
+				else{
 					System.out.print(array[i][j]);
 				}
-				if(a_counter == 3)
-				{
+				if(a_counter == 3){
 					System.out.print(" ");
 					a_counter = 0;
 				}
 			}
 			System.out.print("\n");
-			if(b_counter == 3)
-			{
+			if(b_counter == 3){
 				System.out.print("\n");
 				b_counter = 0;
 			}
-		}
-		
+		}	
 	}
 	
-	// Generates a randomized completeBoard from the beginningBoard
-	public static int[][] generateBoard()
-	{
-		// (1) Swap rows
-		// (2) Swap cols
-		// (3) Swap chunks
-		// (4) Swap two numbers
-		
+	/* Generates a randomized completeBoard from the beginningBoard */
+	public static int[][] generateBoard(){
 		int[][] btempBoard = new int[9][9];
 		btempBoard = outputBeginningBoard();
-		
 		int holdingNumber;
 		int decidingRandom;
 		
-		// Swap some rows randomly
+		/* Swap some random rows */
 		decidingRandom = (int)(Math.random() * 2); // 0, 1, 2
-		if(decidingRandom == 1)
-		{
-			// Swap row0 and row1
-			for(int i=0; i<9; i++)
-			{
+		if(decidingRandom == 1){
+			for(int i=0; i<9; i++){
 				holdingNumber = btempBoard[0][i];
 				btempBoard[0][i] = btempBoard[1][i];
 				btempBoard[1][i] = holdingNumber;
 			}
 		} 
-		if(decidingRandom == 2)
-		{
-			// Swap row0 and row2
-			for(int i=0; i<9; i++)
-			{
+		if(decidingRandom == 2){
+			for(int i=0; i<9; i++){
 				holdingNumber = btempBoard[0][i];
 				btempBoard[0][i] = btempBoard[2][i];
 				btempBoard[2][i] = holdingNumber;
 			}
 		}
 		decidingRandom = (int)(Math.random() * 3); // 0, 1, 2
-		if(decidingRandom == 1)
-		{
-			// Swap row3 and row4
+		if(decidingRandom == 1){
 			for(int i=0; i<9; i++)
 			{
 				holdingNumber = btempBoard[3][i];
@@ -479,136 +440,102 @@ public class SudokuLogic implements IGameLogic {
 				btempBoard[4][i] = holdingNumber;
 			}
 		} 
-		if(decidingRandom == 2)
-		{
-			// Swap row3 and row5
-			for(int i=0; i<9; i++)
-			{
+		if(decidingRandom == 2){
+			for(int i=0; i<9; i++){
 				holdingNumber = btempBoard[3][i];
 				btempBoard[3][i] = btempBoard[5][i];
 				btempBoard[5][i] = holdingNumber;
 			}
 		}
 		decidingRandom = (int)(Math.random() * 3); // 0, 1, 2
-		if(decidingRandom == 1)
-		{
-			// Swap row6 and row7
-			for(int i=0; i<9; i++)
-			{
+		if(decidingRandom == 1){
+			for(int i=0; i<9; i++){
 				holdingNumber = btempBoard[6][i];
 				btempBoard[6][i] = btempBoard[7][i];
 				btempBoard[7][i] = holdingNumber;
 			}
 		} 
-		if(decidingRandom == 2)
-		{
-			// Swap row6 and row8
-			for(int i=0; i<9; i++)
-			{
+		if(decidingRandom == 2){
+			for(int i=0; i<9; i++){
 				holdingNumber = btempBoard[6][i];
 				btempBoard[6][i] = btempBoard[8][i];
 				btempBoard[8][i] = holdingNumber;
 			}
 		}
 		
-		// Swap some columns randomly
+		/* Swap some random columns */
 		decidingRandom = (int)(Math.random() * 3); // 0, 1, 2
-		if(decidingRandom == 1)
-		{
-			// Swap col0 and col1
-			for(int i=0; i<9; i++)
-			{
+		if(decidingRandom == 1){
+			for(int i=0; i<9; i++){
 				holdingNumber = btempBoard[i][0];
 				btempBoard[i][0] = btempBoard[i][1];
 				btempBoard[i][1] = holdingNumber;
 			}
 		} 
-		if(decidingRandom == 2)
-		{
-			// Swap col0 and col2
-			for(int i=0; i<9; i++)
-			{
+		if(decidingRandom == 2){
+			for(int i=0; i<9; i++){
 				holdingNumber = btempBoard[i][0];
 				btempBoard[i][0] = btempBoard[i][2];
 				btempBoard[i][2] = holdingNumber;
 			}
 		}
 		decidingRandom = (int)(Math.random() * 3); // 0, 1, 2
-		if(decidingRandom == 1)
-		{
-			// Swap col3 and col4
-			for(int i=0; i<9; i++)
-			{
+		if(decidingRandom == 1){
+			for(int i=0; i<9; i++){
 				holdingNumber = btempBoard[i][3];
 				btempBoard[i][3] = btempBoard[i][4];
 				btempBoard[i][4] = holdingNumber;
 			}
 		} 
-		if(decidingRandom == 2)
-		{
-			// Swap col3 and col5
-			for(int i=0; i<9; i++)
-			{
+		if(decidingRandom == 2){
+			for(int i=0; i<9; i++){
 				holdingNumber = btempBoard[i][3];
 				btempBoard[i][3] = btempBoard[i][5];
 				btempBoard[i][5] = holdingNumber;
 			}
 		}
 		decidingRandom = (int)(Math.random() * 3); // 0, 1, 2
-		if(decidingRandom == 1)
-		{
-			// Swap col6 and col7
-			for(int i=0; i<9; i++)
-			{
+		if(decidingRandom == 1){
+			for(int i=0; i<9; i++){
 				holdingNumber = btempBoard[i][6];
 				btempBoard[i][6] = btempBoard[i][7];
 				btempBoard[i][7] = holdingNumber;
 			}
 		} 
-		if(decidingRandom == 2)
-		{
-			// Swap col6 and col8
-			for(int i=0; i<9; i++)
-			{
+		if(decidingRandom == 2){
+			for(int i=0; i<9; i++){
 				holdingNumber = btempBoard[i][6];
 				btempBoard[i][6] = btempBoard[i][8];
 				btempBoard[i][8] = holdingNumber;
 			}
 		}
 		
-		// Swap two horizontal 3-tall chunks
-		// Original "ABC" ->  After "BAC" "ACB" "CAB" "ABC"
+		/*
+		 *  Swap two horizontal 3-tall chunks
+		 *  EX: "ABC" ->  After "BAC" "ACB" "CAB" "ABC"
+		 */
 		decidingRandom = (int)(Math.random() * 4); // 0, 1, 2, 3
-		if (decidingRandom == 0)
-		{
-			for(int h=0; h<3; h++)
-			{
-				for(int i=0; i<9; i++)
-				{
+		if (decidingRandom == 0){
+			for(int h=0; h<3; h++){
+				for(int i=0; i<9; i++){
 					holdingNumber = btempBoard[h][i];
 					btempBoard[h][i] = btempBoard[h+3][i];
 					btempBoard[h+3][i] = holdingNumber;
 				}
 			}
 		}
-		if (decidingRandom == 1)
-		{
-			for(int h=0; h<3; h++)
-			{
-				for(int i=0; i<9; i++)
-				{
+		if (decidingRandom == 1){
+			for(int h=0; h<3; h++){
+				for(int i=0; i<9; i++){
 					holdingNumber = btempBoard[h][i];
 					btempBoard[h][i] = btempBoard[h+6][i];
 					btempBoard[h+6][i] = holdingNumber;
 				}
 			}
 		}
-		if (decidingRandom == 2)
-		{
-			for(int h=3; h<6; h++)
-			{
-				for(int i=0; i<9; i++)
-				{
+		if (decidingRandom == 2){
+			for(int h=3; h<6; h++){
+				for(int i=0; i<9; i++){
 					holdingNumber = btempBoard[h][i];
 					btempBoard[h][i] = btempBoard[h+3][i];
 					btempBoard[h+3][i] = holdingNumber;
@@ -616,39 +543,32 @@ public class SudokuLogic implements IGameLogic {
 			}
 		}
 		
-		// Swap two vertical 3-wide chunks
-		// Original "ABC" ->  After "BAC" "ACB" "CAB" "ABC"
+		/*
+		 *  Swap two vertical 3-wide chunks
+		 *  Original "ABC" ->  After "BAC" "ACB" "CAB" "ABC"
+		 */
 		decidingRandom = (int)(Math.random() * 4); // 0, 1, 2, 3
-		if (decidingRandom == 0)
-		{
-			for(int h=0; h<3; h++)
-			{
-				for(int i=0; i<9; i++)
-				{
+		if (decidingRandom == 0){
+			for(int h=0; h<3; h++){
+				for(int i=0; i<9; i++){
 					holdingNumber = btempBoard[i][h];
 					btempBoard[i][h] = btempBoard[i][h+3];
 					btempBoard[i][h+3] = holdingNumber;
 				}
 			}
 		}
-		if (decidingRandom == 1)
-		{
-			for(int h=0; h<3; h++)
-			{
-				for(int i=0; i<9; i++)
-				{
+		if (decidingRandom == 1){
+			for(int h=0; h<3; h++){
+				for(int i=0; i<9; i++){
 					holdingNumber = btempBoard[i][h];
 					btempBoard[i][h] = btempBoard[i][h+6];
 					btempBoard[i][h+6] = holdingNumber;
 				}
 			}
 		}
-		if (decidingRandom == 2)
-		{
-			for(int h=3; h<6; h++)
-			{
-				for(int i=0; i<9; i++)
-				{
+		if (decidingRandom == 2){
+			for(int h=3; h<6; h++){
+				for(int i=0; i<9; i++){
 					holdingNumber = btempBoard[i][h];
 					btempBoard[i][h] = btempBoard[i][h+3];
 					btempBoard[i][h+3] = holdingNumber;
@@ -656,29 +576,25 @@ public class SudokuLogic implements IGameLogic {
 			}
 		}
 		
-		// On the overall board, swap the complete placements of two integers
-		// "Wherever an x put a y, and a y an x."
+		/*
+		 *  On the overall board, swap the complete placements of two integers
+		 *  EX: "Wherever an x put a y, and a y an x."
+		 */
 		int randomX = (int)((Math.random() * 9) + 1);
 		int randomY = (int)((Math.random() * 9) + 1);
-		while(randomX == randomY)
-		{
+		while(randomX == randomY){
 			randomY = (int)((Math.random() * 9) + 1);
 		}
-		for(int i =0; i<9; i++)
-		{
-			for(int j = 0; j<9; j++)
-			{
-				if(btempBoard[i][j] == randomX)
-				{
+		for(int i =0; i<9; i++){
+			for(int j = 0; j<9; j++){
+				if(btempBoard[i][j] == randomX){
 					btempBoard[i][j] = randomY;
 				}
-				else if(btempBoard[i][j] == randomY)
-				{
+				else if(btempBoard[i][j] == randomY){
 					btempBoard[i][j] = randomX;
 				}
 			}
 		}
-		
 		return btempBoard;
 	}
 	
@@ -686,38 +602,31 @@ public class SudokuLogic implements IGameLogic {
 	// A player wants to enter a number to the board
 	public static int[][] playerEntry(int num, int row, int col, int array[][], int barray[][])
 	{
+		// UPDATE ME: make these arrays point to class private values
 		// array[][] is the currentBoard
 		// barray[][] is the initialBoard
-		
 		int[][] ctempBoard = new int[9][9];
-		for(int i=0; i <9; i++)
-		{
-			for(int j=0; j<9;j++)
-			{
+		for(int i=0; i <9; i++){
+			for(int j=0; j<9;j++){
 				ctempBoard[i][j] = array[i][j];
 			}
 		}
-		
-		// Before any changes, if invalid, return the board before the change
-		if(num < 1 || num > 9)
-		{
+		// If invalid, return the board before the change
+		if(num < 1 || num > 9){
 			return ctempBoard;
 		}
 		if(barray[row][col] != 0){
 			return ctempBoard;
 		}
-		
 		ctempBoard[row][col] = num;
-		
 		return ctempBoard;
 	}
 	
+	/* Returns an array of a "key" board. Internal uses. */
 	public static int[][] outputBeginningBoard()
 	{
 		String[][] stringBoard = new String[9][9];
 		int[][] someBoard = new int[9][9];
-		
-		// An arbitrary valid board to start from
 		stringBoard[0] = "3 2 9 6 5 7 8 4 1".split(" ");
 		stringBoard[1] = "7 4 5 8 3 1 2 9 6".split(" ");
 		stringBoard[2] = "6 1 8 2 4 9 3 7 5".split(" ");
@@ -727,29 +636,24 @@ public class SudokuLogic implements IGameLogic {
 		stringBoard[6] = "4 3 2 7 1 6 9 5 8".split(" ");
 		stringBoard[7] = "5 8 7 9 2 3 1 6 4".split(" ");
 		stringBoard[8] = "9 6 1 5 8 4 7 3 2".split(" ");
-		
-		//Transfer the string data to int
-		for(int i =0; i<9; i++)
-		{
-			for(int j = 0; j<9; j++)
-			{
+		for(int i =0; i<9; i++){
+			for(int j = 0; j<9; j++){
 				someBoard[i][j] = Integer.parseInt(stringBoard[i][j]);
 			}
 		}
-		
 		return someBoard;
 	}
 	
-	// Returns true if the board is filled completely
-	// Use this to show errors at completion
+	/*
+	 *  Returns TRUE if the board is filled completely
+	 *  Returns FALSE if the board is not filled
+	 *  Used to trigger end of game
+	 */
 	public static boolean isFilled(int array[][])
 	{
-		for(int i =0; i<9; i++)
-		{
-			for(int j = 0; j<9; j++)
-			{
-				if(array[i][j] == 0)
-				{
+		for(int i =0; i<9; i++){
+			for(int j = 0; j<9; j++){
+				if(array[i][j] == 0){
 					return false;
 				}
 			}
@@ -757,14 +661,16 @@ public class SudokuLogic implements IGameLogic {
 		return true;	
 	}
 	
-	// Compares two boards, if difference returns false. Else, returns true.
+	/* 
+	 *  Compares two boards. 
+	 *  Returns FALSE if there is a difference between them
+	 *  Returns TRUE, otherwise
+	 *  Used to generate the errorBoard
+	 */
 	public static boolean isCorrect(int array[][], int barray[][]){
-		for(int i =0; i<9; i++)
-		{
-			for(int j = 0; j<9; j++)
-			{
-				if(array[i][j] != barray[i][j])
-				{
+		for(int i =0; i<9; i++){
+			for(int j = 0; j<9; j++){
+				if(array[i][j] != barray[i][j]){
 					return false;
 				}
 			}
@@ -772,7 +678,9 @@ public class SudokuLogic implements IGameLogic {
 		return true;
 	}
 	
-	
+	/*	For Testing 
+	 *	UPDATE ME: Remove this main function 
+	 */
 	public void main(String[] args) {
 	
 		int[][] completeBoard = new int[9][9];
@@ -791,10 +699,8 @@ public class SudokuLogic implements IGameLogic {
 		outputToConsole(initialBoard);
 		
 		// Initialize currentBoard
-		for(int i =0; i<9; i++)
-		{
-			for(int j = 0; j<9; j++)
-			{
+		for(int i =0; i<9; i++){
+			for(int j = 0; j<9; j++){
 				currentBoard[i][j] = initialBoard[i][j];
 			}
 		}
@@ -809,8 +715,7 @@ public class SudokuLogic implements IGameLogic {
 		int[] tempArray = new int[3];
 		Scanner scanner = new Scanner(System.in);
 		
-		while(!isCorrect(currentBoard, completeBoard) )
-		{
+		while(!isCorrect(currentBoard, completeBoard) ){
 			System.out.print("Entry [row] [col] [num]: ");
 			tempString = scanner.nextLine();
 			tempStringArray = tempString.split(" ");
@@ -827,40 +732,23 @@ public class SudokuLogic implements IGameLogic {
 			}
 		}
 		System.out.print("Board Complete\n");
-		
+
 		scanner.close();
-		
-		
 	}
 
 	@Override
-	public boolean isGameOver() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean isGameOver() { return false;	}
 
 	@Override
-	public boolean isMove(Move m) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean isMove(Move m) {	return false; }
 
 	@Override
-	public boolean isMove(int x, int y, Player p) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean isMove(int x, int y, Player p) { return false; }
 
 	@Override
-	public void saveState(String filename) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
+	public void saveState(String filename) throws Exception { }
 
 	@Override
-	public void loadState(String filename) throws Exception {
-		// TODO Auto-generated method stub
-		
-	} 
+	public void loadState(String filename) throws Exception { } 
 	
 }

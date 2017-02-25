@@ -22,7 +22,7 @@ public class SudokuPiece implements IPiece, Serializable {
 	 * @param p Which player owns this piece.
 	 */
 	public SudokuPiece(final int num) {
-		this.setNum(0);
+		this.setNum(num);
 	}
 
 	private void setNum(int temp){
