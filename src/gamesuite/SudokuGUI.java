@@ -29,8 +29,7 @@ implements MouseListener, MouseMotionListener {
 	/** Image for the piece. */
 	private ImageIcon one, two, three, four, five;
 	private ImageIcon six, seven, eight, nine;
-	private ImageIcon bReg, rKing, rReg;
-
+	
 	/** Board square containers. */
 	private JPanel[][] board;
 
