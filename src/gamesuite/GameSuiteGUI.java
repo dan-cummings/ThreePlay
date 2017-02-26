@@ -20,7 +20,7 @@ import javax.swing.JPanel;
  * View for the user to interact with visual representations of
  * game pieces and boards.
  * @author Daniel Cummings
- * @version 0.1
+ * @version 0.2
  */
 public class GameSuiteGUI extends JPanel {
 
@@ -34,7 +34,7 @@ public class GameSuiteGUI extends JPanel {
 	private IGameLogic game;
 
 	/** Start games buttons. */
-	private JButton checkersButton, reversiButton, sudokuButton;
+	private JButton checkersButton, othelloButton, sudokuButton;
 
 	/** Menu buttons. */
 	private JMenuItem newGames, save, load, exit;
@@ -116,9 +116,10 @@ public class GameSuiteGUI extends JPanel {
 		// initial panel creation.
 		init = new JPanel(new GridLayout(3, 1));
 		init.setPreferredSize(new Dimension(800, 550));
+		wind.setSize(800, 600);
 		// Instantiates buttons.
 		checkersButton = new JButton("Checkers");
-		reversiButton = new JButton("Reversi");
+		othelloButton = new JButton("Othello");
 		sudokuButton = new JButton("Sudoku");
 		
 		// each button gets listener to activate commands when
@@ -129,7 +130,7 @@ public class GameSuiteGUI extends JPanel {
 				checkersUI();
 			}
 		});
-		reversiButton.addActionListener(new ActionListener() {
+		othelloButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
 				othelloUI();
@@ -142,10 +143,11 @@ public class GameSuiteGUI extends JPanel {
 			}
 		});
 		init.add(checkersButton);
-		init.add(reversiButton);
+		init.add(othelloButton);
 		init.add(sudokuButton);
 		this.add(init);
 		this.revalidate();
+		this.repaint();
 	}
 
 	/**
@@ -173,18 +175,12 @@ public class GameSuiteGUI extends JPanel {
 	 * Only called when the checkers button is selected.
 	 */
 	private void checkersUI() {
-		wind.setSize(900, 700);
+		wind.setSize(800, 700);
+		this.setPreferredSize(new Dimension(800, 700));
 		game = new CheckersLogic();
 		checkersPanel = new CheckersGUI((CheckersLogic) game);
 		this.removeAll();
-		this.setLayout(new GridBagLayout());
-		GridBagConstraints gbCon = new GridBagConstraints();
-		gbCon.gridx = 0;
-		gbCon.gridy = 0;
-		gbCon.gridheight = 700;
-		gbCon.gridwidth = 700;
-		gbCon.anchor = GridBagConstraints.NORTHWEST;
-		this.add(checkersPanel, gbCon);
+		this.add(checkersPanel);
 		this.repaint();
 		this.revalidate();
 	}
@@ -193,18 +189,12 @@ public class GameSuiteGUI extends JPanel {
 	 * Method to create the othello board.
 	 */
 	private void othelloUI() {
-		wind.setSize(900, 700);
+		wind.setSize(800, 700);
+		this.setPreferredSize(new Dimension(800, 700));
 		game = new Othello();
 		othelloPanel = new OthelloGUI((Othello) game);
 		this.removeAll();
-		this.setLayout(new GridBagLayout());
-		GridBagConstraints gbCon = new GridBagConstraints();
-		gbCon.gridx = 0;
-		gbCon.gridy = 0;
-		gbCon.gridheight = 700;
-		gbCon.gridwidth = 700;
-		gbCon.anchor = GridBagConstraints.NORTHWEST;
-		this.add(checkersPanel, gbCon);
+		this.add(othelloPanel);
 		this.repaint();
 		this.revalidate();
 	}
@@ -264,10 +254,11 @@ public class GameSuiteGUI extends JPanel {
 					checkersPanel.displayBoard();
 					checkersPanel.resetColor();
 					checkersPanel.showMoveablePieces();
+					checkersPanel.repaint();
 				} else if (game instanceof Othello) {
-					
-				} else {
-					
+					othelloPanel.displayBoard();
+					othelloPanel.showMoves();
+					othelloPanel.repaint();
 				}
 			}
 		} else {

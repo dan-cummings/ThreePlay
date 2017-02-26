@@ -1,6 +1,5 @@
 package gamesuite;
 
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -10,7 +9,10 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 /**
- * 
+ * Logic for the game of checkers. Model allows users to make moves,
+ * forces jumps, controls current player, saves the game, loads the
+ * game, and determines when the game is over. The model is called
+ * from the controller.
  * @author Daniel Cummings
  */
 public class CheckersLogic implements IGameLogic {
@@ -117,11 +119,6 @@ public class CheckersLogic implements IGameLogic {
 		}
 		return false;
 	}
-	
-	@Override
-	public final boolean isMove(final int x, final int y, final Player p) {
-		return false;
-	}
 
 	/**
 	 * Adjusts the current board to represent the board
@@ -170,8 +167,6 @@ public class CheckersLogic implements IGameLogic {
 				//Otherwise switch players and look for moves.
 				jumps.clear();
 				moves.clear();
-				this.nextTurn();
-				this.checkJumps();
 			}
 		//Checks if the piece exists in moves Arraylist.
 		} else if (moves.contains(board[fx][fy])) {
@@ -180,10 +175,6 @@ public class CheckersLogic implements IGameLogic {
 			//clear possible movable pieces.
 			moves.clear();
 			jumps.clear();
-			//change players.
-			this.nextTurn();
-			//check all moves.
-			this.checkJumps();
 		}
 		//Checks whether the piece is a king after move.
 		CheckersPiece piece = board[tx][ty];
@@ -194,7 +185,13 @@ public class CheckersLogic implements IGameLogic {
 				== Player.WHITE && !piece.isKinged()) {
 			piece.setKinged(true);
 		}
+		this.nextTurn();
 		this.gameover = this.isGameOver();
+		this.nextTurn();
+		if (jumps.isEmpty() && moves.isEmpty() && !gameover) {
+			this.nextTurn();
+			this.checkJumps();
+		}
 		this.saved = false;
 	}
 
@@ -415,15 +412,6 @@ public class CheckersLogic implements IGameLogic {
 	}
 	
 	/**
-	 * Getter method for the player who is currently making
-	 * a move.
-	 * @return The current player who can move.
-	 */
-	public Player getCurrentPlayer() {
-		return player;
-	}
-	
-	/**
 	 * Getter for status of game in stalemate.
 	 * @return True if current player cannot move.
 	 */
@@ -459,5 +447,11 @@ public class CheckersLogic implements IGameLogic {
 		this.jumps.clear();
 		this.checkJumps();
 		
+	}
+	
+	/** Unused Method. */
+	@Override
+	public final boolean isMove(final int x, final int y) {
+		return false;
 	}
 }

@@ -9,11 +9,7 @@ import javax.swing.JFrame;
  * @version 0.1
  */
 public final class GameSuite {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
+	
 	/**
 	 * private constructor. (not used)
 	 */
@@ -30,8 +26,7 @@ public final class GameSuite {
 		frame.setSize(800, 600);
 		GameSuiteGUI g = new GameSuiteGUI(frame);
 		frame.getContentPane().add(g);
-		frame.setResizable(true);
+		frame.setResizable(false);
 		frame.setVisible(true);
-		
 	}
 }

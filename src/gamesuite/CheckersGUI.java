@@ -13,7 +13,6 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 /**
@@ -60,6 +59,9 @@ implements MouseListener, MouseMotionListener {
 
 	/** Layered pane for drag. */
 	private JLayeredPane pane;
+	
+	/** Current player. */
+	private String player;
 
 	/**
 	 * Constructor for the checkers GUI.
@@ -79,7 +81,6 @@ implements MouseListener, MouseMotionListener {
 						size * sqSize);
 		// Layout setup
 		this.setLayout(new BorderLayout(30, 15));
-		this.setBorder(new EmptyBorder(20, 25, 15, 15));
 		
 		//Instantiates layered pane.
 		pane = new JLayeredPane();
@@ -98,6 +99,10 @@ implements MouseListener, MouseMotionListener {
 		this.add(pane, BorderLayout.CENTER);
 		this.displayBoard();
 		this.showMoveablePieces();
+		turn = new JLabel();
+		turn.setHorizontalAlignment(size / 2);
+		this.add(turn, BorderLayout.PAGE_START);
+		getPlayer();
 	}
 
 	@Override
@@ -143,6 +148,7 @@ implements MouseListener, MouseMotionListener {
 
 	@Override
 	public final void mouseReleased(final MouseEvent e) {
+		// Checks to make sure piece is being moved.
 		if (piece != null) {
 			piece.setVisible(false);
 			if (pane.getBounds().contains(e.getPoint())) {
@@ -150,9 +156,14 @@ implements MouseListener, MouseMotionListener {
 				toY = Math.floorDiv(e.getX(), sqSize);
 				Move m = new Move(fromX, fromY, toX, toY);
 				if (game.isMove(m)) {
+					//Tells the model the user
+					//wants to move.
 					game.makeMove(m);
+					//Sets visibility.
 					piece.setVisible(true);
+					//removes piece from drag layer.
 					pane.remove(piece);
+					//Check for game over.
 					if (game.gameOver()) {
 						this.handleGameOver();
 					} else if (game.isStalemate()) {
@@ -162,6 +173,8 @@ implements MouseListener, MouseMotionListener {
 			}
 			piece = null;
 		}
+		//redisplay board.
+		this.getPlayer();
 		this.displayBoard();
 		this.resetColor();
 		this.showMoveablePieces();
@@ -309,6 +322,7 @@ implements MouseListener, MouseMotionListener {
 			game.reset();
 			this.displayBoard();
 			this.showMoveablePieces();
+			this.revalidate();
 		} else if (choice == JOptionPane.NO_OPTION) {
 			JOptionPane.showMessageDialog(this,
 					"If you would like to play"
@@ -325,12 +339,6 @@ implements MouseListener, MouseMotionListener {
 	 * Helper method to handle the instance of game over.
 	 */
 	private void handleGameOver() {
-		String player;
-		if (game.getPlayer() == Player.BLACK) {
-			player = "Black";
-		} else {
-			player = "Red";
-		}
 		int choice = JOptionPane.showConfirmDialog(this,
 				"Game ended, player: " + player + " wins, \n"
 				+ "would you like to play again?",
@@ -339,6 +347,7 @@ implements MouseListener, MouseMotionListener {
 			game.reset();
 			this.displayBoard();
 			this.showMoveablePieces();
+			this.revalidate();
 		} else if (choice == JOptionPane.NO_OPTION) {
 			JOptionPane.showMessageDialog(this,
 					"If you would like to play"
@@ -349,6 +358,18 @@ implements MouseListener, MouseMotionListener {
 					"You may load or start a new game",
 					"Game over", JOptionPane.CANCEL_OPTION);
 		}
+	}
+	
+	/**
+	 * Changes text within the turn label to show current player.
+	 */
+	private void getPlayer() {
+		if (game.getPlayer() == Player.BLACK) {
+			player = "Black";
+		} else {
+			player = "Red";
+		}
+		turn.setText("Current Player: " + player);
 	}
 	
 

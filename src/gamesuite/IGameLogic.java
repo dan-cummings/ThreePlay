@@ -29,11 +29,10 @@ public interface IGameLogic {
 	 * Moves vary based on rules of piece movement.
 	 * @param x position of the move checking
 	 * @param y position of the move checking
-	 * @param p current Player making the move
 	 * @return True when the provided move is valid for current board.
 	 * Otherwise the move is invalid, false.
 	 */
-	boolean isMove(int x, int y, Player p);
+	boolean isMove(int x, int y);
 	
 	/**
 	 * Writes objects into the specified file. The data is

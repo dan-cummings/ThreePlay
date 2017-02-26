@@ -27,11 +27,11 @@ public class OthelloPiece implements IPiece {
 	
 	/**
 	 * Sets the owner of the checkers piece.
-	 * @param p The player who owns the piece.
 	 */
 	public void switchOwner() {
-		if(this.owner == Player.NONE) return;
-		
+		if (this.owner == Player.NONE) {
+			return;
+		}
 		if (this.owner == Player.WHITE) {
 			this.owner = Player.BLACK;
 		} else {
@@ -45,48 +45,61 @@ public class OthelloPiece implements IPiece {
 	}
 	
 	@Override
-	public final boolean validMove(Move m, IPiece[][] b){
+	public final boolean validMove(final Move m, final IPiece[][] b) {
 		return false;
 	}
 
 	@Override
-	public final boolean validMove(int x, int y, final IPiece[][] b, Player p) {
+	public final boolean validMove(final int x, final int y,
+			final IPiece[][] b, final Player p) {
 		
 		if (b[x][y].getOwner() != Player.NONE) {
 			return false;
 		}
 		
-		if(b[x + 1][y].getOwner() != Player.NONE && b[x + 1][y].getOwner() != p){
-			for(int i = x + 2; i < b.length; i++){
-				if(b[i][y].getOwner() == Player.NONE) break;
-				if(b[i][y].getOwner() == p){
+		if (b[x + 1][y].getOwner() 
+				!= Player.NONE && b[x + 1][y].getOwner() != p) {
+			for (int i = x + 2; i < b.length; i++) {
+				if (b[i][y].getOwner() == Player.NONE) { 
+					break;
+				}
+				if (b[i][y].getOwner() == p) {
 					return true;
 				}
 			}
 		}
 		
-		if(b[x - 1][y].getOwner() != Player.NONE && b[x - 1][y].getOwner() != p){
-			for(int i = x - 2; i >= 0; i--){
-				if(b[i][y].getOwner() == Player.NONE) break;
-				if(b[i][y].getOwner() == p){
+		if (b[x - 1][y].getOwner() 
+				!= Player.NONE && b[x - 1][y].getOwner() != p) {
+			for (int i = x - 2; i >= 0; i--) {
+				if (b[i][y].getOwner() == Player.NONE) { 
+					break;
+				}
+				if (b[i][y].getOwner() == p) {
 					return true;
 				}
 			}
 		}
 		
-		if(b[x][y + 1].getOwner() != Player.NONE && b[x][y + 1].getOwner() != p){
-			for(int i = y + 2; i < b.length; i++){
-				if(b[x][i].getOwner() == Player.NONE) break;
-				if(b[x][i].getOwner() == p){
+		if (b[x][y + 1].getOwner() 
+				!= Player.NONE && b[x][y + 1].getOwner() != p) {
+			for (int i = y + 2; i < b.length; i++) {
+				if (b[x][i].getOwner() == Player.NONE) {
+					break;
+				}
+				if (b[x][i].getOwner() == p) {
 					return true;
 				}
 			}
 		}
 		
-		if(b[x][y - 1].getOwner() != Player.NONE && b[x][y - 1].getOwner() != p){
-			for(int i = y - 2; i >= 0; i--){
-				if(b[x][i].getOwner() == Player.NONE) break;
-				if(b[x][i].getOwner() == p){
+		if (b[x][y - 1].getOwner() 
+				!= Player.NONE && b[x][y - 1].getOwner() != p) {
+			for (int i = y - 2; i >= 0; i--) {
+				if (b[x][i].getOwner() == Player.NONE) {
+					break;
+				}
+				if (b[x][i].getOwner() == p) {
 					return true;
 				}
 			}
@@ -94,11 +107,16 @@ public class OthelloPiece implements IPiece {
 		
 		int j = y + 2;
 		
-		if(b[x + 1][y + 1].getOwner() != Player.NONE && b[x + 1][y + 1].getOwner() != p){
-			for(int i = x + 2; i < b.length; i++){
-				if(j >= b.length) break;
-				if(b[i][j].getOwner() == Player.NONE) break;
-				if(b[i][j].getOwner() == p){
+		if (b[x + 1][y + 1].getOwner() 
+			!= Player.NONE && b[x + 1][y + 1].getOwner() != p) {
+			for (int i = x + 2; i < b.length; i++) {
+				if (j >= b.length) {
+					break;
+				}
+				if (b[i][j].getOwner() == Player.NONE) {
+					break;
+				}
+				if (b[i][j].getOwner() == p) {
 					return true;
 				}
 				j++;
@@ -107,11 +125,16 @@ public class OthelloPiece implements IPiece {
 		
 		j = y + 2;
 		
-		if(b[x - 1][y + 1].getOwner() != Player.NONE && b[x - 1][y + 1].getOwner() != p){
-			for(int i = x - 2; i >= 0; i--){
-				if(j >= b.length) break;
-				if(b[i][j].getOwner() == Player.NONE) break;
-				if(b[i][j].getOwner() == p){
+		if (b[x - 1][y + 1].getOwner() 
+			!= Player.NONE && b[x - 1][y + 1].getOwner() != p) {
+			for (int i = x - 2; i >= 0; i--) {
+				if (j >= b.length) {
+					break;
+				}
+				if (b[i][j].getOwner() == Player.NONE) {
+					break;
+				}
+				if (b[i][j].getOwner() == p) {
 					return true;
 				}
 				j++;
@@ -120,11 +143,16 @@ public class OthelloPiece implements IPiece {
 		
 		j = y - 2;
 		
-		if(b[x - 1][y - 1].getOwner() != Player.NONE && b[x - 1][y - 1].getOwner() != p){
-			for(int i = x - 2; i >= 0 ; i--){
-				if(j < 0) break;
-				if(b[i][j].getOwner() == Player.NONE) break;
-				if(b[i][j].getOwner() == p){
+		if (b[x - 1][y - 1].getOwner() 
+			!= Player.NONE && b[x - 1][y - 1].getOwner() != p) {
+			for (int i = x - 2; i >= 0; i--) {
+				if (j < 0) {
+					break;
+				}
+				if (b[i][j].getOwner() == Player.NONE) {
+					break;
+				}
+				if (b[i][j].getOwner() == p) {
 					return true;
 				}
 				j--;
@@ -133,11 +161,16 @@ public class OthelloPiece implements IPiece {
 		
 		j = y - 2;
 		
-		if(b[x + 1][y - 1].getOwner() != Player.NONE && b[x + 1][y - 1].getOwner() != p){
-			for(int i = x + 2; i < b.length; i++){
-				if(j < 0) break;
-				if(b[i][j].getOwner() == Player.NONE) break;
-				if(b[i][j].getOwner() == p){
+		if (b[x + 1][y - 1].getOwner() 
+			!= Player.NONE && b[x + 1][y - 1].getOwner() != p) {
+			for (int i = x + 2; i < b.length; i++) {
+				if (j < 0) {
+					break;
+				}
+				if (b[i][j].getOwner() == Player.NONE) {
+					break;
+				}
+				if (b[i][j].getOwner() == p) {
 					return true;
 				}
 				j--;

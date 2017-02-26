@@ -14,7 +14,6 @@ import java.util.Map;
 /** 
  * 
  * @author Jaden Sella
- *
  */
 public class Othello implements IGameLogic {
 	
@@ -43,6 +42,9 @@ public class Othello implements IGameLogic {
 	private final int[][] adjacentFields = {{-1, -1}, {0, -1},
 			{1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}};
 	
+	/** Count for the number of pieces for player. */
+	private int whiteCount, blackCount;
+	
 	/** 
 	 * Constructor for Othello, begins Othello game. 
 	 */
@@ -52,6 +54,7 @@ public class Othello implements IGameLogic {
 		this.createBoard();
 		this.player = Player.BLACK;
 		this.moves = new ArrayList<IPiece>();
+		this.countPieces();
 	}
 	
 	/**
@@ -78,9 +81,10 @@ public class Othello implements IGameLogic {
 		// then checks if that place has a valid move by either player
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				if (this.board[i][j].getOwner() == Player.NONE) {
-					if (board[i][j].validMove(i, j, board, Player.WHITE)
-							|| board[i][j].validMove(i, j, board, Player.BLACK)){
+				if (this.board[i][j].getOwner()
+						== Player.NONE) {
+					if (board[i][j].validMove(
+							i, j, board, player)) {
 						finished = false;
 						break;
 					}
@@ -96,8 +100,8 @@ public class Othello implements IGameLogic {
 	}
 	
 	@Override
-	public final boolean isMove(int x, int y, Player p) {
-		if (board[x][y].validMove(x, y, board, p)) {
+	public final boolean isMove(final int x, final int y) {
+		if (board[x][y].validMove(x, y, board, player)) {
 			return true;
 		}
 		return false;
@@ -108,21 +112,20 @@ public class Othello implements IGameLogic {
 	 * after the move has been made.
 	 * @param x position of the move checking
 	 * @param y position of the move checking
-	 * @param p current Player making the move
 	 */
-	public void makeMove(int x, int y, Player p) {
-		if (!this.isMove(x, y, p)) {
+	public void makeMove(final int x, final int y) {
+		if (!this.isMove(x, y)) {
 			return;
 		}
 		int j, m, n;
 		if (board[x + 1][y].getOwner() 
 				!= Player.NONE
-				&& board[x + 1][y].getOwner() != p) {
+				&& board[x + 1][y].getOwner() != player) {
 			for (int i = x + 2; i < size; i++) {
 				if (board[i][y].getOwner() == Player.NONE) {
 					break;
 				}
-				if (board[i][y].getOwner() == p) {
+				if (board[i][y].getOwner() == player) {
 					for (j = i - 1; j > x; j--) {
 						board[j][y].switchOwner();
 					}
@@ -130,10 +133,14 @@ public class Othello implements IGameLogic {
 				}
 			}
 		}
-		if (board[x - 1][y].getOwner() != Player.NONE && board[x - 1][y].getOwner() != p) {
+		if (board[x - 1][y].getOwner()
+				!= Player.NONE && board[x - 1][y].getOwner() 
+				!= player) {
 			for (int i = x - 2; i >= 0; i--) {
-				if (board[i][y].getOwner() == Player.NONE) break;
-				if (board[i][y].getOwner() == p) {
+				if (board[i][y].getOwner() == Player.NONE) {
+					break;
+				}
+				if (board[i][y].getOwner() == player) {
 					for (j = i + 1; j < x; j++) {
 						board[j][y].switchOwner();
 					}
@@ -143,12 +150,12 @@ public class Othello implements IGameLogic {
 		}
 		if (board[x][y + 1].getOwner() 
 				!= Player.NONE 
-				&& board[x][y + 1].getOwner() != p) {
+				&& board[x][y + 1].getOwner() != player) {
 			for (int i = y + 2; i < size; i++) {
 				if (board[x][i].getOwner() == Player.NONE) { 
 					break;
 				}
-				if (board[x][i].getOwner() == p) {
+				if (board[x][i].getOwner() == player) {
 					for (j = i - 1; j > y; j--) {
 						board[x][j].switchOwner();
 					}
@@ -159,12 +166,12 @@ public class Othello implements IGameLogic {
 		
 		if (board[x][y - 1].getOwner() 
 				!= Player.NONE 
-				&& board[x][y - 1].getOwner() != p) {
+				&& board[x][y - 1].getOwner() != player) {
 			for (int i = y - 2; i >= 0; i--) {
 				if (board[x][i].getOwner() == Player.NONE) {
 					break;
 				}
-				if (board[x][i].getOwner() == p) {
+				if (board[x][i].getOwner() == player) {
 					for (j = i + 1; j < y; j++) {
 						board[x][j].switchOwner();
 					}
@@ -175,7 +182,7 @@ public class Othello implements IGameLogic {
 		j = y + 2;
 		if (board[x + 1][y + 1].getOwner()
 				!= Player.NONE 
-				&& board[x + 1][y + 1].getOwner() != p) {
+				&& board[x + 1][y + 1].getOwner() != player) {
 			for (int i = x + 2; i < size; i++) {
 				if (j >= size) {
 					break;
@@ -183,7 +190,7 @@ public class Othello implements IGameLogic {
 				if (board[i][j].getOwner() == Player.NONE) {
 					break;
 				}
-				if (board[i][j].getOwner() == p) {
+				if (board[i][j].getOwner() == player) {
 					m = i - 1;
 					for (n = i - 1; n > y; n--) {
 						if (m == x) {
@@ -200,7 +207,7 @@ public class Othello implements IGameLogic {
 		j = y + 2;
 		if (board[x - 1][y + 1].getOwner()
 				!= Player.NONE 
-				&& board[x - 1][y + 1].getOwner() != p) {
+				&& board[x - 1][y + 1].getOwner() != player) {
 			for (int i = x - 2; i >= 0; i--) {
 				if (j >= size) {
 					break;
@@ -208,7 +215,7 @@ public class Othello implements IGameLogic {
 				if (board[i][j].getOwner() == Player.NONE) {
 					break;
 				}
-				if (board[i][j].getOwner() == p) {
+				if (board[i][j].getOwner() == player) {
 					m = i + 1;
 					for (n = i - 1; n > y; n--) {
 						if (m == x) { 
@@ -225,7 +232,7 @@ public class Othello implements IGameLogic {
 		j = y - 2;
 		if (board[x - 1][y - 1].getOwner() 
 				!= Player.NONE 
-				&& board[x - 1][y - 1].getOwner() != p) {
+				&& board[x - 1][y - 1].getOwner() != player) {
 			for (int i = x - 2; i >= 0; i--) {
 				if (j < 0) {
 					break;
@@ -233,7 +240,7 @@ public class Othello implements IGameLogic {
 				if (board[i][j].getOwner() == Player.NONE) {
 					break;
 				}
-				if (board[i][j].getOwner() == p) {
+				if (board[i][j].getOwner() == player) {
 					m = i + 1;
 					for (n = i + 1; n < y; n++) {
 						if (m == x) {
@@ -250,7 +257,7 @@ public class Othello implements IGameLogic {
 		j = y - 2;
 		if (board[x + 1][y - 1].getOwner() 
 				!= Player.NONE 
-				&& board[x + 1][y - 1].getOwner() != p) {
+				&& board[x + 1][y - 1].getOwner() != player) {
 			for (int i = x + 2; i < board.length; i++) {
 				if (j < 0) {
 					break;
@@ -258,7 +265,7 @@ public class Othello implements IGameLogic {
 				if (board[i][j].getOwner() == Player.NONE) {
 					break;
 				}
-				if (board[i][j].getOwner() == p) {
+				if (board[i][j].getOwner() == player) {
 					m = i - 1;
 					for (n = i + 1; n < y; n++) {
 						if (m == x) { 
@@ -319,5 +326,63 @@ public class Othello implements IGameLogic {
 		} finally {
 			
 		}
+	}
+
+	/**
+	 * Getter method to inform the display about the status of
+	 * the piece at the given location.
+	 * @param x Vertical position of the piece.
+	 * @param y Horizontal position of the piece.
+	 * @return Piece at given location.
+	 */
+	public OthelloPiece getPiece(final int x, final int y) {
+		return board[x][y];
+	}
+	
+	/**
+	 * Switches current player to allow for moves.
+	 */
+	public void changePlayer() {
+		if (player == Player.BLACK) {
+			player = Player.WHITE;
+		} else {
+			player = Player.BLACK;
+		}
+	}
+	
+	/**
+	 * Counts the number of pieces that each player has on the board.
+	 */
+	private void countPieces() {
+		whiteCount = 0;
+		blackCount = 0;
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				if (board[x][y] != null) {
+					if (board[x][y].getOwner() 
+							== Player.WHITE) {
+						whiteCount++;
+					} else {
+						blackCount++;
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Getter method for the number of white pieces on the board.
+	 * @return number of white pieces on the board.
+	 */
+	public int getWhiteCount() {
+		return this.whiteCount;
+	}
+	
+	/**
+	 * Getter method for the number of black pieces on the board.
+	 * @return number of black piecs on the board.
+	 */
+	public int getBlackCount() {
+		return this.blackCount;
 	}
 }

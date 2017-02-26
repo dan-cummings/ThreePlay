@@ -51,7 +51,7 @@ implements MouseListener, MouseMotionListener {
 
 	/**
 	 * Constructor for the checkers GUI.
-	 * @param game1 Sudoku game logic.
+	 * @param gamel Sudoku game logic.
 	 */
 	public SudokuGUI(final SudokuLogic gamel) {
 		// Instantiate game objects
@@ -109,7 +109,7 @@ implements MouseListener, MouseMotionListener {
 	private void showErrors() {
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
-				if (game.isError(y,x)) {
+				if (game.isError(y, x)) {
 					board[x][y].setBackground(Color.YELLOW);
 				}
 			}
