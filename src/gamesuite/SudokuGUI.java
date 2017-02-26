@@ -59,6 +59,8 @@ implements MouseListener, MouseMotionListener {
 		Color squareBorderColor = new Color(210,210,210);
 		// Grey background of initial squares
 		Color initialColor = new Color(225,225,225);
+		// Green background of initial squares
+		Color selectedColor = new Color(210,250,220);
 
 	/**
 	 * Constructor for the checkers GUI.
@@ -112,6 +114,8 @@ implements MouseListener, MouseMotionListener {
 		squareX = Math.floorDiv(yPos, 60);
 		squareY = Math.floorDiv(xPos, 60);
 		
+		game.clickedOn(squareY,squareX);
+		
 		// on click of piece, SudokuPiece[x][y].clickedOn()
 		// SudokuPiece.isSelected() returns true if currently selected
 		
@@ -133,7 +137,9 @@ implements MouseListener, MouseMotionListener {
 	}
 	
 	@Override
-	public final void mouseReleased(final MouseEvent e) { }
+	public final void mouseReleased(final MouseEvent e) { 
+		this.displayBoard();
+	}
 	
 	/**
 	 * Creates the board out of JPanels and places them onto the
@@ -169,10 +175,33 @@ implements MouseListener, MouseMotionListener {
 				if(game.isInitial(y,x)){
 					board[x][y].setBackground(initialColor);
 				}
+				
+				// Setting specific border sizes for the thicker middle lines
+				board[x][y].setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, squareBorderColor));
+				if(x == 3 || x == 6){
+					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 1, 1, 1, squareBorderColor));
+				}
+				if(y == 3 || y == 6){
+					board[x][y].setBorder(BorderFactory.createMatteBorder(1, 3, 1, 1, squareBorderColor));
+				}
+				if(x == 3 && y == 3){
+					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
+				}
+				if(x == 3 && y == 6){
+					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
+				}
+				if(x == 6 && y == 3){
+					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
+				}
+				if(x == 6 && y == 6){
+					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
+				}
+				
+				
 				numberLabel.setHorizontalAlignment(SwingConstants.CENTER);
 				numberLabel.setVerticalAlignment(SwingConstants.CENTER);
 				
-				board[x][y].setBorder(BorderFactory.createLineBorder(squareBorderColor));
+				//board[x][y].setBorder(BorderFactory.createLineBorder(squareBorderColor));
 				board[x][y].add(numberLabel);
 				boardPanel.add(board[x][y]);
 			}
@@ -183,19 +212,72 @@ implements MouseListener, MouseMotionListener {
 	 * Creates label for the pieces and places them into the
 	 * proper position on the board.
 	 */
-	/*
+	
 	private void displayBoard() {
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				board[x][y].removeAll();
-				if (game.getNumber(x,y) == 1) {
-					board[x][y].add(new JLabel(one));
+				JLabel numberLabel = new JLabel();
+				numberLabel.setFont(new Font("Arial", 0, 30));
+				board[x][y].setBackground(Color.white);
+				if (game.getNumber(y,x) == 1) {
+					numberLabel.setText("1");
+				} else if(game.getNumber(y,x) == 2){
+					numberLabel.setText("2");
+				} else if(game.getNumber(y,x) == 3){
+					numberLabel.setText("3");
+				} else if(game.getNumber(y,x) == 4){
+					numberLabel.setText("4");
+				} else if(game.getNumber(y,x) == 5){
+					numberLabel.setText("5");
+				} else if(game.getNumber(y,x) == 6){
+					numberLabel.setText("6");
+				} else if(game.getNumber(y,x) == 7){
+					numberLabel.setText("7");
+				} else if(game.getNumber(y,x) == 8){
+					numberLabel.setText("8");
+				} else if(game.getNumber(y,x) == 9){
+					numberLabel.setText("9");
 				}
+				if(game.isInitial(y,x)){
+					board[x][y].setBackground(initialColor);
+				}
+				if(!game.isInitial(y,x) && x == game.currentClickedX() && y == game.currentClickedY()){
+					board[x][y].setBackground(selectedColor);
+				}
+				
+				// Setting specific border sizes for the thicker middle lines
+				board[x][y].setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, squareBorderColor));
+				if(x == 3 || x == 6){
+					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 1, 1, 1, squareBorderColor));
+				}
+				if(y == 3 || y == 6){
+					board[x][y].setBorder(BorderFactory.createMatteBorder(1, 3, 1, 1, squareBorderColor));
+				}
+				if(x == 3 && y == 3){
+					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
+				}
+				if(x == 3 && y == 6){
+					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
+				}
+				if(x == 6 && y == 3){
+					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
+				}
+				if(x == 6 && y == 6){
+					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
+				}
+				
+				numberLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				numberLabel.setVerticalAlignment(SwingConstants.CENTER);
+				
+				//board[x][y].setBorder(BorderFactory.createLineBorder(squareBorderColor));
+				board[x][y].add(numberLabel);
+				boardPanel.add(board[x][y]);
 			}
 		}
 		boardPanel.revalidate();
 	}
-	*/
+	
 	
 	/*  Sets all selected boxes back to unselected 
 	public boolean clearAllSelected()

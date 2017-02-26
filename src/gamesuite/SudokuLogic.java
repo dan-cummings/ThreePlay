@@ -76,6 +76,7 @@ public class SudokuLogic implements IGameLogic {
 	private boolean[][] errorsBoard = new boolean[9][9];
 	public boolean gameComplete;
 	private int size;
+	private int clickedX, clickedY;
 	
 	/* Initializes completeBoard, initialBoard, currentBoard and errorsBoard */
 	public SudokuLogic() {
@@ -281,9 +282,18 @@ public class SudokuLogic implements IGameLogic {
 	
 	// Clicked on piece
 	public void clickedOn(int row, int col){
+		clickedX = col;
+		clickedY = row;
 		
-		// UPDATE ME
-		//(SudokuPiece)board[row][col].clickedOn();
+	}
+	
+	// Returns the col of the current square selected
+	public int currentClickedX(){
+		return clickedX;
+	}
+	// Returns the row of the current square selected
+	public int currentClickedY(){
+		return clickedY;
 	}
 	
 	// Returns if the piece is selected
