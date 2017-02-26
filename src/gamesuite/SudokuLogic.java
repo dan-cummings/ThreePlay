@@ -120,7 +120,7 @@ public class SudokuLogic implements IGameLogic {
 	private void initializeGame(){
 		this.board = new SudokuPiece[9][9];
 		this.completeBoard = generateBoard();
-		this.initialBoard = generateInitialBoard(5);
+		this.initialBoard = generateInitialBoard(55);
 		for(int i=0;i<9;i++){
 			for(int j=0;j<9;j++){
 				this.errorsBoard[i][j] = false;
@@ -128,7 +128,6 @@ public class SudokuLogic implements IGameLogic {
 				board[i][j] = new SudokuPiece(currentBoard[i][j]);
 			}
 		}
-		
 	}
 	
 	/* Generates the initialBoard */
@@ -136,10 +135,8 @@ public class SudokuLogic implements IGameLogic {
 	{
 		int[][] atempBoard = new int[9][9];
 		// Set all the values of atempBoard == array
-		for(int i =0; i<9; i++)
-		{
-			for(int j = 0; j<9; j++)
-			{
+		for(int i =0; i<9; i++){
+			for(int j = 0; j<9; j++){
 				atempBoard[i][j] = this.completeBoard[i][j];
 			}
 		}
@@ -173,32 +170,26 @@ public class SudokuLogic implements IGameLogic {
 			 */
 			counter = 0;
 			shouldLoop = true;
-			while(shouldLoop)
-			{
+			while(shouldLoop){
 				rowRandom = (int)(Math.random() * 9);
 				colRandom = (int)(Math.random() * 9);
 				numberHolder = atempBoard[rowRandom][colRandom];
-				if(atempBoard[rowRandom][colRandom] != 0)
-				{
+				if(atempBoard[rowRandom][colRandom] != 0){
 					atempBoard[rowRandom][colRandom] = 0;
-					if (solveBoard(atempBoard))
-					{
+					if (solveBoard(atempBoard)){
 						removedCount = removedCount + 1;
 						shouldLoop = false;
 						// Testing
 						// System.out.println("Just Removed ["+ rowRandom + "]["+ colRandom +"]: " + numberHolder);
 						// System.out.println("Remove Count: " + removedCount);
 					}
-					else
-					{
+					else{
 						atempBoard[rowRandom][colRandom] = numberHolder;
 						counter = counter + 1;
-						if (counter > 90)
-						{
+						if (counter > 90){
 							shouldRepeat = true;
 							shouldLoop = false;
-							if(repeatCount > 10)
-							{
+							if(repeatCount > 10){
 								System.out.print("ERROR: unable to remove " + removeQuantity + " squares.\n");
 								System.out.print("Removed " + removedCount + " squares.\n");
 								return atempBoard;

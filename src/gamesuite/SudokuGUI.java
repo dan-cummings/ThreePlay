@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -15,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
@@ -39,6 +41,9 @@ implements MouseListener, MouseMotionListener {
 
 	/** Position of piece on board. */
 	private int xPos, yPos;
+	
+	/** integer values for location of chosen square. */
+	private int squareX, squareY;
 
 	/** Size of each square. */
 	private final int size, sqSize;
@@ -48,6 +53,12 @@ implements MouseListener, MouseMotionListener {
 
 	/** Layered pane for drag. */
 	private JLayeredPane pane;
+	
+	/** Settings of colors for the board */
+		// Light-grey square boarders
+		Color squareBorderColor = new Color(210,210,210);
+		// Grey background of initial squares
+		Color initialColor = new Color(225,225,225);
 
 	/**
 	 * Constructor for the checkers GUI.
@@ -97,10 +108,15 @@ implements MouseListener, MouseMotionListener {
 		xPos = e.getX();
 		yPos = e.getY();
 		
+		//gets the integer 0-7 location of piece in 2d array.
+		squareX = Math.floorDiv(yPos, 60);
+		squareY = Math.floorDiv(xPos, 60);
+		
 		// on click of piece, SudokuPiece[x][y].clickedOn()
 		// SudokuPiece.isSelected() returns true if currently selected
 		
-		System.out.print("xPos: " + xPos + " yPos: " + yPos);
+		System.out.print("xPos: " + xPos + " yPos: " + yPos + "\n");
+		System.out.print("squareX: " + squareX + " squareY: " + squareY + "\n");
 	}
 
 	/**
@@ -129,6 +145,7 @@ implements MouseListener, MouseMotionListener {
 			for (int y = 0; y < size; y++) {
 				board[x][y] = new JPanel(new BorderLayout());
 				JLabel numberLabel = new JLabel();
+				numberLabel.setFont(new Font("Arial", 0, 30));
 				board[x][y].setBackground(Color.white);
 				if (game.getNumber(y,x) == 1) {
 					numberLabel.setText("1");
@@ -148,11 +165,15 @@ implements MouseListener, MouseMotionListener {
 					numberLabel.setText("8");
 				} else if(game.getNumber(y,x) == 9){
 					numberLabel.setText("9");
-				} else if(game.isInitial(y,x)){
-					board[x][y].setBackground(Color.lightGray);
 				}
-				board[x][y].setBorder(BorderFactory.createLineBorder(Color.black));
-				boardPanel.add(numberLabel);
+				if(game.isInitial(y,x)){
+					board[x][y].setBackground(initialColor);
+				}
+				numberLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				numberLabel.setVerticalAlignment(SwingConstants.CENTER);
+				
+				board[x][y].setBorder(BorderFactory.createLineBorder(squareBorderColor));
+				board[x][y].add(numberLabel);
 				boardPanel.add(board[x][y]);
 			}
 		}
