@@ -68,7 +68,7 @@ import java.util.Scanner;
 public class SudokuLogic implements IGameLogic {
 	
 	/** Current board status of the game. */
-	private IPiece[][] board;
+	private SudokuPiece[][] board;
 	private Player player;
 	private int[][] completeBoard = new int[9][9];
 	private int[][] initialBoard = new int[9][9];
@@ -92,8 +92,8 @@ public class SudokuLogic implements IGameLogic {
 	
 	/* Returns INT of the IPiece at row, col. */
 	public int getNumber(int row, int col){
-		return currentBoard[row][col];
-		//return ((SudokuPiece) this.board[row][col]).getNum();
+		//return currentBoard[row][col];
+		return this.board[row][col].getNum();
 	}
 	
 	/* Returns TRUE if a square at row, col, was initially set */
@@ -102,6 +102,14 @@ public class SudokuLogic implements IGameLogic {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Changes the selected pieces number.
+	 * @param num number to change selected piece to.
+	 */
+	public void setNumber(final int num) {
+		board[clickedX][clickedY].setNum(num);
 	}
 	
 	/* Returns TRUE if a square at row, col, is not parallel with the completeBoard */
@@ -122,8 +130,8 @@ public class SudokuLogic implements IGameLogic {
 		this.board = new SudokuPiece[9][9];
 		this.completeBoard = generateBoard();
 		this.initialBoard = generateInitialBoard(55);
-		for(int i=0;i<9;i++){
-			for(int j=0;j<9;j++){
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
 				this.errorsBoard[i][j] = false;
 				this.currentBoard[i][j] = initialBoard[i][j];
 				board[i][j] = new SudokuPiece(currentBoard[i][j]);
@@ -131,13 +139,12 @@ public class SudokuLogic implements IGameLogic {
 		}
 	}
 	
-	/* Generates the initialBoard */
-	public int[][] generateInitialBoard(int removeQuantity)
-	{
+	/** Generates the initialBoard */
+	public int[][] generateInitialBoard(int removeQuantity) {
 		int[][] atempBoard = new int[9][9];
 		// Set all the values of atempBoard == array
-		for(int i =0; i<9; i++){
-			for(int j = 0; j<9; j++){
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
 				atempBoard[i][j] = this.completeBoard[i][j];
 			}
 		}
@@ -150,13 +157,13 @@ public class SudokuLogic implements IGameLogic {
 		boolean shouldLoop;
 		boolean shouldRepeat = false;
 		
-		while(removedCount < removeQuantity){
+		while (removedCount < removeQuantity) {
 			// Starts again if comes to dead end
-			if(shouldRepeat){
+			if (shouldRepeat) {
 				shouldRepeat = false;
 				removedCount = 0;
-				for(int i =0; i<9; i++){
-					for(int j = 0; j<9; j++){
+				for (int i = 0; i < 9; i++) {
+					for (int j = 0; j < 9; j++) {
 						atempBoard[i][j] = this.completeBoard[i][j];
 					}
 				}
@@ -171,20 +178,19 @@ public class SudokuLogic implements IGameLogic {
 			 */
 			counter = 0;
 			shouldLoop = true;
-			while(shouldLoop){
-				rowRandom = (int)(Math.random() * 9);
-				colRandom = (int)(Math.random() * 9);
+			while (shouldLoop) {
+				rowRandom = (int) (Math.random() * 9);
+				colRandom = (int) (Math.random() * 9);
 				numberHolder = atempBoard[rowRandom][colRandom];
-				if(atempBoard[rowRandom][colRandom] != 0){
+				if (atempBoard[rowRandom][colRandom] != 0) {
 					atempBoard[rowRandom][colRandom] = 0;
-					if (solveBoard(atempBoard)){
+					if (solveBoard(atempBoard)) {
 						removedCount = removedCount + 1;
 						shouldLoop = false;
 						// Testing
 						// System.out.println("Just Removed ["+ rowRandom + "]["+ colRandom +"]: " + numberHolder);
 						// System.out.println("Remove Count: " + removedCount);
-					}
-					else{
+					} else {
 						atempBoard[rowRandom][colRandom] = numberHolder;
 						counter = counter + 1;
 						if (counter > 90){
@@ -213,12 +219,11 @@ public class SudokuLogic implements IGameLogic {
 		return atempBoard;
 	}
 	
-	public static boolean solveBoard(int array[][])
-	{
+	public static boolean solveBoard(int array[][]){
 		int[][] tempBoard = new int[9][9];
 		// Set all values of tempBoard == array
-		for(int i =0; i<9; i++){
-			for(int j = 0; j<9; j++){
+		for(int i = 0; i < 9; i++) {
+			for(int j = 0; j < 9; j++) {
 				tempBoard[i][j] = array[i][j];
 			}
 		}
@@ -230,7 +235,7 @@ public class SudokuLogic implements IGameLogic {
 		// solving come into play
 		boolean solved = false;
 		boolean madeProgress = false;
-		while(solved == false){
+		while (solved == false) {
 			// To make sure progress is being made
 			madeProgress = false;
 			
@@ -662,9 +667,9 @@ public class SudokuLogic implements IGameLogic {
 	 */
 	public boolean isFilled()
 	{
-		for(int i =0; i<9; i++){
-			for(int j = 0; j<9; j++){
-				if(currentBoard[i][j] == 0){
+		for (int i =0; i<9; i++) {
+			for (int j = 0; j<9; j++) {
+				if (currentBoard[i][j] == 0) {
 					return false;
 				}
 			}
@@ -679,9 +684,9 @@ public class SudokuLogic implements IGameLogic {
 	 *  Used to generate the errorBoard
 	 */
 	public boolean isCorrect(){
-		for(int i =0; i<9; i++){
-			for(int j = 0; j<9; j++){
-				if(currentBoard[i][j] != completeBoard[i][j]){
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (currentBoard[i][j] != completeBoard[i][j]) {
 					return false;
 				}
 			}
@@ -758,7 +763,7 @@ public class SudokuLogic implements IGameLogic {
 	public boolean isMove(Move m) {	return false; }
 
 	@Override
-	public boolean isMove(int x, int y, Player p) { return false; }
+	public boolean isMove(int x, int y) { return false; }
 
 	@Override
 	public void saveState(String filename) throws Exception { }

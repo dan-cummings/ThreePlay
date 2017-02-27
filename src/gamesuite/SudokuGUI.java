@@ -7,6 +7,8 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -20,6 +22,8 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
 
 /**
  * Panel containing all of the information for the Checkers game.
@@ -28,7 +32,7 @@ import javax.swing.border.EtchedBorder;
  * @version 0.1
  */
 public class SudokuGUI extends JPanel 
-implements MouseListener, MouseMotionListener {
+implements MouseListener, KeyListener {
 	
 	/** Board square containers. */
 	private JPanel[][] board;
@@ -54,19 +58,21 @@ implements MouseListener, MouseMotionListener {
 	/** Layered pane for drag. */
 	private JLayeredPane pane;
 	
-	/** Settings of colors for the board */
-		// Light-grey square boarders
-		Color squareBorderColor = new Color(210,210,210);
-		// Grey background of initial squares
-		Color initialColor = new Color(225,225,225);
-		// Green background of initial squares
-		Color selectedColor = new Color(210,250,220);
+	/** Settings of colors for the board. */
+	/** Light-grey square boarders. */
+	private final Color squareBorderColor = new Color(210, 210, 210);
+	/** Grey background of initial squares. */
+	private final Color initialColor = new Color(225, 225, 225);
+	/** Green background of initial squares. */
+	private final Color selectedColor = new Color(210, 250, 220);
 
 	/**
 	 * Constructor for the checkers GUI.
 	 * @param gamel Sudoku game logic.
 	 */
 	public SudokuGUI(final SudokuLogic gamel) {
+		this.setFocusable(true);
+		this.addKeyListener(this);
 		// Instantiate game objects
 		this.game = gamel;
 		this.size = gamel.getSize();
@@ -77,14 +83,10 @@ implements MouseListener, MouseMotionListener {
 						size * sqSize);
 		// Layout setup
 		this.setLayout(new BorderLayout(30, 15));
-		this.setBorder(new EmptyBorder(20, 25, 15, 15));
 		
 		//Instantiates layered pane.
-		pane = new JLayeredPane();
-		pane.setPreferredSize(panelSize);
-		pane.addMouseListener(this);
-		pane.addMouseMotionListener(this);
-		
+		this.setPreferredSize(panelSize);
+		this.addMouseListener(this);
 		// Create panel to store board with grid layout of
 		// board size.
 		boardPanel = new JPanel(new GridLayout(size, size));
@@ -92,17 +94,16 @@ implements MouseListener, MouseMotionListener {
 		boardPanel.setBounds(0, 0, panelSize.width, panelSize.height);
 		this.board = new JPanel[size][size];
 		this.createBoard();
-		pane.add(boardPanel, JLayeredPane.DEFAULT_LAYER);
-		this.add(pane, BorderLayout.CENTER);
-		//this.displayBoard();
+		this.add(boardPanel, BorderLayout.CENTER);
 		this.revalidate();
 	}
-
+	
 	@Override
-	public final void mousePressed(final MouseEvent e) { 
+	public final void mouseClicked(final MouseEvent e) { 
 		if (game.isGameOver()) {
 			return;
 		}
+		
 		if (game.isFilled()) {
 			showErrors();
 		}
@@ -110,11 +111,16 @@ implements MouseListener, MouseMotionListener {
 		xPos = e.getX();
 		yPos = e.getY();
 		
-		//gets the integer 0-7 location of piece in 2d array.
+		//gets the integer 0-8 location of piece in 2d array.
 		squareX = Math.floorDiv(yPos, 60);
 		squareY = Math.floorDiv(xPos, 60);
 		
-		game.clickedOn(squareY,squareX);
+		if (!game.isInitial(squareY, squareX)) {
+			game.clickedOn(squareY, squareX);
+			board[squareX][squareY].setBackground(selectedColor);
+		} else {
+			return;
+		}
 		
 		// on click of piece, SudokuPiece[x][y].clickedOn()
 		// SudokuPiece.isSelected() returns true if currently selected
@@ -123,8 +129,8 @@ implements MouseListener, MouseMotionListener {
 		System.out.print("squareX: " + squareX + " squareY: " + squareY + "\n");
 	}
 
-	/**
-	 * Method to show errors on the Board
+	/** 
+	 * Method to show errors on the Board.
 	 */
 	private void showErrors() {
 		for (int x = 0; x < size; x++) {
@@ -136,72 +142,59 @@ implements MouseListener, MouseMotionListener {
 		}
 	}
 	
-	@Override
-	public final void mouseReleased(final MouseEvent e) { 
-		this.displayBoard();
-	}
-	
 	/**
 	 * Creates the board out of JPanels and places them onto the
 	 * JPanel to hold the board.
 	 */
 	private void createBoard() {
-		boardPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		int num;
+		boardPanel.setBorder(new LineBorder(Color.black));
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				board[x][y] = new JPanel(new BorderLayout());
 				JLabel numberLabel = new JLabel();
 				numberLabel.setFont(new Font("Arial", 0, 30));
 				board[x][y].setBackground(Color.white);
-				if (game.getNumber(y,x) == 1) {
-					numberLabel.setText("1");
-				} else if(game.getNumber(y,x) == 2){
-					numberLabel.setText("2");
-				} else if(game.getNumber(y,x) == 3){
-					numberLabel.setText("3");
-				} else if(game.getNumber(y,x) == 4){
-					numberLabel.setText("4");
-				} else if(game.getNumber(y,x) == 5){
-					numberLabel.setText("5");
-				} else if(game.getNumber(y,x) == 6){
-					numberLabel.setText("6");
-				} else if(game.getNumber(y,x) == 7){
-					numberLabel.setText("7");
-				} else if(game.getNumber(y,x) == 8){
-					numberLabel.setText("8");
-				} else if(game.getNumber(y,x) == 9){
-					numberLabel.setText("9");
+				board[x][y].setPreferredSize(
+						new Dimension(sqSize, sqSize));
+				num = game.getNumber(y, x);
+				if (num != 0) {
+					numberLabel.setText(
+							Integer.toString(num));
 				}
-				if(game.isInitial(y,x)){
+				
+				if (game.isInitial(y, x)) {
 					board[x][y].setBackground(initialColor);
 				}
 				
-				// Setting specific border sizes for the thicker middle lines
-				board[x][y].setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, squareBorderColor));
-				if(x == 3 || x == 6){
-					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 1, 1, 1, squareBorderColor));
+				// Setting specific border sizes
+				// for the thicker middle lines
+				board[x][y].setBorder(new MatteBorder(1, 1, 1, 1, squareBorderColor));
+				if (x == 3 || x == 6) {
+					board[x][y].setBorder(new MatteBorder(3, 1, 1, 1, squareBorderColor));
 				}
-				if(y == 3 || y == 6){
-					board[x][y].setBorder(BorderFactory.createMatteBorder(1, 3, 1, 1, squareBorderColor));
+				if (y == 3 || y == 6) {
+					board[x][y].setBorder(new MatteBorder(1, 3, 1, 1, squareBorderColor));
 				}
-				if(x == 3 && y == 3){
-					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
+				if (x == 3 && y == 3) {
+					board[x][y].setBorder(new MatteBorder(3, 3, 1, 1, squareBorderColor));
 				}
-				if(x == 3 && y == 6){
-					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
+				if (x == 3 && y == 6) {
+					board[x][y].setBorder(new MatteBorder(3, 3, 1, 1, squareBorderColor));
 				}
-				if(x == 6 && y == 3){
-					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
+				if (x == 6 && y == 3) {
+					board[x][y].setBorder(new MatteBorder(3, 3, 1, 1, squareBorderColor));
 				}
-				if(x == 6 && y == 6){
-					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
+				if (x == 6 && y == 6) {
+					board[x][y].setBorder(new MatteBorder(3, 3, 1, 1, squareBorderColor));
 				}
 				
 				
-				numberLabel.setHorizontalAlignment(SwingConstants.CENTER);
-				numberLabel.setVerticalAlignment(SwingConstants.CENTER);
+				numberLabel.setHorizontalAlignment(
+						SwingConstants.CENTER);
+				numberLabel.setVerticalAlignment(
+						SwingConstants.CENTER);
 				
-				//board[x][y].setBorder(BorderFactory.createLineBorder(squareBorderColor));
 				board[x][y].add(numberLabel);
 				boardPanel.add(board[x][y]);
 			}
@@ -214,68 +207,57 @@ implements MouseListener, MouseMotionListener {
 	 */
 	
 	private void displayBoard() {
+		int num;
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				board[x][y].removeAll();
 				JLabel numberLabel = new JLabel();
 				numberLabel.setFont(new Font("Arial", 0, 30));
 				board[x][y].setBackground(Color.white);
-				if (game.getNumber(y,x) == 1) {
-					numberLabel.setText("1");
-				} else if(game.getNumber(y,x) == 2){
-					numberLabel.setText("2");
-				} else if(game.getNumber(y,x) == 3){
-					numberLabel.setText("3");
-				} else if(game.getNumber(y,x) == 4){
-					numberLabel.setText("4");
-				} else if(game.getNumber(y,x) == 5){
-					numberLabel.setText("5");
-				} else if(game.getNumber(y,x) == 6){
-					numberLabel.setText("6");
-				} else if(game.getNumber(y,x) == 7){
-					numberLabel.setText("7");
-				} else if(game.getNumber(y,x) == 8){
-					numberLabel.setText("8");
-				} else if(game.getNumber(y,x) == 9){
-					numberLabel.setText("9");
+				num = game.getNumber(y, x);
+				// Sets label value.
+				if (num != 0) {
+					numberLabel.setText(
+							Integer.toString(num));
 				}
-				if(game.isInitial(y,x)){
+				
+				// Colors initial numbers.
+				if (game.isInitial(y, x)) {
 					board[x][y].setBackground(initialColor);
 				}
-				if(!game.isInitial(y,x) && x == game.currentClickedX() && y == game.currentClickedY()){
-					board[x][y].setBackground(selectedColor);
+				// If the location is currently selected.
+				if (!game.isInitial(y, x) 
+					&& x == game.currentClickedX()
+					&& y == game.currentClickedY()) {
+					board[x][y].setBackground(
+							selectedColor);
 				}
 				
-				// Setting specific border sizes for the thicker middle lines
-				board[x][y].setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, squareBorderColor));
-				if(x == 3 || x == 6){
-					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 1, 1, 1, squareBorderColor));
-				}
-				if(y == 3 || y == 6){
-					board[x][y].setBorder(BorderFactory.createMatteBorder(1, 3, 1, 1, squareBorderColor));
-				}
-				if(x == 3 && y == 3){
-					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
-				}
-				if(x == 3 && y == 6){
-					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
-				}
-				if(x == 6 && y == 3){
-					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
-				}
-				if(x == 6 && y == 6){
-					board[x][y].setBorder(BorderFactory.createMatteBorder(3, 3, 1, 1, squareBorderColor));
-				}
+				numberLabel.setHorizontalAlignment(
+						SwingConstants.CENTER);
+				numberLabel.setVerticalAlignment(
+						SwingConstants.CENTER);
 				
-				numberLabel.setHorizontalAlignment(SwingConstants.CENTER);
-				numberLabel.setVerticalAlignment(SwingConstants.CENTER);
-				
-				//board[x][y].setBorder(BorderFactory.createLineBorder(squareBorderColor));
 				board[x][y].add(numberLabel);
 				boardPanel.add(board[x][y]);
 			}
 		}
 		boardPanel.revalidate();
+	}
+	
+	@Override
+	public final void keyTyped(final KeyEvent e) {
+		try {
+			int temp = Integer.parseInt(
+					Character.toString(e.getKeyChar()));
+			game.setNumber(temp);
+		} catch (NumberFormatException m) {
+			m.printStackTrace();
+			//not a number.
+		} finally {
+			System.out.println("Attempted to parse integer");
+			displayBoard();
+		}
 	}
 	
 	
@@ -293,22 +275,6 @@ implements MouseListener, MouseMotionListener {
 		
 	}
 	*/
-	
-	/**
-	 * Resets the background color of the board after 
-	 * being called.
-	 */
-	private void resetColor() {
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				if (game.getNumber(x,y) == 1 ) {
-					board[x][y].setBackground(Color.gray);
-				} else {
-					board[x][y].setBackground(Color.white);
-				}
-			}
-		}
-	}
 
 	/** Unused methods from MouseListener. */
 	@Override
@@ -316,13 +282,16 @@ implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseExited(final MouseEvent e) { }
-
-	@Override
-	public void mouseClicked(final MouseEvent e) { }
 	
 	@Override
-	public void mouseMoved(final MouseEvent e) { }
+	public final void mouseReleased(final MouseEvent e) { }
+	
+	@Override
+	public final void mousePressed(final MouseEvent e) { }
 
 	@Override
-	public void mouseDragged(MouseEvent e) { }
+	public final void keyPressed(final KeyEvent e) { }
+
+	@Override
+	public void keyReleased(final KeyEvent e) { }
 }

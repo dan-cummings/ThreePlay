@@ -12,16 +12,20 @@ public class SudokuPiece implements IPiece, Serializable {
 
 	/** Serial version ID. */
 	private static final long serialVersionUID = 1L;
-	/** Tells if the piece has been made it to the end. */
+	/** Number stored in piece. */
 	private int num;
+	/** Value for initial number */
 	private boolean isInitial;
+	/** If piece is in error */
 	private boolean isError;
+	/** Owner of piece. */
 	private Player owner;
+	/** If piece is currently selected. */
 	private boolean currentlySelected = false;
 	
 	/**
-	 * Checkers piece constructor to set owner and beginning state.
-	 * @param p Which player owns this piece.
+	 * Sudoku piece constructor to set beginning state.
+	 * @param num value of the piece.
 	 */
 	public SudokuPiece(final int num) {
 		this.setNum(num);
@@ -39,7 +43,7 @@ public class SudokuPiece implements IPiece, Serializable {
 		}
 	}
 
-	private void setNum(int temp){
+	public void setNum(int temp){
 		if(temp < 10 && temp > -1){
 			this.num = temp;
 		}
