@@ -71,7 +71,7 @@ public class SudokuPiece implements IPiece, Serializable {
 	
 	@Override
 	public final Player getOwner() {
-		return owner;
+		return Player.NONE;
 	}
 	
 	@Override

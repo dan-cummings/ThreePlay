@@ -1,11 +1,16 @@
 package gamesuite;
 
+import java.io.Serializable;
+
 /**
  * 
  * @author Jaden Sella
  */
-public class OthelloPiece implements IPiece {
+public class OthelloPiece implements IPiece, Serializable{
 
+	/** Serialize version. */
+	private static final long serialVersionUID = 1L;
+	
 	/** Which player owns this piece. */
 	private Player owner;
 

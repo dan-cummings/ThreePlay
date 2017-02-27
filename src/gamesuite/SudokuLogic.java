@@ -432,7 +432,7 @@ public class SudokuLogic implements IGameLogic {
 		int decidingRandom;
 		
 		/* Swap some random rows */
-		decidingRandom = (int)(Math.random() * 2); // 0, 1, 2
+		decidingRandom = (int) (Math.random() * 2); // 0, 1, 2
 		if(decidingRandom == 1){
 			for(int i=0; i<9; i++){
 				holdingNumber = btempBoard[0][i];
@@ -456,23 +456,23 @@ public class SudokuLogic implements IGameLogic {
 				btempBoard[4][i] = holdingNumber;
 			}
 		} 
-		if(decidingRandom == 2){
-			for(int i=0; i<9; i++){
+		if (decidingRandom == 2) {
+			for (int i = 0; i < 9; i++) {
 				holdingNumber = btempBoard[3][i];
 				btempBoard[3][i] = btempBoard[5][i];
 				btempBoard[5][i] = holdingNumber;
 			}
 		}
-		decidingRandom = (int)(Math.random() * 3); // 0, 1, 2
-		if(decidingRandom == 1){
-			for(int i=0; i<9; i++){
+		decidingRandom = (int) (Math.random() * 3); // 0, 1, 2
+		if (decidingRandom == 1) {
+			for (int i = 0; i < 9; i++) {
 				holdingNumber = btempBoard[6][i];
 				btempBoard[6][i] = btempBoard[7][i];
 				btempBoard[7][i] = holdingNumber;
 			}
-		} 
-		if(decidingRandom == 2){
-			for(int i=0; i<9; i++){
+		}
+		if (decidingRandom == 2) {
+			for (int i = 0; i < 9; i++) {
 				holdingNumber = btempBoard[6][i];
 				btempBoard[6][i] = btempBoard[8][i];
 				btempBoard[8][i] = holdingNumber;
