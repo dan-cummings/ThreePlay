@@ -77,6 +77,7 @@ public class SudokuLogic implements IGameLogic {
 	public boolean gameComplete;
 	private int size;
 	private int clickedX, clickedY;
+	private int removeThisMany = 5;
 	
 	/* Initializes completeBoard, initialBoard, currentBoard and errorsBoard */
 	public SudokuLogic() {
@@ -109,7 +110,14 @@ public class SudokuLogic implements IGameLogic {
 	 * @param num number to change selected piece to.
 	 */
 	public void setNumber(final int num) {
-		board[clickedX][clickedY].setNum(num);
+		board[clickedY][clickedX].setNum(num);
+		
+		if(board[clickedY][clickedX].getNum() != completeBoard[clickedY][clickedX]){
+			errorsBoard[clickedY][clickedX] = true;
+		} else {
+			errorsBoard[clickedY][clickedX] = false;
+		}
+		
 	}
 	
 	/* Returns TRUE if a square at row, col, is not parallel with the completeBoard */
@@ -129,7 +137,7 @@ public class SudokuLogic implements IGameLogic {
 	private void initializeGame(){
 		this.board = new SudokuPiece[9][9];
 		this.completeBoard = generateBoard();
-		this.initialBoard = generateInitialBoard(55);
+		this.initialBoard = generateInitialBoard(removeThisMany);
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
 				this.errorsBoard[i][j] = false;
@@ -669,7 +677,7 @@ public class SudokuLogic implements IGameLogic {
 	{
 		for (int i =0; i<9; i++) {
 			for (int j = 0; j<9; j++) {
-				if (currentBoard[i][j] == 0) {
+				if (board[i][j].getNum() == 0) {
 					return false;
 				}
 			}
@@ -686,69 +694,12 @@ public class SudokuLogic implements IGameLogic {
 	public boolean isCorrect(){
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				if (currentBoard[i][j] != completeBoard[i][j]) {
+				if (board[i][j].getNum() != completeBoard[i][j]) {
 					return false;
 				}
 			}
 		}
 		return true;
-	}
-	
-	/*	For Testing 
-	 *	UPDATE ME: Remove this main function 
-	 */
-	public void main(String[] args) {
-	
-		int[][] completeBoard = new int[9][9];
-		int[][] initialBoard = new int[9][9];
-		int[][] currentBoard = new int[9][9];
-
-		// Set the completeBoard
-		completeBoard = generateBoard();
-		System.out.print("   Complete Board: \n");
-		outputToConsole(completeBoard);
-		
-		// Testing generation of initialBoard from completeBoard
-		// initialBoard = generateInitialBoard(5);
-		System.out.print("   Initial Board: \n");
-		outputToConsole(initialBoard);
-		
-		// Initialize currentBoard
-		for(int i =0; i<9; i++){
-			for(int j = 0; j<9; j++){
-				currentBoard[i][j] = initialBoard[i][j];
-			}
-		}
-		
-		System.out.print("\n");
-		System.out.print("   Let us solve a board!");
-		System.out.print("\n   Current Board:\n");
-		outputToConsole(currentBoard);
-
-		String tempString;
-		String[] tempStringArray = new String[3]; 
-		int[] tempArray = new int[3];
-		Scanner scanner = new Scanner(System.in);
-		
-		while(!isCorrect()){
-			System.out.print("Entry [row] [col] [num]: ");
-			tempString = scanner.nextLine();
-			tempStringArray = tempString.split(" ");
-			for(int i=0;i<3;i++){
-				tempArray[i] = Integer.parseInt(tempStringArray[i]);
-			}
-			currentBoard = playerEntry(tempArray[2], tempArray[0], tempArray[1], currentBoard, initialBoard);
-			System.out.print("   Current Board: \n");
-			outputToConsole(currentBoard);
-			System.out.print("\n");
-			if(isFilled()){
-				// Offer to show errors
-				System.out.print("Board Filled\n");
-			}
-		}
-		System.out.print("Board Complete\n");
-
-		scanner.close();
 	}
 
 	@Override
