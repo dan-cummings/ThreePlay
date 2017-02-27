@@ -47,7 +47,7 @@ implements MouseListener, KeyListener {
 	private int xPos, yPos;
 	
 	/** integer values for location of chosen square. */
-	private int squareX, squareY;
+	private int squareX = 0, squareY = 0;
 
 	/** Size of each square. */
 	private final int size, sqSize;
@@ -63,8 +63,10 @@ implements MouseListener, KeyListener {
 	private final Color squareBorderColor = new Color(210, 210, 210);
 	/** Grey background of initial squares. */
 	private final Color initialColor = new Color(225, 225, 225);
-	/** Green background of initial squares. */
+	/** Green background of selected squares. */
 	private final Color selectedColor = new Color(210, 250, 220);
+	/** Yellow background of error squares. */
+	private final Color errorColor = new Color(255, 255, 140);
 
 	/**
 	 * Constructor for the checkers GUI.
@@ -108,6 +110,10 @@ implements MouseListener, KeyListener {
 			showErrors();
 		}
 		
+		if(!game.isInitial(squareY, squareX) && !game.isError(squareY, squareX)){
+			board[squareX][squareY].setBackground(Color.white);
+		}
+		
 		xPos = e.getX();
 		yPos = e.getY();
 		
@@ -125,6 +131,7 @@ implements MouseListener, KeyListener {
 		// on click of piece, SudokuPiece[x][y].clickedOn()
 		// SudokuPiece.isSelected() returns true if currently selected
 		
+		System.out.print("Current Selected Piece: X: " + game.currentClickedX() + " Y: " + game.currentClickedY() +  "\n");
 		System.out.print("xPos: " + xPos + " yPos: " + yPos + "\n");
 		System.out.print("squareX: " + squareX + " squareY: " + squareY + "\n");
 	}
@@ -136,7 +143,7 @@ implements MouseListener, KeyListener {
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				if (game.isError(y, x)) {
-					board[x][y].setBackground(Color.YELLOW);
+					board[x][y].setBackground(errorColor);
 				}
 			}
 		}
@@ -247,34 +254,8 @@ implements MouseListener, KeyListener {
 	
 	@Override
 	public final void keyTyped(final KeyEvent e) {
-		try {
-			int temp = Integer.parseInt(
-					Character.toString(e.getKeyChar()));
-			game.setNumber(temp);
-		} catch (NumberFormatException m) {
-			m.printStackTrace();
-			//not a number.
-		} finally {
-			System.out.println("Attempted to parse integer");
-			displayBoard();
-		}
-	}
-	
-	
-	/*  Sets all selected boxes back to unselected 
-	public boolean clearAllSelected()
-	{
-		for(int x=0; x<9;x++){
-			for(int y=0;y<9;y++){
-				// UPDATE ME
-				// if(game.isSelected(x,y))
-				// SudokuLogic.current[x][y]
-			}
-		}
-		
 		
 	}
-	*/
 
 	/** Unused methods from MouseListener. */
 	@Override
@@ -290,7 +271,30 @@ implements MouseListener, KeyListener {
 	public final void mousePressed(final MouseEvent e) { }
 
 	@Override
-	public final void keyPressed(final KeyEvent e) { }
+	public final void keyPressed(final KeyEvent e) { 
+		try {
+			int temp = Integer.parseInt(
+					Character.toString(e.getKeyChar()));
+			game.setNumber(temp);
+		} catch (NumberFormatException m) {
+			m.printStackTrace();
+			//not a number.
+		} finally {
+			System.out.println("Attempted to parse integer");
+			System.out.println("Number: " + game.getNumber(squareY, squareX));
+			this.displayBoard();
+		}
+		
+		// Near the game end
+		if(game.isFilled()){
+			System.out.println("Board Filled!");
+			showErrors();
+		}
+		// When the game is finished
+		if(game.isCorrect()){
+			System.out.println("Board Correct!");
+		}
+	}
 
 	@Override
 	public void keyReleased(final KeyEvent e) { }
