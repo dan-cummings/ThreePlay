@@ -14,9 +14,9 @@ public class SudokuPiece implements IPiece, Serializable {
 	private static final long serialVersionUID = 1L;
 	/** Number stored in piece. */
 	private int num;
-	/** Value for initial number */
+	/** Value for initial number. */
 	private boolean isInitial;
-	/** If piece is in error */
+	/** If piece is in error. */
 	private boolean isError;
 	/** Owner of piece. */
 	private Player owner;
@@ -31,41 +31,53 @@ public class SudokuPiece implements IPiece, Serializable {
 		this.setNum(num);
 	}
 	
-	private boolean isSelected(){
-		return currentlySelected;
-	}
-	private void clickedOn(){
-		if(currentlySelected == true){
-			this.currentlySelected = false;
-		}
-		if(currentlySelected == false){
-			this.currentlySelected = true;
-		}
-	}
-
-	public void setNum(int temp){
-		if(temp < 10 && temp > -1){
+	/**
+	 * Sets the number of the square.
+	 * @param temp - The number to set the square to.
+	 */
+	public void setNum(final int temp) {
+		if (temp < 10 && temp > -1) {
 			this.num = temp;
 		}
 	}
 	
-	public int getNum(){
+	/**
+	 * Gets the number of the square. Used in the logic class.
+	 * @return - Returns the INT of the square.
+	 */
+	public int getNum() {
 		return num;
 	}
 
+	/**
+	 * Determines if the square was initially set.
+	 * @return - Returns TRUE if square was initial.
+	 */
 	public boolean isInitial() {
 		return isInitial;
 	}
 
+	/**
+	 * Determines if the square is an error on the board.
+	 * @return - Returns TRUE if the square is an error.
+	 */
 	public boolean isError() {
 		return isError;
 	}
 	
-	public void setInitial(boolean temp){
+	/**
+	 * Sets a square to be seen as initially set.
+	 * @param temp - Set TRUE if initially set, FALSE if not.
+	 */
+	public void setInitial(final boolean temp) {
 		this.isInitial = temp;
 	}
 	
-	public void setError(boolean temp){
+	/**
+	 * Sets a square to be seen as an error.
+	 * @param temp - Set TRUE if is an error, FALSE if not.
+	 */
+	public void setError(final boolean temp) {
 		this.isError = temp;
 	}
 	
@@ -80,7 +92,8 @@ public class SudokuPiece implements IPiece, Serializable {
 	}
 
 	@Override
-	public boolean validMove(int x, int y, IPiece[][] b, Player p) {
+	public final boolean validMove(final int x, final int y, 
+	  final IPiece[][] b, final Player p) {
 		return false;
 	}
 }
