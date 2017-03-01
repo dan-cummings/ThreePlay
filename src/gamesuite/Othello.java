@@ -35,13 +35,6 @@ public class Othello implements IGameLogic {
 	/** The current player. Othello always starts with black*/
 	private Player player;
 	
-	/** Has a move been submitted. */
-	private boolean submittedMove = false;
-	
-	/** Adjacent fields for current move. */
-	private final int[][] adjacentFields = {{-1, -1}, {0, -1},
-			{1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}};
-	
 	/** Count for the number of pieces for player. */
 	private int whiteCount, blackCount;
 	
@@ -82,7 +75,7 @@ public class Othello implements IGameLogic {
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				if (this.board[i][j].getOwner()
-						== Player.NONE) {
+						== null) {
 					if (board[i][j].validMove(
 							i, j, board, player)) {
 						finished = false;
@@ -119,10 +112,10 @@ public class Othello implements IGameLogic {
 		}
 		int j, m, n;
 		if (board[x + 1][y].getOwner() 
-				!= Player.NONE
+				!= null
 				&& board[x + 1][y].getOwner() != player) {
 			for (int i = x + 2; i < size; i++) {
-				if (board[i][y].getOwner() == Player.NONE) {
+				if (board[i][y].getOwner() == null) {
 					break;
 				}
 				if (board[i][y].getOwner() == player) {
@@ -134,10 +127,10 @@ public class Othello implements IGameLogic {
 			}
 		}
 		if (board[x - 1][y].getOwner()
-				!= Player.NONE && board[x - 1][y].getOwner() 
+				!= null && board[x - 1][y].getOwner() 
 				!= player) {
 			for (int i = x - 2; i >= 0; i--) {
-				if (board[i][y].getOwner() == Player.NONE) {
+				if (board[i][y].getOwner() == null) {
 					break;
 				}
 				if (board[i][y].getOwner() == player) {
@@ -149,10 +142,10 @@ public class Othello implements IGameLogic {
 			}
 		}
 		if (board[x][y + 1].getOwner() 
-				!= Player.NONE 
+				!= null 
 				&& board[x][y + 1].getOwner() != player) {
 			for (int i = y + 2; i < size; i++) {
-				if (board[x][i].getOwner() == Player.NONE) { 
+				if (board[x][i].getOwner() == null) { 
 					break;
 				}
 				if (board[x][i].getOwner() == player) {
@@ -165,10 +158,10 @@ public class Othello implements IGameLogic {
 		}
 		
 		if (board[x][y - 1].getOwner() 
-				!= Player.NONE 
+				!= null 
 				&& board[x][y - 1].getOwner() != player) {
 			for (int i = y - 2; i >= 0; i--) {
-				if (board[x][i].getOwner() == Player.NONE) {
+				if (board[x][i].getOwner() == null) {
 					break;
 				}
 				if (board[x][i].getOwner() == player) {
@@ -181,13 +174,13 @@ public class Othello implements IGameLogic {
 		}
 		j = y + 2;
 		if (board[x + 1][y + 1].getOwner()
-				!= Player.NONE 
+				!= null 
 				&& board[x + 1][y + 1].getOwner() != player) {
 			for (int i = x + 2; i < size; i++) {
 				if (j >= size) {
 					break;
 				}
-				if (board[i][j].getOwner() == Player.NONE) {
+				if (board[i][j].getOwner() == null) {
 					break;
 				}
 				if (board[i][j].getOwner() == player) {
@@ -206,13 +199,13 @@ public class Othello implements IGameLogic {
 		}
 		j = y + 2;
 		if (board[x - 1][y + 1].getOwner()
-				!= Player.NONE 
+				!= null 
 				&& board[x - 1][y + 1].getOwner() != player) {
 			for (int i = x - 2; i >= 0; i--) {
 				if (j >= size) {
 					break;
 				}
-				if (board[i][j].getOwner() == Player.NONE) {
+				if (board[i][j].getOwner() == null) {
 					break;
 				}
 				if (board[i][j].getOwner() == player) {
@@ -231,13 +224,13 @@ public class Othello implements IGameLogic {
 		}
 		j = y - 2;
 		if (board[x - 1][y - 1].getOwner() 
-				!= Player.NONE 
+				!= null 
 				&& board[x - 1][y - 1].getOwner() != player) {
 			for (int i = x - 2; i >= 0; i--) {
 				if (j < 0) {
 					break;
 				}
-				if (board[i][j].getOwner() == Player.NONE) {
+				if (board[i][j].getOwner() == null) {
 					break;
 				}
 				if (board[i][j].getOwner() == player) {
@@ -256,13 +249,13 @@ public class Othello implements IGameLogic {
 		}
 		j = y - 2;
 		if (board[x + 1][y - 1].getOwner() 
-				!= Player.NONE 
+				!= null 
 				&& board[x + 1][y - 1].getOwner() != player) {
 			for (int i = x + 2; i < board.length; i++) {
 				if (j < 0) {
 					break;
 				}
-				if (board[i][j].getOwner() == Player.NONE) {
+				if (board[i][j].getOwner() == null) {
 					break;
 				}
 				if (board[i][j].getOwner() == player) {
@@ -279,6 +272,14 @@ public class Othello implements IGameLogic {
 				j--;
 			}
 		}
+		
+		this.nextTurn();
+		this.gameover = this.isGameOver();
+		this.nextTurn();
+		if (moves.isEmpty() && !gameover) {
+			this.nextTurn();
+		}
+		this.saved = false;
 	}
 	
 	@Override
@@ -290,6 +291,7 @@ public class Othello implements IGameLogic {
 			ostrm.writeObject(player);
 			ostrm.close();
 			strm.close();
+			saved = true;
 		} catch (FileNotFoundException e) {
 			//When filename points to a directory instead of a file.
 			throw new Exception("Please choose a "
@@ -380,9 +382,38 @@ public class Othello implements IGameLogic {
 	
 	/**
 	 * Getter method for the number of black pieces on the board.
-	 * @return number of black piecs on the board.
+	 * @return number of black pieces on the board.
 	 */
 	public int getBlackCount() {
 		return this.blackCount;
+	}
+	
+	/**
+	 * Switches player after turn.
+	 */
+	private void nextTurn() {
+		if (player == Player.WHITE) {
+			player = Player.BLACK;
+		} else {
+			player = Player.WHITE;
+		}
+	}
+	
+	/**
+	 * Getter for whether or not the current game state has been saved.
+	 * @return True if the game has been saved this turn.
+	 */
+	public boolean isSaved() {
+		return this.saved;
+	}
+
+	/**
+	 *  Allows users to reset board after getting stalemate or gameover.
+	 */
+	public void reset() {
+		this.gameover = false;
+		this.createBoard();
+		this.player = Player.WHITE;
+		this.moves.clear();
 	}
 }
