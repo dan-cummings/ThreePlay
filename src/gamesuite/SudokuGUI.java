@@ -106,6 +106,9 @@ implements MouseListener, KeyListener {
 		if (game.isFilled()) {
 			showErrors();
 		}
+		if (game.isCorrect()) {
+			makeAllGold();
+		}
 		if (!game.isInitial(squareY, squareX) 
 			&& !game.isError(squareY, squareX)) {
 			board[oldX][oldY].setBackground(Color.white);
@@ -116,6 +119,7 @@ implements MouseListener, KeyListener {
 		// Gets the integer 0-8 location of piece in 2d array.
 		squareX = Math.floorDiv(yPos, 60);
 		squareY = Math.floorDiv(xPos, 60);
+		
 		if (!game.isInitial(squareY, squareX)) {
 			game.clickedOn(squareY, squareX);
 			board[squareX][squareY].setBackground(selectedColor);
@@ -141,6 +145,37 @@ implements MouseListener, KeyListener {
 				}
 			}
 		}
+	}
+	
+	/**
+	 *  Locks all squares and sets the board to gold. To 
+	 *  signal to the user a congratulations.
+	 */
+	private void makeAllGold() {
+		int num;
+		for (int x = 0; x < size; x++) {
+			for (int y = 0; y < size; y++) {
+				board[x][y].removeAll();
+				JLabel numberLabel = new JLabel();
+				numberLabel.setFont(new Font("Arial", 0, 30));
+				board[x][y].setBackground(errorColor);
+				num = game.getNumber(y, x);
+				// Sets label value.
+				if (num != 0) {
+					numberLabel.setText(
+							Integer.toString(num));
+				}
+				
+				numberLabel.setHorizontalAlignment(
+						SwingConstants.CENTER);
+				numberLabel.setVerticalAlignment(
+						SwingConstants.CENTER);
+				
+				board[x][y].add(numberLabel);
+				boardPanel.add(board[x][y]);
+			}
+		}
+		boardPanel.revalidate();
 	}
 	
 	/**
@@ -269,6 +304,11 @@ implements MouseListener, KeyListener {
 
 	@Override
 	public final void keyPressed(final KeyEvent e) { 
+		// When the game is finished, stall out this display.
+		if (game.isCorrect()) {
+			makeAllGold();
+			return;
+		}
 		try {
 			int temp = Integer.parseInt(
 					Character.toString(e.getKeyChar()));
@@ -291,6 +331,7 @@ implements MouseListener, KeyListener {
 		// When the game is finished
 		if (game.isCorrect()) {
 			System.out.println("Board Correct!");
+			makeAllGold();
 		}
 	}
 

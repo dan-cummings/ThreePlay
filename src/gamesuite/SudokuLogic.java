@@ -5,9 +5,8 @@ package gamesuite;
  */
 
 /*
- *  Code:
+ *  Internal Code:
  *  	"UPDATE ME" is at the spots for future updates
- * 
  *  Terms:
  *  	Board - The 9x9 complete array
  * 		Box - A 3x3 chunk of squares
@@ -17,7 +16,6 @@ package gamesuite;
  * 		initialBoard - The board first given to the player
  * 		currentBoard - The board as the game continues (load to this)
  * 		errorsBoard - The errors on the board as the game continues
- * 
  * 	User Solving Methods:
  * 		Single Candidate method - to look to a spot to see if only
  * 			option exists for that spot
@@ -91,7 +89,7 @@ public class SudokuLogic implements IGameLogic {
 	 * This is the number of squares to remove from the initial complete 
 	 *  board to have the user solve.
 	 */
-	private int removeThisMany = 5;
+	private int removeThisMany = 60;
 	
 	/** 
 	 *  Initializes completeBoard, initialBoard, 
@@ -337,7 +335,6 @@ public class SudokuLogic implements IGameLogic {
 	public void clickedOn(final int row, final int col) {
 		clickedX = col;
 		clickedY = row;
-		
 	}
 	
 	/**

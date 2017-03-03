@@ -19,6 +19,7 @@ public class SudokuPiece implements IPiece, Serializable {
 	/** If piece is in error. */
 	private boolean isError;
 	/** Owner of piece. */
+	@SuppressWarnings("unused")
 	private Player owner;
 	/** If piece is currently selected. */
 	private boolean currentlySelected;
