@@ -105,7 +105,16 @@ implements MouseListener, MouseMotionListener {
 		getPlayer();
 	}
 
-	@Override
+	/**
+	 * Gets location of click event, grabs component that is
+	 * at that location. If the location contains no JLabel
+	 * object the method returns without change to board.
+	 * When JLabel is selected the piece is found and the board
+	 * displays highlighted locations for the piece's valid moves.
+	 * If the game is over or there is a stalemate pieces cannot be
+	 * moved.
+	 * @param e Created when user presses mouse key.
+	 */
 	public final void mousePressed(final MouseEvent e) { 
 		if (game.gameOver() || game.isStalemate()) {
 			return;
@@ -146,7 +155,14 @@ implements MouseListener, MouseMotionListener {
 
 	}
 
-	@Override
+	/**
+	 * If the user had selected a piece upon clicking the mouse
+	 * key, method allows users to make possible movement within
+	 * game logic. If the event location is an invalid one, piece
+	 * gets reset to original position. Otherwise, model is updated
+	 * and calls to update the view.
+	 * @param e Event created when mouse key is released.
+	 */
 	public final void mouseReleased(final MouseEvent e) {
 		// Checks to make sure piece is being moved.
 		if (piece != null) {
@@ -182,7 +198,12 @@ implements MouseListener, MouseMotionListener {
 
 	
 
-	@Override
+	/**
+	 * Changes the graphical position of the piece to remain
+	 * under the mouse cursor for simulated drag and drop.
+	 * @param e Event created when mouse key is pressed and
+	 * cursor is moved.
+	 */
 	public final void mouseDragged(final MouseEvent e) {
 		// Keeps piece moving with the cursor while centered.
 		if (piece != null) {

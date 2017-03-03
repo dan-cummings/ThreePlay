@@ -715,7 +715,10 @@ public class SudokuLogic implements IGameLogic {
 		return true;
 	}
 
-	@Override
+	/**
+	 * Checks to see if the game is over.
+	 * @return True if board is filled and all squares are correct.
+	 */
 	public final boolean isGameOver() { 
 		if (isFilled() && isCorrect()) {
 			return true;

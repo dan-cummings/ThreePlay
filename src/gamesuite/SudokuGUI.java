@@ -314,7 +314,6 @@ implements MouseListener, KeyListener {
 					Character.toString(e.getKeyChar()));
 			game.setNumber(temp);
 		} catch (NumberFormatException m) {
-			m.printStackTrace();
 			//not a number.
 		} finally {
 			System.out.println("Attempted to parse integer");

@@ -83,7 +83,45 @@ public class CheckersTests {
 		game = new CheckersLogic();
 		game.makeMove(new Move(5, 1, 4, 0));
 		game.makeMove(new Move(2, 2, 3, 1));
-		assertFalse(game.isMove(new Move(5, 3, 3, 5)));
+		assertFalse(game.isMove(new Move(3, 1, 4, 3)));
+	}
+	
+	@Test
+	public void forceJumpTestKing() {
+		game = new CheckersLogic();
+		game.setup(2);
+		assertFalse(game.isMove(new Move(1, 1, 0, 0)));
+	}
+	
+	@Test
+	public void multiJumpTest() {
+		game = new CheckersLogic();
+		game.setup(3);
+		game.makeMove(new Move(1, 1, 3, 3));
+		assertTrue(game.isMove(new Move(3, 3, 5, 5)));
+	}
+	
+	@Test
+	public void multiJumpTest2() {
+		game = new CheckersLogic();
+		game.setup(3);
+		game.isMove(new Move(1, 1, 3, 3));
+		assertFalse(game.isMove(new Move(3, 3, 1, 1)));
+	}
+	
+	@Test
+	public void multiJumpTest3() {
+		game = new CheckersLogic();
+		game.setup(3);
+		game.isMove(new Move(1, 1, 3, 3));
+		assertFalse(game.isMove(new Move(3, 3, 2, 2)));
+	}
+	
+	@Test
+	public void stalemateTest() {
+		game = new CheckersLogic();
+		game.setup(1);
+		assertTrue(game.isStalemate());
 	}
 }
 //CHECKSTYLE:ON

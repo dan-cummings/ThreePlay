@@ -160,14 +160,13 @@ public class CheckersLogic implements IGameLogic {
 					board[fx][fy] = null;
 				}
 			}
-			//Clears ArrayList of jump pieces.
-			jumps.clear();
-			
 			//If that piece can jump again. It must.
-			if (canJump(m.getToX(), m.getToY())) {
-				jumps.add(board[m.getToX()][m.getToY()]);
+			if (canJump(tx, ty)) {
+				jumps.clear();
+				jumps.add(board[tx][ty]);
 			} else {
 				//Otherwise switch players and look for moves.
+				board[tx][ty].canJump(false);
 				jumps.clear();
 				moves.clear();
 			}
@@ -456,6 +455,38 @@ public class CheckersLogic implements IGameLogic {
 		this.jumps.clear();
 		this.checkJumps();
 		
+	}
+	
+	/**
+	 * Helper method to allow for testing.
+	 * @param test integer for test being run.
+	 */
+	public void setup(final int test) {
+			if (test == 1) {
+				board = new CheckersPiece[8][8];
+				moves.clear();
+				player = Player.BLACK;
+				checkJumps();
+			} else if (test == 2) {
+				board = new CheckersPiece[8][8];
+				player = Player.BLACK;
+				moves.clear();
+				jumps.clear();
+				board[1][1] = new CheckersPiece(player);
+				board[1][1].setKinged(true);
+				board[2][2] = new CheckersPiece(Player.WHITE);
+				checkJumps();
+			} else if (test == 3) {
+				board = new CheckersPiece[8][8];
+				player = Player.BLACK;
+				moves.clear();
+				jumps.clear();
+				board[1][1] = new CheckersPiece(player);
+				board[1][1].setKinged(true);
+				board[2][2] = new CheckersPiece(Player.WHITE);
+				board[4][4] = new CheckersPiece(Player.WHITE);
+				checkJumps();
+			}
 	}
 	
 	/** Unused Method. */
