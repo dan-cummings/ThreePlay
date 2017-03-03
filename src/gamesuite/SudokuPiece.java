@@ -3,10 +3,10 @@ package gamesuite;
 import java.io.Serializable;
 
 /**
- * Checkers Piece is used as a structure to represent pieces on
- * a checker board. Pieces maintain their valid movements as
- * well as whether or not they are king pieces.
- * @author Daniel Cummings
+ * Sudoku Piece is used as a structure to represent squares on
+ * sudoku board. Contains boolean values for errors and initially
+ * defined squares. 
+ * @author Brendon Murthum, Daniel Cummings
  */
 public class SudokuPiece implements IPiece, Serializable {
 
@@ -14,68 +14,91 @@ public class SudokuPiece implements IPiece, Serializable {
 	private static final long serialVersionUID = 1L;
 	/** Number stored in piece. */
 	private int num;
-	/** Value for initial number */
+	/** Value for initial number. */
 	private boolean isInitial;
-	/** If piece is in error */
+	/** If piece is in error. */
 	private boolean isError;
 	/** Owner of piece. */
+	@SuppressWarnings("unused")
 	private Player owner;
 	/** If piece is currently selected. */
-	private boolean currentlySelected = false;
+	private boolean currentlySelected;
 	
 	/**
 	 * Sudoku piece constructor to set beginning state.
-	 * @param num value of the piece.
+	 * @param numl value of the piece.
 	 */
-	public SudokuPiece(final int num) {
-		this.setNum(num);
+	public SudokuPiece(final int numl) {
+		this.setNum(numl);
+		this.currentlySelected = false;
 	}
 	
-	private boolean isSelected(){
-		return currentlySelected;
-	}
-	private void clickedOn(){
-		if(currentlySelected == true){
-			this.currentlySelected = false;
-		}
-		if(currentlySelected == false){
-			this.currentlySelected = true;
-		}
-	}
-
-	public void setNum(int temp){
-		if(temp < 10 && temp > -1){
+	/**
+	 * Sets the number of the square.
+	 * @param temp - The number to set the square to.
+	 */
+	public void setNum(final int temp) {
+		if (temp < 10 && temp > -1) {
 			this.num = temp;
 		}
 	}
 	
-	public int getNum(){
+	/**
+	 * Gets the number of the square. Used in the logic class.
+	 * @return - Returns the INT of the square.
+	 */
+	public int getNum() {
 		return num;
 	}
 
+	/**
+	 * Determines if the square was initially set.
+	 * @return - Returns TRUE if square was initial.
+	 */
 	public boolean isInitial() {
 		return isInitial;
 	}
 
+	/**
+	 * Determines if the square is an error on the board.
+	 * @return - Returns TRUE if the square is an error.
+	 */
 	public boolean isError() {
 		return isError;
 	}
 	
-	public void setInitial(boolean temp){
+	/**
+	 * Sets a square to be seen as initially set.
+	 * @param temp - Set TRUE if initially set, FALSE if not.
+	 */
+	public void setInitial(final boolean temp) {
 		this.isInitial = temp;
 	}
 	
-	public void setError(boolean temp){
+	/**
+	 * Sets a square to be seen as an error.
+	 * @param temp - Set TRUE if is an error, FALSE if not.
+	 */
+	public void setError(final boolean temp) {
 		this.isError = temp;
 	}
 	
 	@Override
 	public final Player getOwner() {
-		return owner;
+		return null;
 	}
 	
 	@Override
 	public final boolean validMove(final Move m, final IPiece[][] b) {
 		return true;
 	}
+<<<<<<< HEAD
+=======
+
+	@Override
+	public final boolean validMove(final int x, final int y, 
+	  final IPiece[][] b, final Player p) {
+		return false;
+	}
+>>>>>>> bee6b24b655c2edf2525d063955615f50fd3a31a
 }

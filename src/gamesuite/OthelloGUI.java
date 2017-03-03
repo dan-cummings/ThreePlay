@@ -13,7 +13,11 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+<<<<<<< HEAD
 import javax.swing.border.EtchedBorder;
+=======
+import javax.swing.border.LineBorder;
+>>>>>>> bee6b24b655c2edf2525d063955615f50fd3a31a
 
 /**
  * Panel containing all of the information for the Othello game.
