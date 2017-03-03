@@ -89,7 +89,7 @@ public class SudokuLogic implements IGameLogic {
 	 * This is the number of squares to remove from the initial complete 
 	 *  board to have the user solve.
 	 */
-	private int removeThisMany = 60;
+	private int removeThisMany = 10;
 	
 	/** 
 	 *  Initializes completeBoard, initialBoard, 
@@ -262,6 +262,16 @@ public class SudokuLogic implements IGameLogic {
 			"ERROR IN INTERNAL GENERATING MECHANIC!");
 		}
 		return atempBoard;
+	}
+	
+	/**
+	 * For testing. This allows for checking if the initial
+	 * board is solvable, from the GUI and testing class.
+	 * @return - Returns TRUE if the initial board is solvable.
+	 *  		 Returns FALSE if the initial board is not.
+	 */
+	public boolean isSolvable() {
+		return solveBoard(initialBoard);
 	}
 	
 	/**
@@ -480,6 +490,83 @@ public class SudokuLogic implements IGameLogic {
 	}
 	
 	/**
+	 * Swaps chunks in the original board. For initializing the board.
+	 * @param someBoard - An array board in the initializing process.
+	 * @return - An array board now with possibly swapped chunks.
+	 */
+	private static int[][] swapChunks(final int[][] someBoard) {
+		int[][] ctempBoard = new int[9][9];
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				ctempBoard[i][j] = someBoard[i][j];
+			}
+		}
+		
+		int decidingRandom, holdingNumber;
+	//  Swap two horizontal 3-tall chunks
+		decidingRandom = (int) (Math.random() * 4); // 0, 1, 2, 3
+		if (decidingRandom == 0) {
+			for (int h = 0; h < 3; h++) {
+				for (int i = 0; i < 9; i++) {
+					holdingNumber = ctempBoard[h][i];
+					ctempBoard[h][i] 
+					 = ctempBoard[h + 3][i];
+					ctempBoard[h + 3][i] 
+					 = holdingNumber;
+				}
+			}
+		}
+		if (decidingRandom == 1) {
+			for (int h = 0; h < 3; h++) {
+				for (int i = 0; i < 9; i++) {
+					holdingNumber = ctempBoard[h][i];
+					ctempBoard[h][i] = ctempBoard[h + 6][i];
+					ctempBoard[h + 6][i] = holdingNumber;
+				}
+			}
+		}
+		if (decidingRandom == 2) {
+			for (int h = 3; h < 6; h++) {
+				for (int i = 0; i < 9; i++) {
+					holdingNumber = ctempBoard[h][i];
+					ctempBoard[h][i] = ctempBoard[h + 3][i];
+					ctempBoard[h + 3][i] = holdingNumber;
+				}
+			}
+		}
+		decidingRandom = (int) (Math.random() * 4); // 0, 1, 2, 3
+		if (decidingRandom == 0) {
+			for (int h = 0; h < 3; h++) {
+				for (int i = 0; i < 9; i++) {
+					holdingNumber = ctempBoard[i][h];
+					ctempBoard[i][h] = ctempBoard[i][h + 3];
+					ctempBoard[i][h + 3] = holdingNumber;
+				}
+			}
+		}
+		if (decidingRandom == 1) {
+			for (int h = 0; h < 3; h++) {
+				for (int i = 0; i < 9; i++) {
+					holdingNumber = ctempBoard[i][h];
+					ctempBoard[i][h] = ctempBoard[i][h + 6];
+					ctempBoard[i][h + 6] = holdingNumber;
+				}
+			}
+		}
+		if (decidingRandom == 2) {
+			for (int h = 3; h < 6; h++) {
+				for (int i = 0; i < 9; i++) {
+					holdingNumber = ctempBoard[i][h];
+					ctempBoard[i][h] = ctempBoard[i][h + 3];
+					ctempBoard[i][h + 3] = holdingNumber;
+				}
+			}
+		}
+		
+		return ctempBoard;
+	}
+	
+	/**
 	 * Generates a rendomized complete board from
 	 * the beginning 'key' board.
 	 * @return - Returns an INT array of a randomized board.
@@ -535,111 +622,10 @@ public class SudokuLogic implements IGameLogic {
 				btempBoard[8][i] = holdingNumber;
 			}
 		}
-		/* Swap some random columns */
-		decidingRandom = (int) (Math.random() * 3); // 0, 1, 2
-		if (decidingRandom == 1) {
-			for (int i = 0; i < 9; i++) {
-				holdingNumber = btempBoard[i][0];
-				btempBoard[i][0] = btempBoard[i][1];
-				btempBoard[i][1] = holdingNumber;
-			}
-		} 
-		if (decidingRandom == 2) {
-			for (int i = 0; i < 9; i++) {
-				holdingNumber = btempBoard[i][0];
-				btempBoard[i][0] = btempBoard[i][2];
-				btempBoard[i][2] = holdingNumber;
-			}
-		}
-		decidingRandom = (int) (Math.random() * 3); // 0, 1, 2
-		if (decidingRandom == 1) {
-			for (int i = 0; i < 9; i++) {
-				holdingNumber = btempBoard[i][3];
-				btempBoard[i][3] = btempBoard[i][4];
-				btempBoard[i][4] = holdingNumber;
-			}
-		} 
-		if (decidingRandom == 2) {
-			for (int i = 0; i < 9; i++) {
-				holdingNumber = btempBoard[i][3];
-				btempBoard[i][3] = btempBoard[i][5];
-				btempBoard[i][5] = holdingNumber;
-			}
-		}
-		decidingRandom = (int) (Math.random() * 3); // 0, 1, 2
-		if (decidingRandom == 1) {
-			for (int i = 0; i < 9; i++) {
-				holdingNumber = btempBoard[i][6];
-				btempBoard[i][6] = btempBoard[i][7];
-				btempBoard[i][7] = holdingNumber;
-			}
-		} 
-		if (decidingRandom == 2) {
-			for (int i = 0; i < 9; i++) {
-				holdingNumber = btempBoard[i][6];
-				btempBoard[i][6] = btempBoard[i][8];
-				btempBoard[i][8] = holdingNumber;
-			}
-		}
-		//  Swap two horizontal 3-tall chunks
-		decidingRandom = (int) (Math.random() * 4); // 0, 1, 2, 3
-		if (decidingRandom == 0) {
-			for (int h = 0; h < 3; h++) {
-				for (int i = 0; i < 9; i++) {
-					holdingNumber = btempBoard[h][i];
-					btempBoard[h][i] 
-					 = btempBoard[h + 3][i];
-					btempBoard[h + 3][i] 
-					 = holdingNumber;
-				}
-			}
-		}
-		if (decidingRandom == 1) {
-			for (int h = 0; h < 3; h++) {
-				for (int i = 0; i < 9; i++) {
-					holdingNumber = btempBoard[h][i];
-					btempBoard[h][i] = btempBoard[h + 6][i];
-					btempBoard[h + 6][i] = holdingNumber;
-				}
-			}
-		}
-		if (decidingRandom == 2) {
-			for (int h = 3; h < 6; h++) {
-				for (int i = 0; i < 9; i++) {
-					holdingNumber = btempBoard[h][i];
-					btempBoard[h][i] = btempBoard[h + 3][i];
-					btempBoard[h + 3][i] = holdingNumber;
-				}
-			}
-		}
-		decidingRandom = (int) (Math.random() * 4); // 0, 1, 2, 3
-		if (decidingRandom == 0) {
-			for (int h = 0; h < 3; h++) {
-				for (int i = 0; i < 9; i++) {
-					holdingNumber = btempBoard[i][h];
-					btempBoard[i][h] = btempBoard[i][h + 3];
-					btempBoard[i][h + 3] = holdingNumber;
-				}
-			}
-		}
-		if (decidingRandom == 1) {
-			for (int h = 0; h < 3; h++) {
-				for (int i = 0; i < 9; i++) {
-					holdingNumber = btempBoard[i][h];
-					btempBoard[i][h] = btempBoard[i][h + 6];
-					btempBoard[i][h + 6] = holdingNumber;
-				}
-			}
-		}
-		if (decidingRandom == 2) {
-			for (int h = 3; h < 6; h++) {
-				for (int i = 0; i < 9; i++) {
-					holdingNumber = btempBoard[i][h];
-					btempBoard[i][h] = btempBoard[i][h + 3];
-					btempBoard[i][h + 3] = holdingNumber;
-				}
-			}
-		}
+		
+		// Swap chunks of the initial board
+		btempBoard = swapChunks(btempBoard);
+		
 	 //  On the overall board, swap the complete placements of two integers.
 		int randomX = (int) ((Math.random() * 9) + 1);
 		int randomY = (int) ((Math.random() * 9) + 1);
