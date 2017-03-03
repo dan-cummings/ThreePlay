@@ -225,6 +225,7 @@ implements MouseListener, MouseMotionListener {
 			}
 		}
 		boardPanel.revalidate();
+		boardPanel.repaint();
 	}
 	
 	/**
@@ -323,6 +324,7 @@ implements MouseListener, MouseMotionListener {
 			this.displayBoard();
 			this.showMoveablePieces();
 			this.revalidate();
+			this.repaint();
 		} else if (choice == JOptionPane.NO_OPTION) {
 			JOptionPane.showMessageDialog(this,
 					"If you would like to play"
@@ -348,6 +350,7 @@ implements MouseListener, MouseMotionListener {
 			this.displayBoard();
 			this.showMoveablePieces();
 			this.revalidate();
+			this.repaint();
 		} else if (choice == JOptionPane.NO_OPTION) {
 			JOptionPane.showMessageDialog(this,
 					"If you would like to play"

@@ -685,16 +685,16 @@ public class SudokuLogic implements IGameLogic {
 		return true;	
 	}
 	
-	/* 
-	 *  Compares two boards. 
-	 *  Returns FALSE if there is a difference between them
-	 *  Returns TRUE, otherwise
-	 *  Used to generate the errorBoard
+	/**
+	 *  Compares two boards for correct values 
+	 *  @return False if there is a difference between them
+	 *  or true, otherwise.
 	 */
 	public boolean isCorrect(){
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				if (board[i][j].getNum() != completeBoard[i][j]) {
+				if (board[i][j].getNum()
+						!= completeBoard[i][j]) {
 					return false;
 				}
 			}

@@ -110,7 +110,7 @@ implements MouseListener, KeyListener {
 			showErrors();
 		}
 		
-		if(!game.isInitial(squareY, squareX) && !game.isError(squareY, squareX)){
+		if (!game.isInitial(squareY, squareX) && !game.isError(squareY, squareX)) {
 			board[squareX][squareY].setBackground(Color.white);
 		}
 		

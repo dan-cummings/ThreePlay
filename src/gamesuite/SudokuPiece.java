@@ -14,9 +14,9 @@ public class SudokuPiece implements IPiece, Serializable {
 	private static final long serialVersionUID = 1L;
 	/** Number stored in piece. */
 	private int num;
-	/** Value for initial number */
+	/** Value for initial number. */
 	private boolean isInitial;
-	/** If piece is in error */
+	/** If piece is in error. */
 	private boolean isError;
 	/** Owner of piece. */
 	private Player owner;

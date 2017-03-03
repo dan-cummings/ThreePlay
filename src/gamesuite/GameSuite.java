@@ -13,7 +13,7 @@ public final class GameSuite {
 	/**
 	 * private constructor. (not used)
 	 */
-	private GameSuite() { };
+	private GameSuite() { }
 	
 	/**
 	 * Main method to create a frame window and populate it with

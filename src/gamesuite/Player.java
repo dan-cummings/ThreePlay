@@ -9,5 +9,5 @@ package gamesuite;
  */
 public enum Player {
 	/** Separates White pieces and Black pieces. */
-	WHITE, BLACK, NONE;
+	WHITE, BLACK;
 }
