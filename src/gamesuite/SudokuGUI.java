@@ -17,12 +17,11 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 
 /**
- * Panel containing all of the information for the Checkers game.
+ * Panel containing all of the information for the sudoku game.
  * @author Daniel Cummings
  * Fitted to Sudoku by Brendon Murthum
  * @version 0.1
  */
-
 public class SudokuGUI extends JPanel 
 implements MouseListener, KeyListener {
 	

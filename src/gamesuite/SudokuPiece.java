@@ -3,10 +3,10 @@ package gamesuite;
 import java.io.Serializable;
 
 /**
- * Checkers Piece is used as a structure to represent pieces on
- * a checker board. Pieces maintain their valid movements as
- * well as whether or not they are king pieces.
- * @author Daniel Cummings
+ * Sudoku Piece is used as a structure to represent squares on
+ * sudoku board. Contains boolean values for errors and initially
+ * defined squares. 
+ * @author Brendon Murthum, Daniel Cummings
  */
 public class SudokuPiece implements IPiece, Serializable {
 
@@ -21,14 +21,15 @@ public class SudokuPiece implements IPiece, Serializable {
 	/** Owner of piece. */
 	private Player owner;
 	/** If piece is currently selected. */
-	private boolean currentlySelected = false;
+	private boolean currentlySelected;
 	
 	/**
 	 * Sudoku piece constructor to set beginning state.
-	 * @param num value of the piece.
+	 * @param numl value of the piece.
 	 */
-	public SudokuPiece(final int num) {
-		this.setNum(num);
+	public SudokuPiece(final int numl) {
+		this.setNum(numl);
+		this.currentlySelected = false;
 	}
 	
 	/**
@@ -83,7 +84,7 @@ public class SudokuPiece implements IPiece, Serializable {
 	
 	@Override
 	public final Player getOwner() {
-		return Player.NONE;
+		return null;
 	}
 	
 	@Override
