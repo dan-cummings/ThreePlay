@@ -2,8 +2,6 @@ package gamesuite;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -11,17 +9,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 
@@ -31,9 +22,13 @@ import javax.swing.border.MatteBorder;
  * Fitted to Sudoku by Brendon Murthum
  * @version 0.1
  */
+
 public class SudokuGUI extends JPanel 
 implements MouseListener, KeyListener {
 	
+	/**	Used in saving and loading. */
+	private static final long serialVersionUID = 1L;
+
 	/** Board square containers. */
 	private JPanel[][] board;
 
@@ -41,6 +36,7 @@ implements MouseListener, KeyListener {
 	private SudokuLogic game;
 
 	/** Piece that was selected. */
+	@SuppressWarnings("unused")
 	private JLabel piece;
 
 	/** Position of piece on board. */
@@ -56,6 +52,7 @@ implements MouseListener, KeyListener {
 	private JPanel boardPanel;
 
 	/** Layered pane for drag. */
+	@SuppressWarnings("unused")
 	private JLayeredPane pane;
 	
 	/** Settings of colors for the board. */
@@ -102,38 +99,36 @@ implements MouseListener, KeyListener {
 	
 	@Override
 	public final void mouseClicked(final MouseEvent e) { 
+		int oldX = game.currentClickedX();
+		int oldY = game.currentClickedY();
 		if (game.isGameOver()) {
 			return;
 		}
-		
 		if (game.isFilled()) {
 			showErrors();
 		}
-		
-		if (!game.isInitial(squareY, squareX) && !game.isError(squareY, squareX)) {
-			board[squareX][squareY].setBackground(Color.white);
+		if (!game.isInitial(squareY, squareX) 
+			&& !game.isError(squareY, squareX)) {
+			board[oldX][oldY].setBackground(Color.white);
 		}
-		
+		// Gets the position values of the user click.
 		xPos = e.getX();
 		yPos = e.getY();
-		
-		//gets the integer 0-8 location of piece in 2d array.
+		// Gets the integer 0-8 location of piece in 2d array.
 		squareX = Math.floorDiv(yPos, 60);
 		squareY = Math.floorDiv(xPos, 60);
-		
 		if (!game.isInitial(squareY, squareX)) {
 			game.clickedOn(squareY, squareX);
 			board[squareX][squareY].setBackground(selectedColor);
 		} else {
 			return;
 		}
-		
-		// on click of piece, SudokuPiece[x][y].clickedOn()
-		// SudokuPiece.isSelected() returns true if currently selected
-		
-		System.out.print("Current Selected Piece: X: " + game.currentClickedX() + " Y: " + game.currentClickedY() +  "\n");
+		System.out.print("Current Selected Piece: X: " 
+			+ game.currentClickedX() + " Y: " 
+			+ game.currentClickedY() +  "\n");
 		System.out.print("xPos: " + xPos + " yPos: " + yPos + "\n");
-		System.out.print("squareX: " + squareX + " squareY: " + squareY + "\n");
+		System.out.print("squareX: " + squareX 
+				+ " squareY: " + squareY + "\n");
 	}
 
 	/** 
@@ -174,29 +169,35 @@ implements MouseListener, KeyListener {
 					board[x][y].setBackground(initialColor);
 				}
 				
-				// Setting specific border sizes
-				// for the thicker middle lines
-				board[x][y].setBorder(new MatteBorder(1, 1, 1, 1, squareBorderColor));
-				if (x == 3 || x == 6) {
-					board[x][y].setBorder(new MatteBorder(3, 1, 1, 1, squareBorderColor));
-				}
-				if (y == 3 || y == 6) {
-					board[x][y].setBorder(new MatteBorder(1, 3, 1, 1, squareBorderColor));
-				}
-				if (x == 3 && y == 3) {
-					board[x][y].setBorder(new MatteBorder(3, 3, 1, 1, squareBorderColor));
-				}
-				if (x == 3 && y == 6) {
-					board[x][y].setBorder(new MatteBorder(3, 3, 1, 1, squareBorderColor));
-				}
-				if (x == 6 && y == 3) {
-					board[x][y].setBorder(new MatteBorder(3, 3, 1, 1, squareBorderColor));
-				}
-				if (x == 6 && y == 6) {
-					board[x][y].setBorder(new MatteBorder(3, 3, 1, 1, squareBorderColor));
-				}
-				
-				
+			// Setting specific border sizes
+			// for the thicker middle lines
+			board[x][y].setBorder(
+			 new MatteBorder(1, 1, 1, 1, squareBorderColor));
+			if (x == 3 || x == 6) {
+			 board[x][y].setBorder(
+			 new MatteBorder(3, 1, 1, 1, squareBorderColor));
+			}
+			if (y == 3 || y == 6) {
+			 board[x][y].setBorder(
+			 new MatteBorder(1, 3, 1, 1, squareBorderColor));
+			}
+			if (x == 3 && y == 3) {
+			 board[x][y].setBorder(
+			 new MatteBorder(3, 3, 1, 1, squareBorderColor));
+			}
+			if (x == 3 && y == 6) {
+			 board[x][y].setBorder(
+			 new MatteBorder(3, 3, 1, 1, squareBorderColor));
+			}
+			if (x == 6 && y == 3) {
+			 board[x][y].setBorder(
+			 new MatteBorder(3, 3, 1, 1, squareBorderColor));
+			}
+			if (x == 6 && y == 6) {
+			 board[x][y].setBorder(
+			 new MatteBorder(3, 3, 1, 1, squareBorderColor));
+			}
+			
 				numberLabel.setHorizontalAlignment(
 						SwingConstants.CENTER);
 				numberLabel.setVerticalAlignment(
@@ -212,7 +213,6 @@ implements MouseListener, KeyListener {
 	 * Creates label for the pieces and places them into the
 	 * proper position on the board.
 	 */
-	
 	private void displayBoard() {
 		int num;
 		for (int x = 0; x < size; x++) {
@@ -253,9 +253,7 @@ implements MouseListener, KeyListener {
 	}
 	
 	@Override
-	public final void keyTyped(final KeyEvent e) {
-		
-	}
+	public final void keyTyped(final KeyEvent e) { }
 
 	/** Unused methods from MouseListener. */
 	@Override
@@ -281,17 +279,18 @@ implements MouseListener, KeyListener {
 			//not a number.
 		} finally {
 			System.out.println("Attempted to parse integer");
-			System.out.println("Number: " + game.getNumber(squareY, squareX));
+			System.out.println("Number: " 
+			+ game.getNumber(squareY, squareX));
 			this.displayBoard();
 		}
 		
 		// Near the game end
-		if(game.isFilled()){
+		if (game.isFilled()) {
 			System.out.println("Board Filled!");
 			showErrors();
 		}
 		// When the game is finished
-		if(game.isCorrect()){
+		if (game.isCorrect()) {
 			System.out.println("Board Correct!");
 		}
 	}
@@ -299,3 +298,4 @@ implements MouseListener, KeyListener {
 	@Override
 	public void keyReleased(final KeyEvent e) { }
 }
+
