@@ -2,22 +2,17 @@ package gamesuite;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-<<<<<<< HEAD
 import javax.swing.border.EtchedBorder;
-=======
-import javax.swing.border.LineBorder;
->>>>>>> bee6b24b655c2edf2525d063955615f50fd3a31a
+
 
 /**
  * Panel containing all of the information for the Othello game.
@@ -32,7 +27,7 @@ implements MouseListener {
 	private static final long serialVersionUID = 1L;
 
 	/** Image for the piece. */
-	private ImageIcon bKing, bReg, rKing, rReg;
+	private ImageIcon bReg, rReg;
 
 	/** Board square containers. */
 	private JPanel[][] board;
@@ -40,17 +35,8 @@ implements MouseListener {
 	/** Model. */
 	private Othello game;
 
-	/** Piece that was selected. */
-	private JLabel piece;
-
-	/** Position of piece on board. */
-	private int xPos, yPos;
-
-	/** adjustment measurement. */
-	private int adjx, adjy;
-
 	/** integer values for location of move. */
-	private int fromX, fromY, toX, toY;
+	private int toX, toY;
 
 	/** Size of each square. */
 	private final int size, sqSize;
@@ -110,42 +96,6 @@ implements MouseListener {
 
 	@Override
 	public final void mousePressed(final MouseEvent e) { 
-		if (game.isGameOver()) {
-			return;
-		}
-		//get position of the event
-		xPos = e.getX();
-		yPos = e.getY();
-		
-		//grab the component at the location.
-		Component temp = pane.findComponentAt(xPos, yPos);
-		
-		//If the piece is not a JPanel they can select it.
-		if (!(temp instanceof JPanel)) {
-			//Adjustments to keep piece centered
-			//where user picked it up.
-			adjx = temp.getParent().getLocation().x - e.getX();
-			adjy = temp.getParent().getLocation().y - e.getY();
-			
-			//gets the integer 0-7 location of piece in 2d array.
-			fromX = Math.floorDiv(yPos, 75);
-			fromY = Math.floorDiv(xPos, 75);
-			
-			// Piece must have a move to move.
-			/*if (game.hasMove(game.getPiece(fromX, fromY))) {
-				//Stores selected piece into field.
-				piece = (JLabel) temp;
-				this.resetColor();
-				this.showMoves();
-				//Move to drag layer.
-				pane.add(piece, JLayeredPane.DRAG_LAYER);
-				//Places piece at correct position.
-				piece.setLocation(e.getX() + adjx,
-						e.getY() + adjy);
-			}*/
-		} else {
-			piece = null;
-		}
 
 	}
 
@@ -253,40 +203,12 @@ implements MouseListener {
 	 * Method grabs the Othello images from the resource file.
 	 */
 	private void getImages() {
-		bKing = new ImageIcon(this.getClass()
-				.getResource("/BlackKing.png"));
-		rKing = new ImageIcon(this.getClass()
-				.getResource("/RedKing.png"));
 		bReg = new ImageIcon(this.getClass()
 				.getResource("/BlackReg.png"));
 		rReg = new ImageIcon(this.getClass()
 				.getResource("/RedReg.png"));
 	}
 	
-	/**
-	 * Helper method to handle the instance of a stalemate.
-	 */
-	private void handleStalemate() {
-		int choice = JOptionPane.showConfirmDialog(this,
-				"Game ended in stalemate, \n"
-				+ "would you like to play again?",
-				"Stalemate", JOptionPane.YES_NO_OPTION);
-		if (choice == JOptionPane.YES_OPTION) {
-			game.reset();
-			this.displayBoard();
-			this.showMoves();
-			this.revalidate();
-		} else if (choice == JOptionPane.NO_OPTION) {
-			JOptionPane.showMessageDialog(this,
-					"If you would like to play"
-					+ " again select New Game tab.",
-					"Stalemate", JOptionPane.CANCEL_OPTION);
-		} else {
-			JOptionPane.showMessageDialog(this,
-					"You may load or start a new game",
-					"Stalemate", JOptionPane.CANCEL_OPTION);
-		}
-	}
 
 	/**
 	 * Helper method to handle the instance of game over.

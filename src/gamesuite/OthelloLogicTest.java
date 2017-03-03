@@ -1,5 +1,5 @@
 package gamesuite;
-
+//CHECKSTYLE:OFF
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -219,16 +219,15 @@ public class OthelloLogicTest {
 	@Test
 	public void testFullGame() {
 		Othello o = new Othello();
-		OthelloPiece[][] board = o.getBoard();
 		
 		for (int i = 1; i < 7; i++) {
 			for (int j = 1; j < 7; j++) {
-				board[i][j] = new OthelloPiece(Player.BLACK);
+				o.setPiece(i, j, Player.BLACK);
 			}
 		}
 		for (int i = 3; i < 5; i++) {
 			for (int j = 3; j < 5; j++) {
-				board[i][j] = new OthelloPiece(Player.WHITE);
+				o.setPiece(i, j, Player.WHITE);
 			}
 		}
 		assertTrue(o.getPiece(2, 2).getOwner() == Player.BLACK);
@@ -268,11 +267,10 @@ public class OthelloLogicTest {
 	@Test
 	public void testEndGame() {
 		Othello o = new Othello();
-		OthelloPiece[][] board = o.getBoard();
 		
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
-				board[i][j] = new OthelloPiece(Player.BLACK);
+				o.setPiece(i, j, Player.BLACK);
 			}
 		}
 		assertTrue(o.isGameOver());
@@ -290,4 +288,5 @@ public class OthelloLogicTest {
 		o.saveState(s);
 		o.loadState(s);
 	}
+	//CHECKSTYLE:ON
 }

@@ -60,11 +60,14 @@ public class Othello implements IGameLogic {
 	}
 	
 	/**
-	 * Returns the current game board.
-	 * @return the current game board.
+	 * sets the place on the board to the desired Player.
+	 * @param x location of the piece
+	 * @param y location of the piece
+	 * @param p desired player
 	 */
-	public OthelloPiece[][] getBoard() {
-		return this.board;
+	public void setPiece(final int x, final int y, 
+			final Player p) {
+		board[x][y] = new OthelloPiece(p);
 	}
 	
 	/**
@@ -77,7 +80,8 @@ public class Othello implements IGameLogic {
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
 				if (validMove(i, j, Player.WHITE) 
-						|| validMove(i, j, Player.BLACK)) {
+						|| 
+						validMove(i, j, Player.BLACK)) {
 					return false;
 				}
 			}
@@ -571,9 +575,10 @@ public class Othello implements IGameLogic {
 	 * @return true if the move is to a valid location, false for invalid.
 	 * @param x parameter location of current move checking.
 	 * @param y parameter location of current move checking.
+	 * @param p current player of current move checking.
 	 */
 	public final boolean validMoveRight(final int x, final int y, 
-			Player p) {
+			final Player p) {
 		if (board[x + 1][y]	!= null) { 
 			if (board[x + 1][y].getOwner() != p) {
 				for (int i = x + 2; i < board.length; i++) {
@@ -595,9 +600,10 @@ public class Othello implements IGameLogic {
 	 * @return true if the move is to a valid location, false for invalid.
 	 * @param x parameter location of current move checking.
 	 * @param y parameter location of current move checking.
+	 * @param p current player of current move checking.
 	 */
 	public final boolean validMoveLeft(final int x, final int y, 
-			Player p) {
+			final Player p) {
 		if (board[x - 1][y]	!= null) {
 			if (board[x - 1][y].getOwner() != p) {
 
@@ -620,9 +626,10 @@ public class Othello implements IGameLogic {
 	 * @return true if the move is to a valid location, false for invalid.
 	 * @param x parameter location of current move checking.
 	 * @param y parameter location of current move checking.
+	 * @param p current player of current move checking.
 	 */
 	public final boolean validMoveDown(final int x, final int y, 
-			Player p) {
+			final Player p) {
 		if (board[x][y + 1]	!= null 
 				&& board[x][y + 1].getOwner() != p) {
 			for (int i = y + 2; i < board.length; i++) {
@@ -643,9 +650,10 @@ public class Othello implements IGameLogic {
 	 * @return true if the move is to a valid location, false for invalid.
 	 * @param x parameter location of current move checking.
 	 * @param y parameter location of current move checking.
+	 * @param p current player of current move checking.
 	 */
 	public final boolean validMoveUp(final int x, final int y, 
-			Player p) {
+			final Player p) {
 		if (board[x][y - 1]	!= null 
 				&& board[x][y - 1].getOwner() != p) {
 			for (int i = y - 2; i >= 0; i--) {
@@ -666,9 +674,10 @@ public class Othello implements IGameLogic {
 	 * @return true if the move is to a valid location, false for invalid.
 	 * @param x parameter location of current move checking.
 	 * @param y parameter location of current move checking.
+	 * @param p current player of current move checking.
 	 */
 	public final boolean validMoveDownRight(final int x, final int y,
-			Player p) {
+			final Player p) {
 		int j = y + 2;
 		
 		if (board[x + 1][y + 1]	!= null 
@@ -695,9 +704,10 @@ public class Othello implements IGameLogic {
 	 * @return true if the move is to a valid location, false for invalid.
 	 * @param x parameter location of current move checking.
 	 * @param y parameter location of current move checking. 
+	 * @param p current player of current move checking.
 	 */
 	public final boolean validMoveDownLeft(final int x, final int y, 
-			Player p) {
+			final Player p) {
 		int j = y + 2;
 		
 		if (board[x - 1][y + 1]	!= null 
@@ -724,9 +734,10 @@ public class Othello implements IGameLogic {
 	 * @return true if the move is to a valid location, false for invalid.
 	 * @param x parameter location of current move checking.
 	 * @param y parameter location of current move checking. 
+	 * @param p current player of current move checking.
 	 */
 	public final boolean validMoveUpLeft(final int x, final int y,
-			Player p) {
+			final Player p) {
 		int j = y - 2;
 		
 		if (board[x - 1][y - 1]	!= null 
@@ -753,9 +764,10 @@ public class Othello implements IGameLogic {
 	 * @return true if the move is to a valid location, false for invalid.
 	 * @param x parameter location of current move checking.
 	 * @param y parameter location of current move checking.
+	 * @param p current player of current move checking.
 	 */
 	public final boolean validMoveUpRight(final int x, final int y,
-			Player p) {
+			final Player p) {
 		int j = y - 2;
 		
 		if (board[x + 1][y - 1]	!= null 
@@ -782,8 +794,10 @@ public class Othello implements IGameLogic {
 	 * @return true if the move is to a valid location, false for invalid.
 	 * @param x parameter location of current move checking.
 	 * @param y parameter location of current move checking.
+	 * @param p current player of current move checking.
 	 */	
-	public final boolean validMove(final int x, final int y, Player p) {
+	public final boolean validMove(final int x, final int y,
+			final Player p) {
 		
 		if (board[x][y] != null) {
 			return false;
@@ -851,7 +865,7 @@ public class Othello implements IGameLogic {
 	 * returns the board size.
 	 * @return the board size.
 	 */
-	public int getSize(){
+	public int getSize() {
 		return size;
 	}
 }

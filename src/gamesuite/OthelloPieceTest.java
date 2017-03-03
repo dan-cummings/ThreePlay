@@ -1,4 +1,5 @@
 package gamesuite;
+//CHECKSTYLE:OFF
 
 import static org.junit.Assert.*;
 
@@ -27,4 +28,5 @@ public class OthelloPieceTest {
 		p.switchOwner();
 		assertTrue(p.getOwner() == Player.WHITE);
 	}
+	//CHECKSTYLE:ON
 }

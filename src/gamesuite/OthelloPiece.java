@@ -6,16 +6,10 @@ import java.io.Serializable;
  * 
  * @author Jaden Sella
  */
-<<<<<<< HEAD
+
 public class OthelloPiece implements IPiece, Serializable {
 	
 	/** Serial version ID. */
-	private static final long serialVersionUID = 1L;
-=======
-public class OthelloPiece implements IPiece, Serializable{
->>>>>>> bee6b24b655c2edf2525d063955615f50fd3a31a
-
-	/** Serialize version. */
 	private static final long serialVersionUID = 1L;
 	
 	/** Which player owns this piece. */
