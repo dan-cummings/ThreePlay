@@ -59,12 +59,6 @@ public class CheckersPiece implements IPiece, Serializable {
 	}
 	
 	@Override
-	public final boolean validMove(final int x, 
-			final int y, final IPiece[][] b, final Player p) {
-		return false;
-	}
-
-	@Override
 	public final boolean validMove(final Move m, final IPiece[][] b) {
 		int tX = m.getToX();
 		int tY = m.getToY();

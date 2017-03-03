@@ -20,15 +20,4 @@ public interface IPiece {
 	 * @param b	2d array of pieces representing the current board.
 	 */
 	boolean validMove(Move m, IPiece[][] b);
-	
-	/**
-	 * Determines whether a given piece can move to the player determined
-	 * position.
-	 * @return true if the move is to a valid location, false for invalid.
-	 * @param x parameter location of current move checking.
-	 * @param y parameter location of current move checking.
-	 * @param b	2d array of pieces representing the current board.
-	 * @param p current player 
-	 */
-	boolean validMove(int x, int y, IPiece[][] b, Player p);
 }

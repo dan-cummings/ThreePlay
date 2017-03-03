@@ -1,10 +1,15 @@
 package gamesuite;
 
+import java.io.Serializable;
+
 /**
  * 
  * @author Jaden Sella
  */
-public class OthelloPiece implements IPiece {
+public class OthelloPiece implements IPiece, Serializable {
+	
+	/** Serial version ID. */
+	private static final long serialVersionUID = 1L;
 
 	/** Which player owns this piece. */
 	private Player owner;
@@ -26,16 +31,16 @@ public class OthelloPiece implements IPiece {
 	}
 	
 	/**
-	 * Sets the owner of the checkers piece.
+	 * Switches the owner of the checkers piece.
 	 */
 	public void switchOwner() {
-		if (this.owner == null) {
+		if (getOwner() == null) {
 			return;
 		}
-		if (this.owner == Player.WHITE) {
-			this.owner = Player.BLACK;
+		if (getOwner() == Player.WHITE) {
+			setOwner(Player.BLACK);
 		} else {
-			this.owner = Player.WHITE;
+			setOwner(Player.WHITE);
 		}
 	}
 
@@ -48,138 +53,4 @@ public class OthelloPiece implements IPiece {
 	public final boolean validMove(final Move m, final IPiece[][] b) {
 		return false;
 	}
-
-	@Override
-	public final boolean validMove(final int x, final int y,
-			final IPiece[][] b, final Player p) {
-		
-		if (b[x][y].getOwner() != null) {
-			return false;
-		}
-		
-		if (b[x + 1][y].getOwner() 
-				!= null && b[x + 1][y].getOwner() != p) {
-			for (int i = x + 2; i < b.length; i++) {
-				if (b[i][y].getOwner() == null) { 
-					break;
-				}
-				if (b[i][y].getOwner() == p) {
-					return true;
-				}
-			}
-		}
-		
-		if (b[x - 1][y].getOwner() 
-				!= null && b[x - 1][y].getOwner() != p) {
-			for (int i = x - 2; i >= 0; i--) {
-				if (b[i][y].getOwner() == null) { 
-					break;
-				}
-				if (b[i][y].getOwner() == p) {
-					return true;
-				}
-			}
-		}
-		
-		if (b[x][y + 1].getOwner() 
-				!= null && b[x][y + 1].getOwner() != p) {
-			for (int i = y + 2; i < b.length; i++) {
-				if (b[x][i].getOwner() == null) {
-					break;
-				}
-				if (b[x][i].getOwner() == p) {
-					return true;
-				}
-			}
-		}
-		
-		if (b[x][y - 1].getOwner() 
-				!= null && b[x][y - 1].getOwner() != p) {
-			for (int i = y - 2; i >= 0; i--) {
-				if (b[x][i].getOwner() == null) {
-					break;
-				}
-				if (b[x][i].getOwner() == p) {
-					return true;
-				}
-			}
-		}
-		
-		int j = y + 2;
-		
-		if (b[x + 1][y + 1].getOwner() 
-			!= null && b[x + 1][y + 1].getOwner() != p) {
-			for (int i = x + 2; i < b.length; i++) {
-				if (j >= b.length) {
-					break;
-				}
-				if (b[i][j].getOwner() == null) {
-					break;
-				}
-				if (b[i][j].getOwner() == p) {
-					return true;
-				}
-				j++;
-			}
-		}
-		
-		j = y + 2;
-		
-		if (b[x - 1][y + 1].getOwner() 
-			!= null && b[x - 1][y + 1].getOwner() != p) {
-			for (int i = x - 2; i >= 0; i--) {
-				if (j >= b.length) {
-					break;
-				}
-				if (b[i][j].getOwner() == null) {
-					break;
-				}
-				if (b[i][j].getOwner() == p) {
-					return true;
-				}
-				j++;
-			}
-		}
-		
-		j = y - 2;
-		
-		if (b[x - 1][y - 1].getOwner() 
-			!= null && b[x - 1][y - 1].getOwner() != p) {
-			for (int i = x - 2; i >= 0; i--) {
-				if (j < 0) {
-					break;
-				}
-				if (b[i][j].getOwner() == null) {
-					break;
-				}
-				if (b[i][j].getOwner() == p) {
-					return true;
-				}
-				j--;
-			}
-		}
-		
-		j = y - 2;
-		
-		if (b[x + 1][y - 1].getOwner() 
-			!= null && b[x + 1][y - 1].getOwner() != p) {
-			for (int i = x + 2; i < b.length; i++) {
-				if (j < 0) {
-					break;
-				}
-				if (b[i][j].getOwner() == null) {
-					break;
-				}
-				if (b[i][j].getOwner() == p) {
-					return true;
-				}
-				j--;
-			}
-		}
-		
-		return false;
-	}
-	
-	
-
 }
