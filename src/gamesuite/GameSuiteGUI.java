@@ -1,4 +1,3 @@
-
 package gamesuite;
 
 import java.awt.Dimension;
@@ -271,3 +270,4 @@ public class GameSuiteGUI extends JPanel {
 		}
 	}
 }
+

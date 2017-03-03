@@ -93,9 +93,5 @@ public class SudokuPiece implements IPiece, Serializable {
 		return true;
 	}
 
-	@Override
-	public final boolean validMove(final int x, final int y, 
-	  final IPiece[][] b, final Player p) {
-		return false;
-	}
+
 }
