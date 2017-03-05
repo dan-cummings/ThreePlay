@@ -83,13 +83,13 @@ public class SudokuLogic implements IGameLogic {
 	 *  Used to communicate between the GUI and the arrays 
 	 *  containing square-values.
 	 */
-	private int clickedX, clickedY;
+	private int clickedX, clickedY, lastX, lastY;
 	
 	/** 
 	 * This is the number of squares to remove from the initial complete 
 	 *  board to have the user solve.
 	 */
-	private int removeThisMany = 10;
+	private int removeThisMany = 60;
 	
 	/** 
 	 *  Initializes completeBoard, initialBoard, 
@@ -188,7 +188,6 @@ public class SudokuLogic implements IGameLogic {
 		}
 	}
 	
-	/** Generates the initialBoard */
 	/**
 	 * Generates the initial board.
 	 * @param removeQuantity - The number of squares to remove from
@@ -343,6 +342,8 @@ public class SudokuLogic implements IGameLogic {
 	 * 				edge of the board.
 	 */
 	public void clickedOn(final int row, final int col) {
+		lastX = clickedX;
+		lastY = clickedY;
 		clickedX = col;
 		clickedY = row;
 	}
@@ -363,6 +364,24 @@ public class SudokuLogic implements IGameLogic {
 	 */
 	public int currentClickedY() {
 		return clickedY;
+	}
+	
+	/**
+	 * Communicates to the GUI which square was last selected.
+	 * @return - Returns INT 0-8 of the cols right from the left
+	 * 			 edge of the board.
+	 */
+	public int lastClickedX() {
+		return lastX;
+	}
+	
+	/**
+	 * Communicates to the GUI which square was last selected.
+	 * @return - Returns INT 0-8 of the rows down from the top
+	 * 			 edge of the board.
+	 */
+	public int lastClickedY() {
+		return lastY;
 	}
 	
 	/**
