@@ -39,7 +39,7 @@ implements MouseListener, KeyListener {
 	private JLabel piece;
 
 	/** Position of piece on board. */
-	private int xPos, yPos;
+	private int xPos, yPos, oldX, oldY;
 	
 	/** integer values for location of chosen square. */
 	private int squareX = 0, squareY = 0;
@@ -56,13 +56,19 @@ implements MouseListener, KeyListener {
 	
 	/** Settings of colors for the board. */
 	/** Light-grey square boarders. */
-	private final Color squareBorderColor = new Color(210, 210, 210);
+	private final Color squareBorderColor = new Color(30, 30, 30);
 	/** Grey background of initial squares. */
-	private final Color initialColor = new Color(225, 225, 225);
+	private final Color initialColor = new Color(255, 255, 255);
+	/** Grey background of non-initial squares. */
+	private final Color nonInitialColor = new Color(255, 255, 255);
 	/** Green background of selected squares. */
-	private final Color selectedColor = new Color(210, 250, 220);
+	private final Color selectedColor = new Color(230, 230, 230);
 	/** Yellow background of error squares. */
-	private final Color errorColor = new Color(255, 255, 140);
+	private final Color errorColor = new Color(255, 255, 200);
+	/** Black text of initial squares. */
+	private final Color initialTextColor = new Color(25, 25, 25);
+	/** Grey text of completed squares. */
+	private final Color completedTextColor = new Color(190, 190, 190);
 
 	/**
 	 * Constructor for the checkers GUI.
@@ -94,12 +100,12 @@ implements MouseListener, KeyListener {
 		this.createBoard();
 		this.add(boardPanel, BorderLayout.CENTER);
 		this.revalidate();
+	
 	}
 	
 	@Override
 	public final void mouseClicked(final MouseEvent e) { 
-		int oldX = game.currentClickedX();
-		int oldY = game.currentClickedY();
+		
 		if (game.isGameOver()) {
 			return;
 		}
@@ -108,10 +114,6 @@ implements MouseListener, KeyListener {
 		}
 		if (game.isCorrect()) {
 			makeAllGold();
-		}
-		if (!game.isInitial(squareY, squareX) 
-			&& !game.isError(squareY, squareX)) {
-			board[oldX][oldY].setBackground(Color.white);
 		}
 		// Gets the position values of the user click.
 		xPos = e.getX();
@@ -123,15 +125,23 @@ implements MouseListener, KeyListener {
 		if (!game.isInitial(squareY, squareX)) {
 			game.clickedOn(squareY, squareX);
 			board[squareX][squareY].setBackground(selectedColor);
+			oldX = game.lastClickedX();
+			oldY = game.lastClickedY();
+			if (!(oldX == squareX && oldY == squareY)) {
+				board[oldX][oldY].setBackground(Color.white);
+			}
 		} else {
 			return;
 		}
+		/*
+		// For testing, outputs current click to console.
 		System.out.print("Current Selected Piece: X: " 
 			+ game.currentClickedX() + " Y: " 
 			+ game.currentClickedY() +  "\n");
 		System.out.print("xPos: " + xPos + " yPos: " + yPos + "\n");
 		System.out.print("squareX: " + squareX 
 				+ " squareY: " + squareY + "\n");
+		*/
 	}
 
 	/** 
@@ -190,6 +200,7 @@ implements MouseListener, KeyListener {
 				board[x][y] = new JPanel(new BorderLayout());
 				JLabel numberLabel = new JLabel();
 				numberLabel.setFont(new Font("Arial", 0, 30));
+				numberLabel.setForeground(initialTextColor);
 				board[x][y].setBackground(Color.white);
 				board[x][y].setPreferredSize(
 						new Dimension(sqSize, sqSize));
@@ -202,36 +213,28 @@ implements MouseListener, KeyListener {
 				if (game.isInitial(y, x)) {
 					board[x][y].setBackground(initialColor);
 				}
-				
-			// Setting specific border sizes
-			// for the thicker middle lines
-			board[x][y].setBorder(
-			 new MatteBorder(1, 1, 1, 1, squareBorderColor));
-			if (x == 3 || x == 6) {
-			 board[x][y].setBorder(
-			 new MatteBorder(3, 1, 1, 1, squareBorderColor));
-			}
-			if (y == 3 || y == 6) {
-			 board[x][y].setBorder(
-			 new MatteBorder(1, 3, 1, 1, squareBorderColor));
-			}
-			if (x == 3 && y == 3) {
-			 board[x][y].setBorder(
-			 new MatteBorder(3, 3, 1, 1, squareBorderColor));
-			}
-			if (x == 3 && y == 6) {
-			 board[x][y].setBorder(
-			 new MatteBorder(3, 3, 1, 1, squareBorderColor));
-			}
-			if (x == 6 && y == 3) {
-			 board[x][y].setBorder(
-			 new MatteBorder(3, 3, 1, 1, squareBorderColor));
-			}
-			if (x == 6 && y == 6) {
-			 board[x][y].setBorder(
-			 new MatteBorder(3, 3, 1, 1, squareBorderColor));
-			}
-			
+				// Setting the display board
+				int thick = 4;
+				int thin = 1;
+				int top = thin;
+				int left = thin;
+				int bottom = thin;
+				int right = thin;
+				if (x == 0 || x == 3 || x == 6) {
+					left = thick;
+				}
+				if (y == 0 || y == 3 || y == 6) {
+					top = thick;
+				}
+				if (y == 8) {
+					bottom = thick;
+				}
+				if (x == 8) {
+					right = thick;
+				}
+				board[x][y].setBorder(
+				  new MatteBorder(left, top, right, bottom, squareBorderColor));			
+	
 				numberLabel.setHorizontalAlignment(
 						SwingConstants.CENTER);
 				numberLabel.setVerticalAlignment(
@@ -265,6 +268,10 @@ implements MouseListener, KeyListener {
 				// Colors initial numbers.
 				if (game.isInitial(y, x)) {
 					board[x][y].setBackground(initialColor);
+					numberLabel.setForeground(initialTextColor);
+				} else {
+					board[x][y].setBackground(nonInitialColor);
+					numberLabel.setForeground(completedTextColor);
 				}
 				// If the location is currently selected.
 				if (!game.isInitial(y, x) 
@@ -309,27 +316,39 @@ implements MouseListener, KeyListener {
 			makeAllGold();
 			return;
 		}
+		// Parse the user input
 		try {
+			// Turn the current selected white
+			int currentX = game.currentClickedX();
+			int currentY = game.currentClickedY();
+			if (!game.isInitial(currentY, currentX)) {
+				board[currentX][currentY].setBackground(
+						Color.white);
+			}
+			
 			int temp = Integer.parseInt(
 					Character.toString(e.getKeyChar()));
 			game.setNumber(temp);
-		} catch (NumberFormatException m) {
-			//not a number.
-		} finally {
-			System.out.println("Attempted to parse integer");
-			System.out.println("Number: " 
-			+ game.getNumber(squareY, squareX));
 			this.displayBoard();
+			
+		} catch (NumberFormatException m) {
+			// Not a number
+		} finally {
+			// For Testing
+			//System.out.println("Input to [" + game.currentClickedX() + "][" + game.currentClickedY() + "]: " 
+			//+ game.getNumber(squareY, squareX));
 		}
 		
 		// Near the game end
 		if (game.isFilled()) {
-			System.out.println("Board Filled!");
+			// For Testing
+			// System.out.println("Board Filled!");
 			showErrors();
 		}
 		// When the game is finished
 		if (game.isCorrect()) {
-			System.out.println("Board Correct!");
+			// For Testing
+			// System.out.println("Board Correct!");
 			makeAllGold();
 		}
 	}
