@@ -89,7 +89,7 @@ public class SudokuLogic implements IGameLogic {
 	 * This is the number of squares to remove from the initial complete 
 	 *  board to have the user solve.
 	 */
-	private int removeThisMany = 10;
+	private int removeThisMany = 20;
 	
 	/** 
 	 *  Initializes completeBoard, initialBoard, 

@@ -105,7 +105,7 @@ public class CheckersTests {
 	public void multiJumpTest2() {
 		game = new CheckersLogic();
 		game.setup(3);
-		game.isMove(new Move(1, 1, 3, 3));
+		game.makeMove(new Move(1, 1, 3, 3));
 		assertFalse(game.isMove(new Move(3, 3, 1, 1)));
 	}
 	
@@ -113,7 +113,7 @@ public class CheckersTests {
 	public void multiJumpTest3() {
 		game = new CheckersLogic();
 		game.setup(3);
-		game.isMove(new Move(1, 1, 3, 3));
+		game.makeMove(new Move(1, 1, 3, 3));
 		assertFalse(game.isMove(new Move(3, 3, 2, 2)));
 	}
 	
