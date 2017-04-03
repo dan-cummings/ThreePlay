@@ -53,7 +53,6 @@ public class SudokuLogic implements IGameLogic {
 	private SudokuPiece[][] board;
 	
 	/** Used in IGameLogic, though not in Sudoku. */
-	@SuppressWarnings("unused")
 	private Player player;
 	
 	/** Stores the finished 'goal' board to be achieved. */
@@ -69,7 +68,6 @@ public class SudokuLogic implements IGameLogic {
 	private boolean[][] errorsBoard = new boolean[9][9];
 	
 	/** This value is true when the game is complete. */
-	@SuppressWarnings("unused")
 	private boolean gameComplete;
 	
 	/** 

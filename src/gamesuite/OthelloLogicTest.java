@@ -1,4 +1,5 @@
 package gamesuite;
+
 //CHECKSTYLE:OFF
 import static org.junit.Assert.*;
 
@@ -288,5 +289,5 @@ public class OthelloLogicTest {
 		o.saveState(s);
 		o.loadState(s);
 	}
-	//CHECKSTYLE:ON
 }
+//CHECKSTYLE:ON
