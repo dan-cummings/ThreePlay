@@ -51,7 +51,7 @@ public class GameSuiteGUI extends JPanel {
 	private JPanel init;
 
 	/**
-	 * @param frame  
+	 * @param frame of the GUI
 	 */
 	public GameSuiteGUI(final JFrame frame) {
 		this.wind = frame;
