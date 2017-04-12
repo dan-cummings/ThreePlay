@@ -145,6 +145,7 @@ implements MouseListener {
 			}
 		}
 		boardPanel.revalidate();
+		boardPanel.repaint();
 	}
 	
 	/**

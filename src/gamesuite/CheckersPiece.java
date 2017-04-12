@@ -33,7 +33,7 @@ public class CheckersPiece implements IPiece, Serializable {
 	 * Returns the boolean for pieces being able to jump.
 	 * @return true if the piece can jump this turn.
 	 */
-	public boolean getCanJump() {
+	public boolean hasJump() {
 		return this.canJump;
 	}
 	
@@ -43,14 +43,6 @@ public class CheckersPiece implements IPiece, Serializable {
 	 */
 	public void canJump(final boolean b) {
 		this.canJump = b;
-	}
-
-	/**
-	 * Sets the owner of the checkers piece.
-	 * @param p The player who owns the piece.
-	 */
-	private void setOwner(final Player p) {
-		this.owner = p;
 	}
 
 	@Override
@@ -137,6 +129,14 @@ public class CheckersPiece implements IPiece, Serializable {
 	 */
 	public void setKinged(final boolean kinged) {
 		this.isKinged = kinged;
+	}
+
+	/**
+	 * Sets the owner of the checkers piece.
+	 * @param p The player who owns the piece.
+	 */
+	private void setOwner(final Player p) {
+		this.owner = p;
 	}
 
 }
