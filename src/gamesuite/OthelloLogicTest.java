@@ -278,7 +278,7 @@ public class OthelloLogicTest {
 	
 	/** 
 	 * Tests save and load of game.
-	 * @throws Exception 
+	 * @throws Exception to handle load/save exceptions
 	 *  
 	 */
 	@Test
