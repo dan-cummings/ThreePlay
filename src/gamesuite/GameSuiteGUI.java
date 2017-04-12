@@ -30,7 +30,7 @@ public class GameSuiteGUI extends JPanel {
 	private JFrame wind;
 
 	/** Model which controls the game. */
-	private IGameLogic game;
+	private transient IGameLogic game;
 
 	/** Start games buttons. */
 	private JButton checkersButton, othelloButton, sudokuButton;
@@ -176,8 +176,7 @@ public class GameSuiteGUI extends JPanel {
 	private void checkersUI() {
 		wind.setSize(800, 700);
 		this.setPreferredSize(new Dimension(800, 700));
-		game = new CheckersLogic();
-		checkersPanel = new CheckersGUI((CheckersLogic) game);
+		checkersPanel = new CheckersGUI(this);
 		this.removeAll();
 		this.add(checkersPanel);
 		this.repaint();
@@ -249,7 +248,7 @@ public class GameSuiteGUI extends JPanel {
 						"Load Error",
 						JOptionPane.ERROR_MESSAGE);
 			} finally {
-				if (game instanceof CheckersLogic) {
+				if (game instanceof CheckersController) {
 					checkersPanel.displayBoard();
 					checkersPanel.resetColor();
 					checkersPanel.showMoveablePieces();

@@ -34,7 +34,7 @@ implements MouseListener, MouseMotionListener {
 	private JPanel[][] board;
 
 	/** Model. */
-	private CheckersLogic game;
+	private CheckersController game;
 
 	/** Piece that was selected. */
 	private JLabel piece;
@@ -62,18 +62,21 @@ implements MouseListener, MouseMotionListener {
 	
 	/** Current player. */
 	private String player;
+	
+	/** The creator of this JPanel. */
+	private final JPanel parent;
 
 	/**
 	 * Constructor for the checkers GUI.
-	 * @param gamel checkers game logic.
+	 * @param p The view object that created this one.
 	 */
-	public CheckersGUI(final CheckersLogic gamel) {
+	public CheckersGUI(final JPanel p) {
 		// Get game images.
 		this.getImages();
-		
+		this.parent = p;
+		this.game = new CheckersController(this);
 		// instantiate game objects
-		this.game = gamel;
-		this.size = gamel.getSize();
+		this.size = 8;
 		this.sqSize = 75;
 		// Creating size of panels.
 		Dimension panelSize =
@@ -138,7 +141,7 @@ implements MouseListener, MouseMotionListener {
 			fromY = Math.floorDiv(xPos, 75);
 			
 			// Piece must have a move to move.
-			if (game.hasMove(game.getPiece(fromX, fromY))) {
+			if (game.hasMove(fromX, fromY)) {
 				//Stores selected piece into field.
 				piece = (JLabel) temp;
 				this.resetColor();
@@ -170,11 +173,9 @@ implements MouseListener, MouseMotionListener {
 			if (pane.getBounds().contains(e.getPoint())) {
 				toX = Math.floorDiv(e.getY(), sqSize);
 				toY = Math.floorDiv(e.getX(), sqSize);
-				Move m = new Move(fromX, fromY, toX, toY);
-				if (game.isMove(m)) {
+				if (game.makeMove(fromX, fromY, toX, toY)) {
 					//Tells the model the user
 					//wants to move.
-					game.makeMove(m);
 					//Sets visibility.
 					piece.setVisible(true);
 					//removes piece from drag layer.
@@ -272,7 +273,7 @@ implements MouseListener, MouseMotionListener {
 	private void showMoves() {
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
-				if (game.isMove(new Move(fromX, fromY, x, y))) {
+				if (game.isMove(fromX, fromY, x, y)) {
 					board[x][y].setBackground(Color.YELLOW);
 				}
 			}
@@ -287,7 +288,7 @@ implements MouseListener, MouseMotionListener {
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				if (game.getPiece(x, y) != null) {
-					if (game.hasMove(game.getPiece(x, y))) {
+					if (game.hasMove(x, y)) {
 						board[x][y].
 						setBackground(Color.red);
 					}
