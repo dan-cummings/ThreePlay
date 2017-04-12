@@ -1,5 +1,7 @@
 package gamesuite;
 
+import java.io.Serializable;
+
 /** 
  * Move class creates and stores moves of board pieces.
  * When a piece is moved the Move object stores the to
@@ -7,8 +9,10 @@ package gamesuite;
  * @author Daniel Cummings
  * @version 0.1
  */
-public class Move {
+public class Move implements Serializable {
 	
+	/** Default serial code. */
+	private static final long serialVersionUID = 1L;
 	/**Horizontal board location piece moving to.*/
 	private int toX;
 	/**Vertical board location the piece is moving to.*/

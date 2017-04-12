@@ -16,8 +16,6 @@ public class CheckersPiece implements IPiece, Serializable {
 	private Player owner;
 	/** Tells if the piece has been made it to the end. */
 	private boolean isKinged;
-	/** Tells if the piece can jump. */
-	private boolean canJump;
 
 	/**
 	 * Checkers piece constructor to set owner and beginning state.
@@ -26,30 +24,8 @@ public class CheckersPiece implements IPiece, Serializable {
 	public CheckersPiece(final Player p) {
 		this.setOwner(p);
 		this.setKinged(false);
-		this.canJump(false);
 	}
 
-	/**
-	 * Returns the boolean for pieces being able to jump.
-	 * @return true if the piece can jump this turn.
-	 */
-	public boolean hasJump() {
-		return this.canJump;
-	}
-	
-	/**
-	 * Sets whether the piece can jump that turn.
-	 * @param b Whether or not the piece can jump.
-	 */
-	public void canJump(final boolean b) {
-		this.canJump = b;
-	}
-
-	@Override
-	public final Player getOwner() {
-		return owner;
-	}
-	
 	@Override
 	public final boolean validMove(final Move m, final IPiece[][] b) {
 		int tX = m.getToX();
@@ -57,12 +33,18 @@ public class CheckersPiece implements IPiece, Serializable {
 		int fX = m.getFromX();
 		int fY = m.getFromY();
 		
+		if ((fX < 0 || fX > 7)
+				|| (fY < 0 || fY > 7)
+				|| (tX < 0 || tX > 7)
+				|| (tY < 0 || tY > 7)) {
+			return false;
+		}
+		
 		boolean can = false;
 		if (b[tX][tY] != null) {
 			return can;
 		}
-		if (this.canJump 
-				&& Math.abs(tX - fX) == 2 
+		if (Math.abs(tX - fX) == 2 
 				&& Math.abs(tY - fY) == 2) {
 			if (tX - fX < 0 
 				&& (isKinged || owner == Player.WHITE)) {
@@ -95,7 +77,7 @@ public class CheckersPiece implements IPiece, Serializable {
 					}
 				}
 			}
-		} else if (!canJump) {
+		} else {
 			if (isKinged) {
 				if (Math.abs(tX - fX) == 1 
 						&& Math.abs(tY - fY) == 1) {
@@ -112,6 +94,11 @@ public class CheckersPiece implements IPiece, Serializable {
 			}
 		}
 		return can;	
+	}
+
+	@Override
+	public final Player getOwner() {
+		return owner;
 	}
 
 	/**
