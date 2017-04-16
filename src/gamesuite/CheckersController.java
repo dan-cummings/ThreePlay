@@ -1,13 +1,13 @@
 package gamesuite;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Stack;
 
 import javax.swing.JPanel;
 
@@ -23,19 +23,33 @@ public class CheckersController {
 
 	/** Current board status of the game. */
 	private CheckersModel model;
-	/** List of views that have authority. */
-	private List<JPanel> views;
 	/** Has the game been saved. */
 	private boolean saved;
-
+	/** tells the number of stored board states for undo. */
+	private int stores;
+	/** Stack to store game states if an undo is made. */
+	private Stack<CheckersModel> redo;
+	/** Computer player for the game. */
+	private CheckersAI comp;
+	/** Field to determine whether the game being played is
+	 * against a computer.
+	 */
+	private boolean isComp;
+	
 	/**
 	 * Constructor for checkers game.
-	 * @param view The view that is allowed access to the controller.
+	 * @param com Whether the game has a computer player.
 	 */
-	public CheckersController(final JPanel view) {
+	public CheckersController(final boolean com) {
 		this.model = new CheckersModel();
-		this.views = new ArrayList<JPanel>();
-		this.views.add(view);
+		this.stores = 0;
+		this.redo = new Stack<CheckersModel>();
+		this.fileSetup();
+		this.store();
+		if (com) {
+			this.isComp = com;
+			this.comp = new CheckersAI(this.model);
+		}
 	}
 
 	/**
@@ -73,7 +87,154 @@ public class CheckersController {
 	 */
 	public boolean makeMove(final int fx,
 			final int fy, final int tx, final int ty) {
-		return this.model.makeMove(new Move(fx, fy, tx, ty));
+		 boolean made = this.model.makeMove(new Move(fx, fy, tx, ty));
+		 if (made) {
+			 this.store();
+			 if (isComp) {
+				 comp.yourMove();
+			 }
+		 }
+		 return made;
+	}
+	
+	/**
+	 * Method to recover the most previous game state in memory.
+	 * If game is at the beginning there are no such states and
+	 * the method will not recover any state.
+	 */
+	@SuppressWarnings("unchecked")
+	public void undo() {
+		if (stores == 1) {
+			return;
+		}
+		try {
+			Stack<CheckersModel> undo = new Stack<CheckersModel>();
+			FileInputStream fstrm =
+					new FileInputStream("undo.ser");
+			ObjectInputStream undostrm = 
+					new ObjectInputStream(fstrm);
+			Object temp = undostrm.readObject();
+			if (temp instanceof Stack<?>) {
+				temp = (Stack<Object>) temp;
+				if (((Stack<CheckersModel>) temp).peek()
+						instanceof CheckersModel) {
+					undo = (Stack<CheckersModel>) temp;
+				}
+			}
+			undostrm.close();
+			fstrm.close();
+			FileOutputStream strm = new 
+					FileOutputStream("undo.ser");
+			ObjectOutputStream ostrm = new ObjectOutputStream(strm);
+			//Places object into the redo stack.
+			this.redo.push(this.model);
+			this.model = undo.pop();
+			ostrm.writeObject(undo);
+			ostrm.close();
+			strm.close();
+		} catch (Exception e) {
+			System.out.println("Error while storing: ");
+			e.printStackTrace();
+		} finally {
+			stores--;
+		}
+	}
+	
+	/**
+	 * Method attempt to recover a game state that existed
+	 * before an undo was executed. If an undo is executed and
+	 * a new move is made the states cannot be recovered.
+	 */
+	@SuppressWarnings("unchecked")
+	public void redo() {
+		if (redo.isEmpty()) {
+			return;
+		}
+		try {
+			Stack<CheckersModel> undo = new Stack<CheckersModel>();
+			FileInputStream fstrm =
+					new FileInputStream("undo.ser");
+			ObjectInputStream undostrm = 
+					new ObjectInputStream(fstrm);
+			Object temp = undostrm.readObject();
+			if (temp instanceof Stack<?>) {
+				temp = (Stack<Object>) temp;
+				if (((Stack<CheckersModel>) temp).peek()
+						instanceof CheckersModel) {
+					undo = (Stack<CheckersModel>) temp;
+				}
+			}
+			undostrm.close();
+			fstrm.close();
+			FileOutputStream strm = new 
+					FileOutputStream("undo.ser");
+			ObjectOutputStream ostrm = new ObjectOutputStream(strm);
+			//Places object into the redo stack.
+			undo.push(this.model);
+			this.model = redo.pop();
+			ostrm.writeObject(undo);
+			ostrm.close();
+			strm.close();
+		} catch (Exception e) {
+			System.out.println("Error while storing: ");
+			e.printStackTrace();
+		} finally {
+			stores++;
+		}
+	}
+	
+	/**
+	 * Helper method stores board states into a file
+	 * This file is used to get states of the game
+	 * when undo is called.
+	 */
+	@SuppressWarnings("unchecked")
+	private void store() {
+		try {
+			Stack<CheckersModel> undo = new Stack<CheckersModel>();
+			if (stores != 0) {
+				FileInputStream istrm = 
+						new FileInputStream("undo.ser");
+				ObjectInputStream iostrm = 
+						new ObjectInputStream(istrm);
+				Object temp = iostrm.readObject();
+				if (temp instanceof Stack<?>) {
+					if (((Stack<?>) temp).peek() 
+						instanceof CheckersModel) {
+						undo = 
+						(Stack<CheckersModel>) temp;
+					}
+				}
+				iostrm.close();
+				istrm.close();
+			}
+			FileOutputStream strm = new 
+					FileOutputStream("undo.ser");
+			ObjectOutputStream ostrm = new ObjectOutputStream(strm);
+			undo.push(this.model);
+			ostrm.writeObject(undo);
+			ostrm.close();
+			strm.close();
+		} catch (Exception e) {
+			System.out.println("Error while storing: ");
+			e.printStackTrace();
+		} finally {
+			stores++;
+		}
+	}
+	
+	/**
+	 * Creates a new file for board states.
+	 */
+	private void fileSetup() {
+		File temp = new File("undo.ser");
+		if (temp.delete()) {
+			try {
+				temp.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} 
 	}
 	
 	/**
@@ -87,6 +248,7 @@ public class CheckersController {
 			FileOutputStream strm = new FileOutputStream(filename);
 			ObjectOutputStream ostrm = new ObjectOutputStream(strm);
 			ostrm.writeObject(model);
+			ostrm.writeBoolean(this.isComp);
 			ostrm.close();
 			strm.close();
 			saved = true;
@@ -120,6 +282,7 @@ public class CheckersController {
 			if (o instanceof CheckersModel) {
 				this.model = (CheckersModel) o;
 			}
+			this.isComp = ostrm.readBoolean();
 			ostrm.close();
 			strm.close();
 		} catch (FileNotFoundException e) {
@@ -139,6 +302,10 @@ public class CheckersController {
 					+ " cannot recieve game state.");
 		} finally {
 			System.out.println("Load Attempted.");
+			if (isComp) {
+				this.comp = 
+				new CheckersAI(this.model);
+			}
 		}
 	}
 
@@ -200,39 +367,9 @@ public class CheckersController {
 	 */
 	public void reset() {
 		this.model = new CheckersModel();
+		this.fileSetup();
+		this.store();
+		this.stores = 0;
 	}
 	
-	/**
-	 * REPLACE IN MODEL.
-	 * @param test integer for test being run.
-	 *
-	public void setup(final int test) {
-			if (test == 1) {
-				board = new CheckersPiece[8][8];
-				moves.clear();
-				player = Player.BLACK;
-				checkJumps();
-			} else if (test == 2) {
-				board = new CheckersPiece[8][8];
-				player = Player.BLACK;
-				moves.clear();
-				jumps.clear();
-				board[1][1] = new CheckersPiece(player);
-				board[1][1].setKinged(true);
-				board[2][2] = new CheckersPiece(Player.WHITE);
-				checkJumps();
-			} else if (test == 3) {
-				board = new CheckersPiece[8][8];
-				player = Player.BLACK;
-				moves.clear();
-				jumps.clear();
-				board[1][1] = new CheckersPiece(player);
-				board[1][1].setKinged(true);
-				board[2][2] = new CheckersPiece(Player.WHITE);
-				board[4][4] = new CheckersPiece(Player.WHITE);
-				checkJumps();
-			}
-	}
-	*/
-	/** Unused Method. */
 }

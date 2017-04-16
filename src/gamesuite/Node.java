@@ -43,6 +43,20 @@ public class Node<E> implements Serializable {
 		this.value = 0;
 		this.leaf = new ArrayList<Node<E>>();
 	}
+	
+	/**
+	 * Getter method for all of the leaves on the
+	 * current node.
+	 * @return A list of nodes if the caller is
+	 * not a leaf. Otherwise it will return null.
+	 */
+	public List<Node<E>> getLeaves() {
+		if (!this.isLeaf()) {
+			return this.leaf;
+		} else {
+			return null;
+		}
+	}
 
 	/**
 	 * Creates a new node and makes it a leaf of the root node.

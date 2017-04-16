@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import org.apache.commons.lang3.SerializationUtils;
 
 /**
  * Checker models is a persistent collection of values and objects
@@ -43,7 +44,7 @@ public class CheckersModel implements Serializable {
 		this.moves = new ArrayList<Move>();
 		this.gameover = false;
 		this.stalemate = false;
-		this.player = Player.BLACK;
+		this.player = Player.WHITE;
 		this.jumpTree = new Node<Move>(null, null);
 		createBoard();
 		findMoves();
@@ -91,30 +92,33 @@ public class CheckersModel implements Serializable {
 	 * into a single move. Boards are stored into map.
 	 */
 	private void concatJumps() {
+		
 		//Get depth of the last nodes in the tree.
 		int max = jumpTree.calcDepth(jumpTree) - 1;
+		
 		//Stack to store Nodes into.
 		Stack<Node<Move>> stack = new Stack<Node<Move>>();
+		
 		//Adds nodes to the stack.
 		jumpTree.findAtDepth(max, stack);
+		
 		//ArrayList for new concatenated jumps.
 		Stack<Move> tempMoves = new Stack<Move>();
+		
 		//ArrayList to temporarily store boards.
 		Stack<CheckersPiece[][]> boards =
 				new Stack<CheckersPiece[][]>();
-		//If the stack is empty for some reason then skip.
-		if (!stack.isEmpty()) {
-			for (Node<Move> temp : stack) {
-				Move last = temp.getData();
-				while (temp.getRoot() != jumpTree) {
-					temp = temp.getRoot();
+
+		for (Node<Move> temp : stack) {
+			Move last = temp.getData();
+			while (temp.getRoot() != jumpTree) {
+				temp = temp.getRoot();
 				}
-				Move first = temp.getData();
-				tempMoves.push(new Move(first.getFromX(),
-						first.getFromY(), last.getToX(),
-						last.getToY()));
-				boards.push(move.get(last));
-			}
+			Move first = temp.getData();
+			tempMoves.push(new Move(first.getFromX(),
+					first.getFromY(), last.getToX(),
+					last.getToY()));
+			boards.push(move.get(last));
 		}
 		//Clears possible moves on the board.
 		move.clear();
@@ -221,7 +225,10 @@ public class CheckersModel implements Serializable {
 		CheckersPiece[][] temp = new CheckersPiece[8][8];
 		for (int x = 0; x < 8; x++) {
 			for (int y = 0; y < 8; y++) {
-				temp[x][y] = b[x][y];
+				if (b[x][y] != null) {
+					temp[x][y] = 
+					SerializationUtils.clone(b[x][y]);
+				}
 			}
 		}
 		int tx = m.getToX();
@@ -439,7 +446,11 @@ public class CheckersModel implements Serializable {
 	 * @return Board for the provided Move object.
 	 */
 	public CheckersPiece[][] getResultBoard(final Move m) {
-		return this.move.get(m);
+		if (checkMove(m)) {
+			return this.move.get(m);
+		} else {
+			return null;
+		}
 	}
 
 	/**

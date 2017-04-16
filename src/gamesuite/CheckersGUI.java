@@ -74,7 +74,7 @@ implements MouseListener, MouseMotionListener {
 		// Get game images.
 		this.getImages();
 		this.parent = p;
-		this.game = new CheckersController(this);
+		this.gameOption();
 		// instantiate game objects
 		this.size = 8;
 		this.sqSize = 75;
@@ -106,6 +106,21 @@ implements MouseListener, MouseMotionListener {
 		turn.setHorizontalAlignment(size / 2);
 		this.add(turn, BorderLayout.PAGE_START);
 		getPlayer();
+	}
+
+	private void gameOption() {
+		Object[] options = {"Player vs. Computer", "Player vs. Player"};
+		int type = JOptionPane.showOptionDialog(this,
+				"Please select a game mode:",
+				"Game Select",
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.PLAIN_MESSAGE,
+				null, options, options[0]);
+		if (type == JOptionPane.YES_OPTION) {
+			this.game = new CheckersController(true);
+		} else {
+			this.game = new CheckersController(false);
+		}
 	}
 
 	/**
