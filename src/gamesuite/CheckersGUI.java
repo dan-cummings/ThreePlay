@@ -156,12 +156,16 @@ implements MouseListener, MouseMotionListener {
 	 */
 	private void gameOption() {
 		Object[] options = {"Player vs. Computer", "Player vs. Player"};
-		int type = JOptionPane.showOptionDialog(this,
+		int type;
+		do {
+			type = JOptionPane.showOptionDialog(this,
 				"Please select a game mode:",
 				"Game Select",
 				JOptionPane.YES_NO_OPTION,
 				JOptionPane.PLAIN_MESSAGE,
 				null, options, options[0]);
+		} while (type == JOptionPane.CLOSED_OPTION);
+				
 		if (type == JOptionPane.YES_OPTION) {
 			this.game.setAI(true);
 		} else {
@@ -403,6 +407,7 @@ implements MouseListener, MouseMotionListener {
 				+ "would you like to play again?",
 				"Stalemate", JOptionPane.YES_NO_OPTION);
 		if (choice == JOptionPane.YES_OPTION) {
+			gameOption();
 			game.reset();
 			this.displayBoard();
 			this.showMoveablePieces();
