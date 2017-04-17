@@ -71,7 +71,7 @@ public class SudokuLogic implements IGameLogic {
 	private boolean gameComplete;
 	
 	/** 
-	 * The width and hight of the grid of squares in the game. 
+	 * The width and hieght of the grid of squares in the game. 
 	 * Should be 9. 
 	 */
 	private int size;

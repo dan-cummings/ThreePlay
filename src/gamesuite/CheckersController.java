@@ -1,6 +1,5 @@
 package gamesuite;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,8 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Stack;
-
-import javax.swing.JPanel;
+import org.apache.commons.lang3.SerializationUtils;
 
 /**
  * Logic for the game of checkers. Model allows users to make moves,
@@ -17,16 +15,14 @@ import javax.swing.JPanel;
  * game, and determines when the game is over. The model is called
  * from the controller.
  * @author Daniel Cummings
- * @version 1.0
+ * @version 2.0
  */
-public class CheckersController {
+public class CheckersController implements IGameLogic {
 
 	/** Current board status of the game. */
 	private CheckersModel model;
 	/** Has the game been saved. */
 	private boolean saved;
-	/** tells the number of stored board states for undo. */
-	private int stores;
 	/** Stack to store game states if an undo is made. */
 	private Stack<CheckersModel> redo;
 	/** Computer player for the game. */
@@ -35,19 +31,28 @@ public class CheckersController {
 	 * against a computer.
 	 */
 	private boolean isComp;
+	/** Allows users to move back through previous board states. */
+	private Stack<CheckersModel> undo;
 	
 	/**
 	 * Constructor for checkers game.
-	 * @param com Whether the game has a computer player.
 	 */
-	public CheckersController(final boolean com) {
+	public CheckersController() {
 		this.model = new CheckersModel();
-		this.stores = 0;
 		this.redo = new Stack<CheckersModel>();
-		this.fileSetup();
+		this.isComp = false;
+		undo = new Stack<CheckersModel>();
+		redo = new Stack<CheckersModel>();
 		this.store();
-		if (com) {
-			this.isComp = com;
+	}
+	
+	/** Allows user to set whether or not they are
+	 * playing against an AI.
+	 * @param ai True if this is an AI game.
+	 */
+	public void setAI(final boolean ai) {
+		if (ai) {
+			this.isComp = true;
 			this.comp = new CheckersAI(this.model);
 		}
 	}
@@ -89,10 +94,11 @@ public class CheckersController {
 			final int fy, final int tx, final int ty) {
 		 boolean made = this.model.makeMove(new Move(fx, fy, tx, ty));
 		 if (made) {
-			 this.store();
-			 if (isComp) {
+			 if (isComp && !model.isGameOver()
+					 && !model.getStalemate()) {
 				 comp.yourMove();
 			 }
+			 this.store();
 		 }
 		 return made;
 	}
@@ -102,41 +108,15 @@ public class CheckersController {
 	 * If game is at the beginning there are no such states and
 	 * the method will not recover any state.
 	 */
-	@SuppressWarnings("unchecked")
 	public void undo() {
-		if (stores == 1) {
+		if (undo.isEmpty()) {
 			return;
-		}
-		try {
-			Stack<CheckersModel> undo = new Stack<CheckersModel>();
-			FileInputStream fstrm =
-					new FileInputStream("undo.ser");
-			ObjectInputStream undostrm = 
-					new ObjectInputStream(fstrm);
-			Object temp = undostrm.readObject();
-			if (temp instanceof Stack<?>) {
-				temp = (Stack<Object>) temp;
-				if (((Stack<CheckersModel>) temp).peek()
-						instanceof CheckersModel) {
-					undo = (Stack<CheckersModel>) temp;
-				}
-			}
-			undostrm.close();
-			fstrm.close();
-			FileOutputStream strm = new 
-					FileOutputStream("undo.ser");
-			ObjectOutputStream ostrm = new ObjectOutputStream(strm);
-			//Places object into the redo stack.
-			this.redo.push(this.model);
+		} else {
+			redo.push(this.model);
 			this.model = undo.pop();
-			ostrm.writeObject(undo);
-			ostrm.close();
-			strm.close();
-		} catch (Exception e) {
-			System.out.println("Error while storing: ");
-			e.printStackTrace();
-		} finally {
-			stores--;
+			if (isComp) {
+				comp.setModel(this.model);
+			}
 		}
 	}
 	
@@ -144,97 +124,31 @@ public class CheckersController {
 	 * Method attempt to recover a game state that existed
 	 * before an undo was executed. If an undo is executed and
 	 * a new move is made the states cannot be recovered.
+	 * (Utilizes Apache Commons to clone object.)
 	 */
-	@SuppressWarnings("unchecked")
 	public void redo() {
 		if (redo.isEmpty()) {
 			return;
-		}
-		try {
-			Stack<CheckersModel> undo = new Stack<CheckersModel>();
-			FileInputStream fstrm =
-					new FileInputStream("undo.ser");
-			ObjectInputStream undostrm = 
-					new ObjectInputStream(fstrm);
-			Object temp = undostrm.readObject();
-			if (temp instanceof Stack<?>) {
-				temp = (Stack<Object>) temp;
-				if (((Stack<CheckersModel>) temp).peek()
-						instanceof CheckersModel) {
-					undo = (Stack<CheckersModel>) temp;
-				}
-			}
-			undostrm.close();
-			fstrm.close();
-			FileOutputStream strm = new 
-					FileOutputStream("undo.ser");
-			ObjectOutputStream ostrm = new ObjectOutputStream(strm);
-			//Places object into the redo stack.
-			undo.push(this.model);
+		} else {
+			undo.push(SerializationUtils.clone(this.model));
 			this.model = redo.pop();
-			ostrm.writeObject(undo);
-			ostrm.close();
-			strm.close();
-		} catch (Exception e) {
-			System.out.println("Error while storing: ");
-			e.printStackTrace();
-		} finally {
-			stores++;
+			if (isComp) {
+				comp.setModel(this.model);
+			}
 		}
 	}
 	
 	/**
 	 * Helper method stores board states into a file
 	 * This file is used to get states of the game
-	 * when undo is called.
+	 * when undo is called. (Utilizes Apache Commons to 
+	 * clone object.)
 	 */
-	@SuppressWarnings("unchecked")
 	private void store() {
-		try {
-			Stack<CheckersModel> undo = new Stack<CheckersModel>();
-			if (stores != 0) {
-				FileInputStream istrm = 
-						new FileInputStream("undo.ser");
-				ObjectInputStream iostrm = 
-						new ObjectInputStream(istrm);
-				Object temp = iostrm.readObject();
-				if (temp instanceof Stack<?>) {
-					if (((Stack<?>) temp).peek() 
-						instanceof CheckersModel) {
-						undo = 
-						(Stack<CheckersModel>) temp;
-					}
-				}
-				iostrm.close();
-				istrm.close();
-			}
-			FileOutputStream strm = new 
-					FileOutputStream("undo.ser");
-			ObjectOutputStream ostrm = new ObjectOutputStream(strm);
-			undo.push(this.model);
-			ostrm.writeObject(undo);
-			ostrm.close();
-			strm.close();
-		} catch (Exception e) {
-			System.out.println("Error while storing: ");
-			e.printStackTrace();
-		} finally {
-			stores++;
+		undo.push(SerializationUtils.clone(this.model));
+		if (!redo.isEmpty()) {
+			redo.clear();
 		}
-	}
-	
-	/**
-	 * Creates a new file for board states.
-	 */
-	private void fileSetup() {
-		File temp = new File("undo.ser");
-		if (temp.delete()) {
-			try {
-				temp.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} 
 	}
 	
 	/**
@@ -367,9 +281,21 @@ public class CheckersController {
 	 */
 	public void reset() {
 		this.model = new CheckersModel();
-		this.fileSetup();
+		if (this.isComp) {
+			comp = new CheckersAI(this.model);
+		}
 		this.store();
-		this.stores = 0;
+	}
+
+	/** UNUSED METHODS. */
+	@Override
+	public final boolean isMove(final Move m) {
+		return false;
+	}
+
+	@Override
+	public final boolean isMove(final int x, final int y) {
+		return false;
 	}
 	
 }

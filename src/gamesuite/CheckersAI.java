@@ -15,11 +15,13 @@ public class CheckersAI {
 	/** MinMax tree for moves in checkers game. */
 	private Node<Move> minmax;
 	/** Determines the color of pieces for the AI. */
-	private static Player COLOR = Player.BLACK;
+	private static Player color = Player.BLACK;
 	/** Model being used for evaluation. */
 	private CheckersModel model;
 	/** Sets the maximum depth the move search tree will go. */
-	private static int MAX_DEPTH = 4;
+	private static int maxDepth = 4;
+	/** Whether the it is the first move of the game. */
+	private boolean firstMove;
 	
 	/**
 	 * AI constructor to set skill level provide
@@ -29,6 +31,7 @@ public class CheckersAI {
 	public CheckersAI(final CheckersModel m) {
 		this.minmax = new Node<Move>(null, null);
 		this.model = m;
+		this.firstMove = true;
 	}
 	
 	/**
@@ -36,6 +39,15 @@ public class CheckersAI {
 	 * for the AI. When one is found, the move is executed.
 	 */
 	public void yourMove() {
+		if (firstMove) {
+			ArrayList<Move> moves = this.model.getMoveList();
+			int rand = (int) (Math.random() * (moves.size() - 1));
+			Move disMove = moves.get(rand);
+			this.model.makeMove(disMove);
+			minmax.clear();
+			this.firstMove = false;
+			return;
+		}
 		//Create the tree.
 		this.generateTree(1, minmax, model);
 		//Node to contain the best move.
@@ -81,7 +93,6 @@ public class CheckersAI {
 				(ArrayList<Node<Move>>) r.getLeaves();
 		//max
 		if ((depth & 1) == 1) {
-			System.out.println("Max");
 			int value = Integer.MIN_VALUE;
 			int max = Integer.MIN_VALUE;
 			for (Node<Move> m : evalList) {
@@ -96,7 +107,6 @@ public class CheckersAI {
 			}
 			return max;
 		} else {
-			System.out.println("min");
 			int value = Integer.MAX_VALUE;
 			int min = Integer.MAX_VALUE;
 			for (Node<Move> m : evalList) {
@@ -123,7 +133,7 @@ public class CheckersAI {
 			final CheckersModel mod) {
 		CheckersModel hold;
 		ArrayList<Move> list = mod.getMoveList();
-		if (depth < CheckersAI.MAX_DEPTH) {
+		if (depth < CheckersAI.maxDepth) {
 			//Adds moves for the turn on the tree.
 			list.stream().forEach(e -> r.addleaf(e));
 			//Iterates over the list to evaluate response moves to
@@ -140,7 +150,7 @@ public class CheckersAI {
 						r.getleaf(m), hold);
 				//Returns model to the status of before move.
 			}
-		} else if (depth == CheckersAI.MAX_DEPTH) {
+		} else if (depth == CheckersAI.maxDepth) {
 			list.stream().forEach(e -> r.addleaf(e));
 			//Applies static analysis to each board and sets the
 			//value of the board into the node.
@@ -169,29 +179,29 @@ public class CheckersAI {
 		for (int x = 0; x < board.length; x++) {
 			for (int y = 0; y < board.length; y++) {
 				if (board[x][y] != null) {
+					locVal = (Math.abs((x + 1) - 4)
+							+ Math.abs((y + 1) - 4))
+							/ 2;
 					//Average distance to the center.
-					locVal = 
-					(Math.abs((x + 1) - 4)
-					+ Math.abs((y + 1) - 4)) / 2;
 					temp = board[x][y];
 					if (temp.getOwner()
-							== CheckersAI.COLOR) {
+							!= CheckersAI.color) {
 						posVal +=
-						lookForJump(board, x, y);
+						calcPos(board, x, y);
 						posVal += locVal + x;
 						if (temp.isKinged()) {
-							posVal += 4;
-						} else {
 							posVal += 2;
+						} else {
+							posVal += 1;
 						}
 					} else {
 						negVal += locVal + (7 - x);
-						posVal += 
-						lookForJump(board, x, y);
+						negVal += 
+						calcPos(board, x, y);
 						if (temp.isKinged()) {
-							negVal += 4;
-						} else {
 							negVal += 2;
+						} else {
+							negVal += 1;
 						}
 					}
 				}
@@ -208,59 +218,113 @@ public class CheckersAI {
 	 * @param y Horizontal position of the piece on the board.
 	 * @return Weighted value for whether the piece can be jumped.
 	 */
-	private int lookForJump(final CheckersPiece[][] 
+	private int calcPos(final CheckersPiece[][] 
 			board, final int x, final int y) {
+		//If piece is near the edges then it is safe.
 		if ((x < 1 || x > 6) || (y < 1 || y > 6)) {
-			return 3;
+			return 4;
 		}
 		int total = 0;
-		if (board[x][y].getOwner() == CheckersAI.COLOR) {
+		if (board[x][y].getOwner() == CheckersAI.color) {
 			if (board[x - 1][y - 1] != null
 					&& board[x - 1][y - 1].getOwner()
-					== CheckersAI.COLOR) {
-				total += 4;
+					== CheckersAI.color) {
+				total += 1;
 			} else {
 				if (board[x][y].isKinged()) {
-					total += 4;
+					total += 1;
 				} else {
 					total -= 2;
 				}
 			}
 			if (board[x - 1][y + 1] != null
 					&& board[x - 1][y + 1].getOwner()
-					== CheckersAI.COLOR) {
-				total += 4;
+					== CheckersAI.color) {
+				total += 1;
 			} else {
 				if (board[x][y].isKinged()) {
-					total += 4;
-				} else {
-					total -= 2;
-				}
-			}
-		} else {
-			if (board[x + 1][y - 1] != null
-					&& board[x + 1][y - 1].getOwner()
-					== CheckersAI.COLOR) {
-				total += 4;
-			} else {
-				if (board[x][y].isKinged()) {
-					total += 4;
+					total += 1;
 				} else {
 					total -= 2;
 				}
 			}
 			if (board[x + 1][y + 1] != null
 					&& board[x + 1][y + 1].getOwner()
-					== CheckersAI.COLOR) {
-				total += 4;
+					== CheckersAI.color) {
+				total += 1;
 			} else {
 				if (board[x][y].isKinged()) {
-					total += 4;
+					total += 1;
+				} else {
+					total -= 1;
+				}
+			}
+			if (board[x + 1][y - 1] != null
+					&& board[x + 1][y - 1].getOwner()
+					== CheckersAI.color) {
+				total += 1;
+			} else {
+				if (board[x][y].isKinged()) {
+					total += 1;
+				} else {
+					total -= 1;
+				}
+			}
+		} else {
+			if (board[x + 1][y - 1] != null
+					&& board[x + 1][y - 1].getOwner()
+					!= CheckersAI.color) {
+				total += 1;
+			} else {
+				if (board[x][y].isKinged()) {
+					total += 1;
 				} else {
 					total -= 2;
 				}
 			}
+			if (board[x + 1][y + 1] != null
+					&& board[x + 1][y + 1].getOwner()
+					!= CheckersAI.color) {
+				total += 1;
+			} else {
+				if (board[x][y].isKinged()) {
+					total += 1;
+				} else {
+					total -= 2;
+				}
+			}
+			if (board[x - 1][y + 1] != null
+					&& board[x - 1][y + 1].getOwner()
+					!= CheckersAI.color) {
+				total += 1;
+			} else {
+				if (board[x][y].isKinged()) {
+					total += 1;
+				} else {
+					total -= 1;
+				}
+			}
+			if (board[x - 1][y - 1] != null
+					&& board[x - 1][y - 1].getOwner()
+					!= CheckersAI.color) {
+				total += 1;
+			} else {
+				if (board[x][y].isKinged()) {
+					total += 1;
+				} else {
+					total -= 1;
+				}
+			}
 		}
 		return total;
+	}
+	
+	/**
+	 * Setter method to allow the AI access to the
+	 * current game state.
+	 * @param m Current game state.
+	 */
+	public void setModel(final CheckersModel m) {
+		this.model = m;
 	}
 }

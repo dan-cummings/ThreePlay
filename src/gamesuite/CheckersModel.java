@@ -11,8 +11,9 @@ import org.apache.commons.lang3.SerializationUtils;
 /**
  * Checker models is a persistent collection of values and objects
  * which determines the state of the checkers game.
+ * (Class utilizes Apache Commons.) 
  * @author Daniel Cummings
- * @version 0.1
+ * @version 2.0
  */
 public class CheckersModel implements Serializable {
 

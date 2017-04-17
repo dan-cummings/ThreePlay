@@ -13,6 +13,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.border.EtchedBorder;
 
 
 /**
@@ -174,11 +175,18 @@ public class GameSuiteGUI extends JPanel {
 	 * Only called when the checkers button is selected.
 	 */
 	private void checkersUI() {
-		wind.setSize(800, 700);
-		this.setPreferredSize(new Dimension(800, 700));
-		checkersPanel = new CheckersGUI(this);
+		wind.setSize(900, 700);
+		game = new CheckersController();
+		checkersPanel = new CheckersGUI((CheckersController) game);
 		this.removeAll();
-		this.add(checkersPanel);
+		this.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridheight = 700;
+		gbc.gridwidth = 700;
+		checkersPanel.setBorder(new EtchedBorder());
+		this.add(checkersPanel, gbc);
 		this.repaint();
 		this.revalidate();
 	}
