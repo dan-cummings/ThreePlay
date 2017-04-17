@@ -6,10 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JPanel;
+import java.util.Stack;
+import org.apache.commons.lang3.SerializationUtils;
 
 /**
  * Logic for the game of checkers. Model allows users to make moves,
@@ -17,25 +15,46 @@ import javax.swing.JPanel;
  * game, and determines when the game is over. The model is called
  * from the controller.
  * @author Daniel Cummings
- * @version 1.0
+ * @version 2.0
  */
-public class CheckersController {
+public class CheckersController implements IGameLogic {
 
 	/** Current board status of the game. */
 	private CheckersModel model;
-	/** List of views that have authority. */
-	private List<JPanel> views;
 	/** Has the game been saved. */
 	private boolean saved;
-
+	/** Stack to store game states if an undo is made. */
+	private Stack<CheckersModel> redo;
+	/** Computer player for the game. */
+	private CheckersAI comp;
+	/** Field to determine whether the game being played is
+	 * against a computer.
+	 */
+	private boolean isComp;
+	/** Allows users to move back through previous board states. */
+	private Stack<CheckersModel> undo;
+	
 	/**
 	 * Constructor for checkers game.
-	 * @param view The view that is allowed access to the controller.
 	 */
-	public CheckersController(final JPanel view) {
+	public CheckersController() {
 		this.model = new CheckersModel();
-		this.views = new ArrayList<JPanel>();
-		this.views.add(view);
+		this.redo = new Stack<CheckersModel>();
+		this.isComp = false;
+		undo = new Stack<CheckersModel>();
+		redo = new Stack<CheckersModel>();
+		this.store();
+	}
+	
+	/** Allows user to set whether or not they are
+	 * playing against an AI.
+	 * @param ai True if this is an AI game.
+	 */
+	public void setAI(final boolean ai) {
+		if (ai) {
+			this.isComp = true;
+			this.comp = new CheckersAI(this.model);
+		}
 	}
 
 	/**
@@ -73,7 +92,63 @@ public class CheckersController {
 	 */
 	public boolean makeMove(final int fx,
 			final int fy, final int tx, final int ty) {
-		return this.model.makeMove(new Move(fx, fy, tx, ty));
+		 boolean made = this.model.makeMove(new Move(fx, fy, tx, ty));
+		 if (made) {
+			 if (isComp && !model.isGameOver()
+					 && !model.getStalemate()) {
+				 comp.yourMove();
+			 }
+			 this.store();
+		 }
+		 return made;
+	}
+	
+	/**
+	 * Method to recover the most previous game state in memory.
+	 * If game is at the beginning there are no such states and
+	 * the method will not recover any state.
+	 */
+	public void undo() {
+		if (undo.isEmpty()) {
+			return;
+		} else {
+			redo.push(this.model);
+			this.model = undo.pop();
+			if (isComp) {
+				comp.setModel(this.model);
+			}
+		}
+	}
+	
+	/**
+	 * Method attempt to recover a game state that existed
+	 * before an undo was executed. If an undo is executed and
+	 * a new move is made the states cannot be recovered.
+	 * (Utilizes Apache Commons to clone object.)
+	 */
+	public void redo() {
+		if (redo.isEmpty()) {
+			return;
+		} else {
+			undo.push(SerializationUtils.clone(this.model));
+			this.model = redo.pop();
+			if (isComp) {
+				comp.setModel(this.model);
+			}
+		}
+	}
+	
+	/**
+	 * Helper method stores board states into a file
+	 * This file is used to get states of the game
+	 * when undo is called. (Utilizes Apache Commons to 
+	 * clone object.)
+	 */
+	private void store() {
+		undo.push(SerializationUtils.clone(this.model));
+		if (!redo.isEmpty()) {
+			redo.clear();
+		}
 	}
 	
 	/**
@@ -87,6 +162,7 @@ public class CheckersController {
 			FileOutputStream strm = new FileOutputStream(filename);
 			ObjectOutputStream ostrm = new ObjectOutputStream(strm);
 			ostrm.writeObject(model);
+			ostrm.writeBoolean(this.isComp);
 			ostrm.close();
 			strm.close();
 			saved = true;
@@ -120,6 +196,7 @@ public class CheckersController {
 			if (o instanceof CheckersModel) {
 				this.model = (CheckersModel) o;
 			}
+			this.isComp = ostrm.readBoolean();
 			ostrm.close();
 			strm.close();
 		} catch (FileNotFoundException e) {
@@ -139,6 +216,10 @@ public class CheckersController {
 					+ " cannot recieve game state.");
 		} finally {
 			System.out.println("Load Attempted.");
+			if (isComp) {
+				this.comp = 
+				new CheckersAI(this.model);
+			}
 		}
 	}
 
@@ -200,39 +281,21 @@ public class CheckersController {
 	 */
 	public void reset() {
 		this.model = new CheckersModel();
+		if (this.isComp) {
+			comp = new CheckersAI(this.model);
+		}
+		this.store();
+	}
+
+	/** UNUSED METHODS. */
+	@Override
+	public final boolean isMove(final Move m) {
+		return false;
+	}
+
+	@Override
+	public final boolean isMove(final int x, final int y) {
+		return false;
 	}
 	
-	/**
-	 * REPLACE IN MODEL.
-	 * @param test integer for test being run.
-	 *
-	public void setup(final int test) {
-			if (test == 1) {
-				board = new CheckersPiece[8][8];
-				moves.clear();
-				player = Player.BLACK;
-				checkJumps();
-			} else if (test == 2) {
-				board = new CheckersPiece[8][8];
-				player = Player.BLACK;
-				moves.clear();
-				jumps.clear();
-				board[1][1] = new CheckersPiece(player);
-				board[1][1].setKinged(true);
-				board[2][2] = new CheckersPiece(Player.WHITE);
-				checkJumps();
-			} else if (test == 3) {
-				board = new CheckersPiece[8][8];
-				player = Player.BLACK;
-				moves.clear();
-				jumps.clear();
-				board[1][1] = new CheckersPiece(player);
-				board[1][1].setKinged(true);
-				board[2][2] = new CheckersPiece(Player.WHITE);
-				board[4][4] = new CheckersPiece(Player.WHITE);
-				checkJumps();
-			}
-	}
-	*/
-	/** Unused Method. */
 }

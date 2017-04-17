@@ -26,7 +26,7 @@ public final class GameSuite {
 		frame.setSize(800, 600);
 		GameSuiteGUI g = new GameSuiteGUI(frame);
 		frame.getContentPane().add(g);
-		frame.setResizable(false);
+		frame.setResizable(true);
 		frame.setVisible(true);
 	}
 }

@@ -4,11 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
@@ -24,6 +29,9 @@ import javax.swing.border.EtchedBorder;
 public class CheckersGUI extends JPanel 
 implements MouseListener, MouseMotionListener {
 	
+	/** Button for moving between states of the game. */
+	private JButton undo, redo;
+	
 	/** Version Serialize ID. */
 	private static final long serialVersionUID = 1L;
 
@@ -33,7 +41,7 @@ implements MouseListener, MouseMotionListener {
 	/** Board square containers. */
 	private JPanel[][] board;
 
-	/** Model. */
+	/** Controller. */
 	private CheckersController game;
 
 	/** Piece that was selected. */
@@ -62,19 +70,16 @@ implements MouseListener, MouseMotionListener {
 	
 	/** Current player. */
 	private String player;
-	
-	/** The creator of this JPanel. */
-	private final JPanel parent;
 
 	/**
 	 * Constructor for the checkers GUI.
-	 * @param p The view object that created this one.
+	 * @param g The game controller for checkers.
 	 */
-	public CheckersGUI(final JPanel p) {
+	public CheckersGUI(final CheckersController g) {
 		// Get game images.
 		this.getImages();
-		this.parent = p;
-		this.game = new CheckersController(this);
+		this.game = g;
+		this.gameOption();
 		// instantiate game objects
 		this.size = 8;
 		this.sqSize = 75;
@@ -83,14 +88,15 @@ implements MouseListener, MouseMotionListener {
 				new Dimension(size * sqSize,
 						size * sqSize);
 		// Layout setup
-		this.setLayout(new BorderLayout(30, 15));
-		
+		this.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
 		//Instantiates layered pane.
 		pane = new JLayeredPane();
 		pane.setPreferredSize(panelSize);
+		pane.setBounds(0, 0, panelSize.width, panelSize.height);
 		pane.addMouseListener(this);
 		pane.addMouseMotionListener(this);
-		
 		// Create panel to store board with grid layout of
 		// board size.
 		boardPanel = new JPanel(new GridLayout(size, size));
@@ -99,13 +105,68 @@ implements MouseListener, MouseMotionListener {
 		this.board = new JPanel[size][size];
 		this.createBoard();
 		pane.add(boardPanel, JLayeredPane.DEFAULT_LAYER);
-		this.add(pane, BorderLayout.CENTER);
+		gbc.gridx = 1;
+		gbc.gridy = 1;
+		gbc.gridheight = panelSize.height;
+		gbc.gridwidth = panelSize.width;
+		this.add(pane, gbc);
 		this.displayBoard();
 		this.showMoveablePieces();
+		
 		turn = new JLabel();
-		turn.setHorizontalAlignment(size / 2);
-		this.add(turn, BorderLayout.PAGE_START);
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		gbc.gridheight = 1;
+		gbc.gridwidth = 1;
+		this.add(turn, gbc);
 		getPlayer();
+		
+		undo = new JButton("Undo");
+		redo = new JButton("Redo");
+		undo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				game.undo();
+				getPlayer();
+				resetColor();
+				displayBoard();
+				showMoveablePieces();
+			}
+		});
+		redo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				game.redo();
+				getPlayer();
+				resetColor();
+				displayBoard();
+				showMoveablePieces();
+			}
+		});
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		this.add(undo, gbc);
+		gbc.gridy = 1;
+		this.add(redo, gbc);
+	}
+
+	/**
+	 * Creates a dialog window to select which game mode
+	 * the player wishes to play.
+	 */
+	private void gameOption() {
+		Object[] options = {"Player vs. Computer", "Player vs. Player"};
+		int type = JOptionPane.showOptionDialog(this,
+				"Please select a game mode:",
+				"Game Select",
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.PLAIN_MESSAGE,
+				null, options, options[0]);
+		if (type == JOptionPane.YES_OPTION) {
+			this.game.setAI(true);
+		} else {
+			this.game.setAI(false);
+		}
 	}
 
 	/**
@@ -170,26 +231,26 @@ implements MouseListener, MouseMotionListener {
 		// Checks to make sure piece is being moved.
 		if (piece != null) {
 			piece.setVisible(false);
-			if (pane.getBounds().contains(e.getPoint())) {
-				toX = Math.floorDiv(e.getY(), sqSize);
-				toY = Math.floorDiv(e.getX(), sqSize);
-				if (game.makeMove(fromX, fromY, toX, toY)) {
-					//Tells the model the user
-					//wants to move.
-					//Sets visibility.
-					piece.setVisible(true);
-					//removes piece from drag layer.
-					pane.remove(piece);
-					//Check for game over.
-					if (game.gameOver()) {
-						this.handleGameOver();
-					} else if (game.isStalemate()) {
-						this.handleStalemate();
-					}
+
+			toX = Math.floorDiv(e.getY(), sqSize);
+			toY = Math.floorDiv(e.getX(), sqSize);
+			if (game.makeMove(fromX, fromY, toX, toY)) {
+				//Tells the model the user
+				//wants to move.
+				//Sets visibility.
+				piece.setVisible(true);
+				//removes piece from drag layer.
+				pane.remove(piece);
+				//Check for game over.
+				if (game.gameOver()) {
+					this.handleGameOver();
+				} else if (game.isStalemate()) {
+					this.handleStalemate();
 				}
 			}
-			piece = null;
 		}
+		piece = null;
+		
 		//redisplay board.
 		this.getPlayer();
 		this.displayBoard();
