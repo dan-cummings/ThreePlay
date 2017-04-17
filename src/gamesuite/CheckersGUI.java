@@ -434,6 +434,7 @@ implements MouseListener, MouseMotionListener {
 				+ "would you like to play again?",
 				"Game over", JOptionPane.YES_NO_OPTION);
 		if (choice == JOptionPane.YES_OPTION) {
+			gameOption();
 			game.reset();
 			this.displayBoard();
 			this.showMoveablePieces();
