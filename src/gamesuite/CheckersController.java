@@ -51,8 +51,8 @@ public class CheckersController implements IGameLogic {
 	 * @param ai True if this is an AI game.
 	 */
 	public void setAI(final boolean ai) {
-		if (ai) {
-			this.isComp = true;
+		this.isComp = ai;
+		if (this.isComp) {
 			this.comp = new CheckersAI(this.model);
 		}
 	}
@@ -285,6 +285,14 @@ public class CheckersController implements IGameLogic {
 			comp = new CheckersAI(this.model);
 		}
 		this.store();
+	}
+	
+	/**
+	 * Passes string onto model to set up test boards.
+	 * @param s Test being run.
+	 */
+	public void setupTest(final String s) {
+		model.testSetup(s);
 	}
 
 	/** UNUSED METHODS. */

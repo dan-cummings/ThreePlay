@@ -51,11 +51,7 @@ public class Node<E> implements Serializable {
 	 * not a leaf. Otherwise it will return null.
 	 */
 	public List<Node<E>> getLeaves() {
-		if (!this.isLeaf()) {
-			return this.leaf;
-		} else {
-			return null;
-		}
+		return this.leaf;
 	}
 
 	/**

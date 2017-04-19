@@ -96,28 +96,36 @@ public class CheckersTests {
 	@Test
 	public void multiJumpTest() {
 		game = new CheckersController();
-		game.makeMove(1, 1, 3, 3);
-		assertTrue(game.isMove(3, 3, 5, 5));
+		game.setupTest("MultiJump1");
+		assertTrue(game.isMove(0, 0, 4, 4));
 	}
 	
 	@Test
 	public void multiJumpTest2() {
 		game = new CheckersController();
-		game.makeMove(1, 1, 3, 3);
-		assertFalse(game.isMove(3, 3, 1, 1));
+		game.setupTest("MultiJump2");
+		assertTrue(game.isMove(0, 0, 0, 4));
 	}
 	
 	@Test
 	public void multiJumpTest3() {
 		game = new CheckersController();
-		game.makeMove(1, 1, 3, 3);
-		assertFalse(game.isMove(3, 3, 2, 2));
+		game.setupTest("MultiJump3");
+		assertFalse(game.isMove(0, 0, 0, 4));
 	}
 	
 	@Test
 	public void stalemateTest() {
 		game = new CheckersController();
+		game.setupTest("Stalemate");
 		assertTrue(game.isStalemate());
+	}
+	
+	@Test
+	public void gameoverTest() {
+		game = new CheckersController();
+		game.setupTest("GameOver");
+		assertTrue(game.gameOver());
 	}
 }
 //CHECKSTYLE:ON
