@@ -197,8 +197,8 @@ public class GameSuiteGUI extends JPanel {
 	private void othelloUI() {
 		wind.setSize(800, 700);
 		this.setPreferredSize(new Dimension(800, 700));
-		game = new Othello();
-		othelloPanel = new OthelloGUI((Othello) game);
+		game = new OthelloController();
+		othelloPanel = new OthelloGUI((OthelloController) game);
 		this.removeAll();
 		this.add(othelloPanel);
 		this.repaint();
