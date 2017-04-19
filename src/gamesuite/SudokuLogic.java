@@ -1,5 +1,12 @@
 package gamesuite;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 /**
  * @author Brendon Murthum
  */
@@ -52,9 +59,6 @@ public class SudokuLogic implements IGameLogic {
 	 */
 	private SudokuPiece[][] board;
 	
-	/** Used in IGameLogic, though not in Sudoku. */
-	private Player player;
-	
 	/** Stores the finished 'goal' board to be achieved. */
 	private int[][] completeBoard = new int[9][9];
 	
@@ -71,7 +75,7 @@ public class SudokuLogic implements IGameLogic {
 	private boolean gameComplete;
 	
 	/** 
-	 * The width and hieght of the grid of squares in the game. 
+	 * The width and height of the grid of squares in the game. 
 	 * Should be 9. 
 	 */
 	private int size;
@@ -739,10 +743,74 @@ public class SudokuLogic implements IGameLogic {
 		return false; 
 	}
 
-	@Override
-	public void saveState(final String filename) throws Exception { }
+	/**
+	 * Writes objects into the specified file. The data is
+	 * stored into the file as a corresponding state of the game.
+	 * @param filename Name of file to save the game state.
+	 * @throws Exception contains information about save error.
+	 */
+	public final void saveState(final String filename)  throws Exception {
+		try {
+			FileOutputStream strm = new FileOutputStream(filename);
+			ObjectOutputStream ostrm = new ObjectOutputStream(strm);
+			ostrm.writeObject(this.completeBoard);
+			ostrm.writeObject(this.initialBoard);
+			ostrm.writeObject(this.currentBoard);
+			ostrm.writeObject(this.errorsBoard);
+			ostrm.writeObject(this.board);
+			ostrm.close();
+			strm.close();
+		} catch (FileNotFoundException e) {
+			//When filename points to a directory instead of a file.
+			e.printStackTrace();
+			throw new Exception("File name is occupied,"
+					+ " please try another.");
+		} catch (IOException e) {
+			//When error occurs in IO.
+			e.printStackTrace();
+			throw new Exception("Error in saving took place,"
+				+ " please try again with new file name.");
+		} finally {
+			System.out.println("Save attempted");
+		}
+	}
 
-	@Override
-	public void loadState(final String filename) throws Exception { } 
+	/**
+	 * Reads objects from the specified file into the game.
+	 * Allowing users to load from saved states.
+	 * @param filename Name of file to load game state.
+	 * @throws Exception contains information about load error.
+	 */
+	public final void loadState(final String filename) throws Exception {
+		try {
+			FileInputStream strm = new FileInputStream(filename);
+			ObjectInputStream ostrm = new ObjectInputStream(strm);
+			this.completeBoard = (int[][]) ostrm.readObject();
+			this.initialBoard = (int[][]) ostrm.readObject();
+			this.currentBoard = (int[][]) ostrm.readObject();
+			this.errorsBoard = (boolean[][]) ostrm.readObject();
+			this.board = (SudokuPiece[][]) ostrm.readObject();
+			ostrm.close();
+			strm.close();
+		} catch (FileNotFoundException e) {
+			//When filename points to a directory instead of a file.
+			e.printStackTrace();
+			throw new Exception("File with"
+					+ " that name does not exist.");
+		} catch (IOException e) {
+			//When error occurs in IO.
+			e.printStackTrace();
+			throw new Exception("Error durring reading, "
+					+ "file corrupted.");
+		} catch (ClassNotFoundException e) {
+			//When class specified is not found.
+			e.printStackTrace();
+			throw new Exception("File corrupted,"
+					+ " cannot recieve game state.");
+		} finally {
+			System.out.println("Load Attempted.");
+			
+		}
+	}
 	
 }

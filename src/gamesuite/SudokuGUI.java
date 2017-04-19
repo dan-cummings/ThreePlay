@@ -250,7 +250,7 @@ implements MouseListener, KeyListener {
 	 * Creates label for the pieces and places them into the
 	 * proper position on the board.
 	 */
-	private void displayBoard() {
+	public void displayBoard() {
 		int num;
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
