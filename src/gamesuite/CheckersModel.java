@@ -461,4 +461,57 @@ public class CheckersModel implements Serializable {
 	public Player getPlayer() {
 		return this.player;
 	}
+	
+	/**
+	 * Method for testing the model class.
+	 * @param s String to decide which test type this is.
+	 */
+	public void testSetup(final String s) {
+		if (s.equals("Stalemate")) {
+			board = new CheckersPiece[8][8];
+			board[0][0] = new CheckersPiece(Player.WHITE);
+			board[7][7] = new CheckersPiece(Player.BLACK);
+			this.moves.clear();
+			this.move.clear();
+			findMoves();
+			stalemate = isStalemate();
+		} else if (s.equals("MultiJump1")) {
+			board = new CheckersPiece[8][8];
+			this.nextTurn();
+			board[0][0] = new CheckersPiece(Player.BLACK);
+			board[1][1] = new CheckersPiece(Player.WHITE);
+			board[3][3] = new CheckersPiece(Player.WHITE);
+			this.moves.clear();
+			this.move.clear();
+			this.findMoves();
+		} else if (s.equals("MultiJump2")) {
+			board = new CheckersPiece[8][8];
+			this.nextTurn();
+			this.moves.clear();
+			this.move.clear();
+			board[0][0] = new CheckersPiece(Player.BLACK);
+			board[0][0].setKinged(true);
+			board[1][1] = new CheckersPiece(Player.WHITE);
+			board[1][3] = new CheckersPiece(Player.WHITE);
+			this.findMoves();
+		} else if (s.equals("MultiJump3")) {
+			board = new CheckersPiece[8][8];
+			this.nextTurn();
+			this.moves.clear();
+			this.move.clear();
+			board[0][0] = new CheckersPiece(Player.BLACK);
+			board[0][0].setKinged(true);
+			board[1][1] = new CheckersPiece(Player.WHITE);
+			board[1][3] = new CheckersPiece(Player.WHITE);
+			board[3][3] = new CheckersPiece(Player.WHITE);
+			board[5][5] = new CheckersPiece(Player.WHITE);
+			this.findMoves();
+		} else {
+			board = new CheckersPiece[8][8];
+			this.moves.clear();
+			this.move.clear();
+			board[0][0] = new CheckersPiece(Player.BLACK);
+			this.findMoves();
+		}
+	}
 }

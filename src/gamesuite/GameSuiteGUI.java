@@ -265,6 +265,9 @@ public class GameSuiteGUI extends JPanel {
 					othelloPanel.displayBoard();
 					othelloPanel.showMoves();
 					othelloPanel.repaint();
+				} else if (game instanceof SudokuLogic) {
+					sudokuPanel.displayBoard();
+					sudokuPanel.repaint();
 				}
 			}
 		} else {
