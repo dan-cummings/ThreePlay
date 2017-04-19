@@ -15,7 +15,7 @@ public class OthelloAI {
 	/** MinMax tree for moves in checkers game. */
 	private Node<OthelloMove> minmax;
 	/** Determines the color of pieces for the AI. */
-	private static Player color = Player.BLACK;
+	private static Player color = Player.WHITE;
 	/** Model being used for evaluation. */
 	private Othello model;
 	/** Sets the maximum depth the move search tree will go. */
@@ -51,17 +51,17 @@ public class OthelloAI {
 		//Create the tree.
 		this.generateTree(1, minmax, model);
 		//Node to contain the best move.
-		Node<Move> disMove = new Node<Move>(null, null);
+		Node<OthelloMove> disMove = new Node<OthelloMove>(null, null);
 		//List of all nodes connected to min-max.
-		ArrayList<Node<Move>> moves =
-				(ArrayList<Node<Move>>) minmax.getLeaves();
+		ArrayList<Node<OthelloMove>> moves =
+				(ArrayList<Node<OthelloMove>>) minmax.getLeaves();
 		//Heads down each subtree evaluating for min-max and
 		//setting each nodes value to the max of that subtree.
 		moves.parallelStream().forEachOrdered(
 				e -> e.setValue(miniMaxDatTree(e, 1)));
 		int max = Integer.MIN_VALUE;
 		//Find the maximum for possible moves this turn.
-		for (Node<Move> m : moves) {
+		for (Node<OthelloMove> m : moves) {
 			if (m.getValue() == max) {
 				if (Math.random() > .5) {
 					disMove = m;
@@ -85,17 +85,17 @@ public class OthelloAI {
 	 * been reached. Otherwise returns either the max or minimum value
 	 * of the nodes in the subtree of r depending on the depth.
 	 */
-	private int miniMaxDatTree(final Node<Move> r, final int depth) {
+	private int miniMaxDatTree(final Node<OthelloMove> r, final int depth) {
 		if (r.isLeaf()) {
 			return r.getValue();
 		}
-		ArrayList<Node<Move>> evalList =
-				(ArrayList<Node<Move>>) r.getLeaves();
+		ArrayList<Node<OthelloMove>> evalList =
+				(ArrayList<Node<OthelloMove>>) r.getLeaves();
 		//max
 		if ((depth & 1) == 1) {
 			int value = Integer.MIN_VALUE;
 			int max = Integer.MIN_VALUE;
-			for (Node<Move> m : evalList) {
+			for (Node<OthelloMove> m : evalList) {
 				value = miniMaxDatTree(m, depth + 1);
 				if (value == max) {
 					if (Math.random() > 0.5) {
@@ -109,7 +109,7 @@ public class OthelloAI {
 		} else {
 			int value = Integer.MAX_VALUE;
 			int min = Integer.MAX_VALUE;
-			for (Node<Move> m : evalList) {
+			for (Node<OthelloMove> m : evalList) {
 				value = miniMaxDatTree(m, depth + 1);
 				if (value == min) {
 					if (Math.random() > 0.5) {
@@ -129,16 +129,16 @@ public class OthelloAI {
 	 * @param r Root node of the tree
 	 * @param mod Game state.
 	 */
-	private void generateTree(final int depth, final Node<Move> r,
-			final CheckersModel mod) {
-		CheckersModel hold;
-		ArrayList<Move> list = mod.getMoveList();
+	private void generateTree(final int depth, final Node<OthelloMove> r,
+			final Othello mod) {
+		Othello hold;
+		ArrayList<OthelloMove> list = mod.getMoveList();
 		if (depth < OthelloAI.maxDepth) {
 			//Adds moves for the turn on the tree.
 			list.stream().forEach(e -> r.addleaf(e));
 			//Iterates over the list to evaluate response moves to
 			// each move in the list.
-			Move m = null;
+			OthelloMove m = null;
 			for (int i = 0; i < list.size(); i++) {
 				hold = SerializationUtils.clone(mod);
 				m = list.get(i);
@@ -170,11 +170,13 @@ public class OthelloAI {
 	 * @param board The board to apply the function against.
 	 * @return The derived value of the given board.
 	 */
-	private int analyzeStaticBoard(final CheckersPiece[][] board) {
+	private int analyzeStaticBoard(OthelloPiece[][] board) {
 		int posVal = 0;
 		int negVal = 0;
 		int locVal = 0;
-		CheckersPiece temp;
+		OthelloPiece temp;
+		
+		if(board == null) return 0;
 		
 		for (int x = 0; x < board.length; x++) {
 			for (int y = 0; y < board.length; y++) {
@@ -186,23 +188,10 @@ public class OthelloAI {
 					temp = board[x][y];
 					if (temp.getOwner()
 							!= OthelloAI.color) {
-						posVal +=
-						calcPos(board, x, y);
 						posVal += locVal + x;
-						if (temp.isKinged()) {
-							posVal += 2;
-						} else {
-							posVal += 1;
-						}
+
 					} else {
 						negVal += locVal + (7 - x);
-						negVal += 
-						calcPos(board, x, y);
-						if (temp.isKinged()) {
-							negVal += 2;
-						} else {
-							negVal += 1;
-						}
 					}
 				}
 			}
@@ -210,121 +199,13 @@ public class OthelloAI {
 		return (posVal - negVal);
 	}
 	
-	/**
-	 * Helper method to check whether the piece at that location
-	 * can be jumped.
-	 * @param board Current board state.
-	 * @param x Vertical position of the piece on the board.
-	 * @param y Horizontal position of the piece on the board.
-	 * @return Weighted value for whether the piece can be jumped.
-	 */
-	private int calcPos(final CheckersPiece[][] 
-			board, final int x, final int y) {
-		//If piece is near the edges then it is safe.
-		if ((x < 1 || x > 6) || (y < 1 || y > 6)) {
-			return 4;
-		}
-		int total = 0;
-		if (board[x][y].getOwner() == OthelloAI.color) {
-			if (board[x - 1][y - 1] != null
-					&& board[x - 1][y - 1].getOwner()
-					== OthelloAI.color) {
-				total += 1;
-			} else {
-				if (board[x][y].isKinged()) {
-					total += 1;
-				} else {
-					total -= 2;
-				}
-			}
-			if (board[x - 1][y + 1] != null
-					&& board[x - 1][y + 1].getOwner()
-					== OthelloAI.color) {
-				total += 1;
-			} else {
-				if (board[x][y].isKinged()) {
-					total += 1;
-				} else {
-					total -= 2;
-				}
-			}
-			if (board[x + 1][y + 1] != null
-					&& board[x + 1][y + 1].getOwner()
-					== OthelloAI.color) {
-				total += 1;
-			} else {
-				if (board[x][y].isKinged()) {
-					total += 1;
-				} else {
-					total -= 1;
-				}
-			}
-			if (board[x + 1][y - 1] != null
-					&& board[x + 1][y - 1].getOwner()
-					== OthelloAI.color) {
-				total += 1;
-			} else {
-				if (board[x][y].isKinged()) {
-					total += 1;
-				} else {
-					total -= 1;
-				}
-			}
-		} else {
-			if (board[x + 1][y - 1] != null
-					&& board[x + 1][y - 1].getOwner()
-					!= OthelloAI.color) {
-				total += 1;
-			} else {
-				if (board[x][y].isKinged()) {
-					total += 1;
-				} else {
-					total -= 2;
-				}
-			}
-			if (board[x + 1][y + 1] != null
-					&& board[x + 1][y + 1].getOwner()
-					!= OthelloAI.color) {
-				total += 1;
-			} else {
-				if (board[x][y].isKinged()) {
-					total += 1;
-				} else {
-					total -= 2;
-				}
-			}
-			if (board[x - 1][y + 1] != null
-					&& board[x - 1][y + 1].getOwner()
-					!= OthelloAI.color) {
-				total += 1;
-			} else {
-				if (board[x][y].isKinged()) {
-					total += 1;
-				} else {
-					total -= 1;
-				}
-			}
-			if (board[x - 1][y - 1] != null
-					&& board[x - 1][y - 1].getOwner()
-					!= OthelloAI.color) {
-				total += 1;
-			} else {
-				if (board[x][y].isKinged()) {
-					total += 1;
-				} else {
-					total -= 1;
-				}
-			}
-		}
-		return total;
-	}
-	
+
 	/**
 	 * Setter method to allow the AI access to the
 	 * current game state.
 	 * @param m Current game state.
 	 */
-	public void setModel(final CheckersModel m) {
+	public void setModel(final Othello m) {
 		this.model = m;
 	}
 }

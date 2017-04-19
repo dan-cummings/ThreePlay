@@ -7,21 +7,22 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.io.Serializable;
 
 /** 
  * 
  * @author Jaden Sella
  */
-public class Othello implements IGameLogic {
+public class Othello implements IGameLogic, Serializable {
 	
 	/** Current board status of the game. */
 	private OthelloPiece[][] board;
 	
 	/** Size of game board. */
 	private int size;
-	
-	/** ArrayList of possible moves. */
-	private ArrayList<IPiece> moves;
 	
 	/** Determines whether or not the game is over. */
 	private boolean gameover;
@@ -35,15 +36,29 @@ public class Othello implements IGameLogic {
 	/** Count for the number of pieces for player. */
 	private int whiteCount, blackCount;
 	
+	private List<OthelloMove> moves;
+	
+	private Map<OthelloMove, OthelloPiece[][]> move;
+	/** Collection of moves available on turn. */
+	
+	/** Computer player for the game. */
+	private OthelloAI comp;
+	/** Field to determine whether the game being played is
+	 * against a computer.
+	 */
+	private boolean isComp;
+	
 	/** 
 	 * Constructor for Othello, begins Othello game. 
 	 */
 	public Othello() {
+		this.move = new HashMap<OthelloMove, OthelloPiece[][]>();
+		this.moves = new ArrayList<OthelloMove>();
 		this.size = 8;
 		this.gameover = false;
 		this.createBoard();
 		this.player = Player.BLACK;
-		this.moves = new ArrayList<IPiece>();
+		this.moves = new ArrayList<OthelloMove>();
 		this.countPieces();
 	}
 	
@@ -59,12 +74,74 @@ public class Othello implements IGameLogic {
 		board[4][3] = new OthelloPiece(Player.BLACK);
 	}
 	
+	/** Allows user to set whether or not they are
+	 * playing against an AI.
+	 * @param ai True if this is an AI game.
+	 */
+	public void setAI(final boolean ai) {
+		if (ai) {
+			this.isComp = true;
+			this.comp = new OthelloAI(this);
+		}
+	}
+	
+	/**
+	 * Helper method to create a list of moves and store their
+	 * subsequent board states.
+	 */
+	private void findMoves() {
+		for (int i = 0; i < size; i++){
+			for (int j = 0; j < size; j++){
+				if(validMove(i, j, player)){
+					OthelloMove m = new OthelloMove(i, j);
+					moves.add(m);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Getter method for the list of moves.
+	 * @return ArrayList of Move objects.
+	 */
+	public ArrayList<OthelloMove> getMoveList() {
+		return (ArrayList<OthelloMove>) this.moves;
+	}
+	
+	/**
+	 * Method to check if a move exists. If it does
+	 * the move is made and the next turn is activated.
+	 * @param m Move that is being made.
+	 * @return True if move can be made.
+	 */
+	public boolean makeMove(final OthelloMove m) {
+		if (this.validMove(m)) {
+			this.makeMove(m.getX(), m.getY());
+			this.moves.clear();
+			this.findMoves();
+			this.gameover = this.isGameOver();
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Method to check if a move exists. 
+	 * @param m Move that is being made.
+	 * @return True if move can be made.
+	 */
+	public boolean validMove(final OthelloMove m){
+		return validMove(m.getX(), m.getY(), player);
+	}
+	
+	
 	/**
 	 * sets the place on the board to the desired Player.
 	 * @param x location of the piece
 	 * @param y location of the piece
 	 * @param p desired player
-	 */
+	 */	
 	public void setPiece(final int x, final int y, 
 			final Player p) {
 		board[x][y] = new OthelloPiece(p);
@@ -868,4 +945,35 @@ public class Othello implements IGameLogic {
 	public int getSize() {
 		return size;
 	}
+	
+	/**
+	 * Getter method for the resulting board for the
+	 * provided Move.
+	 * @param m Move to be inspected.
+	 * @return Board for the provided Move object.
+	 */
+	public OthelloPiece[][] getResultBoard(final OthelloMove m) {
+		if (validMove(m)) {
+			return this.move.get(m);
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Determines whether or not the piece at that position on
+	 * the board has a move this turn.
+	 * @param x vertical location of piece.
+	 * @param y horizontal location of piece.
+	 * @return True if the piece has a move, false otherwise.
+	 */
+	public boolean hasMove(final int x, final int y) {
+		for (OthelloMove m : moves) {
+			if (m.getX() == x && m.getY() == y) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

@@ -33,7 +33,7 @@ implements MouseListener {
 	private JPanel[][] board;
 
 	/** Model. */
-	private Othello game;
+	private OthelloController game;
 
 	/** integer values for location of move. */
 	private int toX, toY;
@@ -57,13 +57,14 @@ implements MouseListener {
 	 * Constructor for the Othello GUI.
 	 * @param gamel Othello game logic.
 	 */
-	public OthelloGUI(final Othello gamel) {
+	public OthelloGUI(final OthelloController gamel) {
 		// Get game images.
 		this.getImages();
 		
 		// instantiate game objects
 		this.game = gamel;
-		this.size = gamel.getSize();
+		this.gameOption();
+		this.size = 8;
 		this.sqSize = 75;
 		// Creating size of panels.
 		Dimension panelSize =
@@ -93,6 +94,25 @@ implements MouseListener {
 		this.add(turn, BorderLayout.PAGE_START);
 		getPlayer();
 	}
+	
+	/**
+	 * Creates a dialog window to select which game mode
+	 * the player wishes to play.
+	 */
+	private void gameOption() {
+		Object[] options = {"Player vs. Computer", "Player vs. Player"};
+		int type = JOptionPane.showOptionDialog(this,
+				"Please select a game mode:",
+				"Game Select",
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.PLAIN_MESSAGE,
+				null, options, options[0]);
+		if (type == JOptionPane.YES_OPTION) {
+			this.game.setAI(true);
+		} else {
+			this.game.setAI(false);
+		}
+	}
 
 	@Override
 	public final void mousePressed(final MouseEvent e) { 
@@ -106,7 +126,7 @@ implements MouseListener {
 		if (pane.getBounds().contains(e.getPoint())) {
 			toX = Math.floorDiv(e.getY(), sqSize);
 			toY = Math.floorDiv(e.getX(), sqSize);
-			if (game.validMove(toX, toY, game.getPlayer())) {
+			if (game.isMove(toX, toY)) {
 				//Tells the model the user
 				//wants to move.
 				game.makeMove(toX, toY);
@@ -171,7 +191,7 @@ implements MouseListener {
 	public void showMoves() {
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
-				if (game.validMove(x, y, game.getPlayer())) {
+				if (game.isMove(x, y)) {
 					board[x][y].setBackground(Color.YELLOW);
 				}
 			}
