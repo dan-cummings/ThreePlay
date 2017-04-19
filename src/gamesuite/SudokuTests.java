@@ -8,19 +8,19 @@ public class SudokuTests {
 	
 	@Test
 	public void validInitialBoardTest() {
-		game = new SudokuLogic();
+		game = new SudokuLogic(20);
 		assertTrue(game.isSolvable());
 	}
 	
 	@Test
 	public void isFilledTest() {
-		game = new SudokuLogic();
+		game = new SudokuLogic(20);
 		assertFalse(game.isFilled());
 	}
 	
 	@Test
 	public void isCorrectTest() {
-		game = new SudokuLogic();
+		game = new SudokuLogic(20);
 		assertFalse(game.isCorrect());
 	}
 	

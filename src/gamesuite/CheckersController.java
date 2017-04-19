@@ -281,6 +281,8 @@ public class CheckersController implements IGameLogic {
 	 */
 	public void reset() {
 		this.model = new CheckersModel();
+		this.undo.clear();
+		this.redo.clear();
 		if (this.isComp) {
 			comp = new CheckersAI(this.model);
 		}

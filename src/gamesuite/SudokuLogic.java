@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Random;
 
 /**
  * @author Brendon Murthum
@@ -71,9 +72,6 @@ public class SudokuLogic implements IGameLogic {
 	/** Stores booleans of where the errors in the board are. */
 	private boolean[][] errorsBoard = new boolean[9][9];
 	
-	/** This value is true when the game is complete. */
-	private boolean gameComplete;
-	
 	/** 
 	 * The width and height of the grid of squares in the game. 
 	 * Should be 9. 
@@ -91,16 +89,26 @@ public class SudokuLogic implements IGameLogic {
 	 * This is the number of squares to remove from the initial complete 
 	 *  board to have the user solve.
 	 */
-	private int removeThisMany = 20;
+	private int removeThisMany;
 	
 	/** 
 	 *  Initializes completeBoard, initialBoard, 
 	 *  currentBoard and errorsBoard.
+	 *  @param remove Integer for how many pieces are removed.
 	 *  */
-	public SudokuLogic() {
+	public SudokuLogic(final int remove) {
+		this.removeThisMany = remove;
 		this.initializeGame();
-		this.gameComplete = false;
 		this.size = 9;
+	}
+	
+	/**
+	 * Setter method for the difficulty of the sudoku game.
+	 * @param dif How many pieces are being removed.
+	 */
+	public void setDifficulty(final int dif) {
+		this.removeThisMany = dif;
+		this.initializeGame();
 	}
 	
 	/**
@@ -178,7 +186,7 @@ public class SudokuLogic implements IGameLogic {
 	 */
 	private void initializeGame() {
 		this.board = new SudokuPiece[9][9];
-		this.completeBoard = generateBoard();
+		generateBoard();
 		this.initialBoard = generateInitialBoard(removeThisMany);
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
@@ -232,11 +240,12 @@ public class SudokuLogic implements IGameLogic {
 			 * Remove a square. Hold onto that removed number
 			 * until it's checked to still be solvable
 			 */
+			Random r = new Random();
 			counter = 0;
 			shouldLoop = true;
 			while (shouldLoop) {
-				rowRandom = (int) (Math.random() * 9);
-				colRandom = (int) (Math.random() * 9);
+				rowRandom = r.nextInt(9);
+				colRandom = r.nextInt(9);
 				numberHolder = atempBoard[rowRandom][colRandom];
 				if (atempBoard[rowRandom][colRandom] != 0) {
 					atempBoard[rowRandom][colRandom] = 0;
@@ -524,8 +533,9 @@ public class SudokuLogic implements IGameLogic {
 		}
 		
 		int decidingRandom, holdingNumber;
+		Random r = new Random();
 	//  Swap two horizontal 3-tall chunks
-		decidingRandom = (int) (Math.random() * 4); // 0, 1, 2, 3
+		decidingRandom = r.nextInt(4); // 0, 1, 2, 3
 		if (decidingRandom == 0) {
 			for (int h = 0; h < 3; h++) {
 				for (int i = 0; i < 9; i++) {
@@ -555,7 +565,7 @@ public class SudokuLogic implements IGameLogic {
 				}
 			}
 		}
-		decidingRandom = (int) (Math.random() * 4); // 0, 1, 2, 3
+		decidingRandom = r.nextInt(4); // 0, 1, 2, 3
 		if (decidingRandom == 0) {
 			for (int h = 0; h < 3; h++) {
 				for (int i = 0; i < 9; i++) {
@@ -590,79 +600,77 @@ public class SudokuLogic implements IGameLogic {
 	/**
 	 * Generates a rendomized complete board from
 	 * the beginning 'key' board.
-	 * @return - Returns an INT array of a randomized board.
 	 */
-	public static int[][] generateBoard() {
-		int[][] btempBoard = new int[9][9];
-		btempBoard = outputBeginningBoard();
+	public void generateBoard() {
+		completeBoard = outputBeginningBoard();
 		int holdingNumber;
 		int decidingRandom;
+		Random r = new Random();
 		/* Swap some random rows */
-		decidingRandom = (int) (Math.random() * 2); // 0, 1, 2
+		decidingRandom = r.nextInt(3); // 0, 1, 2
 		if (decidingRandom == 1) {
 			for (int i = 0; i < 9; i++) {
-				holdingNumber = btempBoard[0][i];
-				btempBoard[0][i] = btempBoard[1][i];
-				btempBoard[1][i] = holdingNumber;
+				holdingNumber = completeBoard[0][i];
+				completeBoard[0][i] = completeBoard[1][i];
+				completeBoard[1][i] = holdingNumber;
 			}
 		} 
 		if (decidingRandom == 2) {
 			for (int i = 0; i < 9; i++) {
-				holdingNumber = btempBoard[0][i];
-				btempBoard[0][i] = btempBoard[2][i];
-				btempBoard[2][i] = holdingNumber;
+				holdingNumber = completeBoard[0][i];
+				completeBoard[0][i] = completeBoard[2][i];
+				completeBoard[2][i] = holdingNumber;
 			}
 		}
-		decidingRandom = (int) (Math.random() * 3); // 0, 1, 2
+		decidingRandom = r.nextInt(3); // 0, 1, 2
 		if (decidingRandom == 1) {
 			for (int i = 0; i < 9; i++) {
-				holdingNumber = btempBoard[3][i];
-				btempBoard[3][i] = btempBoard[4][i];
-				btempBoard[4][i] = holdingNumber;
+				holdingNumber = completeBoard[3][i];
+				completeBoard[3][i] = completeBoard[4][i];
+				completeBoard[4][i] = holdingNumber;
 			}
 		} 
 		if (decidingRandom == 2) {
 			for (int i = 0; i < 9; i++) {
-				holdingNumber = btempBoard[3][i];
-				btempBoard[3][i] = btempBoard[5][i];
-				btempBoard[5][i] = holdingNumber;
+				holdingNumber = completeBoard[3][i];
+				completeBoard[3][i] = completeBoard[5][i];
+				completeBoard[5][i] = holdingNumber;
 			}
 		}
-		decidingRandom = (int) (Math.random() * 3); // 0, 1, 2
+		decidingRandom = r.nextInt(3); // 0, 1, 2
 		if (decidingRandom == 1) {
 			for (int i = 0; i < 9; i++) {
-				holdingNumber = btempBoard[6][i];
-				btempBoard[6][i] = btempBoard[7][i];
-				btempBoard[7][i] = holdingNumber;
+				holdingNumber = completeBoard[6][i];
+				completeBoard[6][i] = completeBoard[7][i];
+				completeBoard[7][i] = holdingNumber;
 			}
 		}
 		if (decidingRandom == 2) {
 			for (int i = 0; i < 9; i++) {
-				holdingNumber = btempBoard[6][i];
-				btempBoard[6][i] = btempBoard[8][i];
-				btempBoard[8][i] = holdingNumber;
+				holdingNumber = completeBoard[6][i];
+				completeBoard[6][i] = completeBoard[8][i];
+				completeBoard[8][i] = holdingNumber;
 			}
 		}
 		
 		// Swap chunks of the initial board
-		btempBoard = swapChunks(btempBoard);
+		completeBoard = swapChunks(completeBoard);
 		
 	 //  On the overall board, swap the complete placements of two integers.
-		int randomX = (int) ((Math.random() * 9) + 1);
-		int randomY = (int) ((Math.random() * 9) + 1);
+		int randomX = (r.nextInt(10) + 1);
+		int randomY = (r.nextInt(10) + 1);
 		while (randomX == randomY) {
-			randomY = (int) ((Math.random() * 9) + 1);
+			randomY = (r.nextInt(10) + 1);
 		}
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				if (btempBoard[i][j] == randomX) {
-					btempBoard[i][j] = randomY;
-				} else if (btempBoard[i][j] == randomY) {
-					btempBoard[i][j] = randomX;
+				if (completeBoard[i][j] == randomX) {
+					completeBoard[i][j] = randomY;
+				} else if (completeBoard[i][j] == randomY) {
+					completeBoard[i][j] = randomX;
 				}
 			}
 		}
-		return btempBoard;
 	}
 	
 	/**

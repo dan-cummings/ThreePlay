@@ -155,7 +155,7 @@ public class GameSuiteGUI extends JPanel {
 	 */
 	private void sudokuUI() {
 		wind.setSize(900, 700);
-		game = new SudokuLogic();
+		game = new SudokuLogic(20);
 		sudokuPanel = new SudokuGUI((SudokuLogic) game);
 		this.removeAll();
 		this.setLayout(new GridBagLayout());

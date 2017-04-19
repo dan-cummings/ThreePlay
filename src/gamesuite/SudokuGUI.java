@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
@@ -79,6 +80,7 @@ implements MouseListener, KeyListener {
 		this.addKeyListener(this);
 		// Instantiate game objects
 		this.game = gamel;
+		this.gameOption();
 		this.size = gamel.getSize();
 		this.sqSize = 60;
 		// Creating size of panels.
@@ -233,7 +235,10 @@ implements MouseListener, KeyListener {
 					right = thick;
 				}
 				board[x][y].setBorder(
-				  new MatteBorder(left, top, right, bottom, squareBorderColor));			
+				  new MatteBorder(left,
+						  top, right, 
+						  bottom,
+				squareBorderColor));			
 	
 				numberLabel.setHorizontalAlignment(
 						SwingConstants.CENTER);
@@ -243,6 +248,31 @@ implements MouseListener, KeyListener {
 				board[x][y].add(numberLabel);
 				boardPanel.add(board[x][y]);
 			}
+		}
+	}
+	
+	/**
+	 * Creates a dialog window to select which game difficulty
+	 * the player wishes to play.
+	 */
+	private void gameOption() {
+		Object[] options = {"Easy", "Medium", "Hard"};
+		int type;
+		do {
+			type = JOptionPane.showOptionDialog(this,
+				"Please select a game mode:",
+				"Game Select",
+				JOptionPane.DEFAULT_OPTION,
+				JOptionPane.PLAIN_MESSAGE,
+				null, options, options[0]);
+		} while (type == JOptionPane.CLOSED_OPTION);
+				
+		if (type == 0) {
+			this.game.setDifficulty(25);
+		} else if (type == 1) {
+			this.game.setDifficulty(50);
+		} else {
+			this.game.setDifficulty(64);
 		}
 	}
 	
@@ -268,10 +298,13 @@ implements MouseListener, KeyListener {
 				// Colors initial numbers.
 				if (game.isInitial(y, x)) {
 					board[x][y].setBackground(initialColor);
-					numberLabel.setForeground(initialTextColor);
+					numberLabel.setForeground(
+							initialTextColor);
 				} else {
-					board[x][y].setBackground(nonInitialColor);
-					numberLabel.setForeground(completedTextColor);
+					board[x][y].setBackground(
+							nonInitialColor);
+					numberLabel.setForeground(
+							completedTextColor);
 				}
 				// If the location is currently selected.
 				if (!game.isInitial(y, x) 
@@ -335,8 +368,7 @@ implements MouseListener, KeyListener {
 			// Not a number
 		} finally {
 			// For Testing
-			//System.out.println("Input to [" + game.currentClickedX() + "][" + game.currentClickedY() + "]: " 
-			//+ game.getNumber(squareY, squareX));
+			this.displayBoard();
 		}
 		
 		// Near the game end
